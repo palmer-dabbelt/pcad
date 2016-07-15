@@ -1,0 +1,23 @@
+language: c++
+
+matrix:
+  include:
+    - env: PCONFIGURE_VERSION=0.11.6
+
+before_install:
+  - export S=$(pwd)
+  - mkdir -p $HOME/dependencies
+  - cd $HOME/dependencies
+  - wget https://github.com/palmer-dabbelt/pconfigure/archive/v${PCONFIGURE_VERSION}.tar.gz -O ${PCONFIGURE_VERSION}.tar.gz
+  - tar -xvzpf ${PCONFIGURE_VERSION}.tar.gz -C $HOME/dependencies
+  - cd pconfigure-${PCONFIGURE_VERSION}
+  - ./bootstrap.sh --prefix $HOME/dependencies/install
+  - make install
+  - export PATH="$HOME/dependencies/install/bin:$PATH"
+  - cd ${S}
+
+script:
+  - pconfigure
+  - make
+  - make check
+  - ptest --verbose
