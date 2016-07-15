@@ -13,3 +13,4 @@ COMPILEOPTS += -Isrc
 BINARIES    += pcad-pipe-top2json
 SOURCES     += pipe-top2json.c++
 TESTSRC     += verilog-hello_world.bash
+TESTSRC     += verilog-AOI.bash

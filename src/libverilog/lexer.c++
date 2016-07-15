@@ -24,6 +24,7 @@ lexer::lexer(const std::string& filename)
 bool isbreak(int c)
 {
     if (isspace(c)) return true;
+    if (c == ',') return true;
     if (c == '(' || c == ')') return true;
     if (c == '+' || c == '-' || c == '*' || c == '^') return true;
     return false;

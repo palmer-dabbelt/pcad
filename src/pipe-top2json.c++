@@ -50,8 +50,18 @@ int main(int argc, const char **argv)
             std::ofstream os(output.getValue());
             os << "{\n"
                << "  \"name\": \"" << t->name() << "\",\n"
-               << "  \"ports\": [\n"
-               << "  ]\n"
+               << "  \"ports\": [\n";
+
+            for (const auto& port: t->ports()) {
+                os << "    {\n"
+                   << "      \"name\": \"" << port->name() << "\",\n"
+                   << "      \"direction\": \"" << libverilog::to_string(port->direction()) << "\",\n"
+                   << "      \"type\": \"wire\",\n"
+                   << "      \"width\": \"" << std::to_string(port->width()) << "\"\n"
+                   << "    },\n";
+            }
+
+            os << "  ]\n"
                << "}\n";
             os.close();
         } 
