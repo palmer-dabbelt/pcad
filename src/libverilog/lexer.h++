@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <vector>
+#include <string>
 
 namespace libverilog {
     /* A Verilog lexer.  You probably don't want to use this directly, use the
