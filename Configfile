@@ -2,7 +2,6 @@ LANGUAGES   += c++
 COMPILEOPTS += -std=c++11
 COMPILEOPTS += -Wall
 COMPILEOPTS += -Wextra
-COMPILEOPTS += -pedantic
 COMPILEOPTS += -Werror
 
 LANGUAGES   += bash
