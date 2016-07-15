@@ -10,6 +10,7 @@ matrix:
     - env: PCONFIGURE_VERSION=0.11.6
 
 before_install:
+  - export MAKEFLAGS="-j3"
   - export S=$(pwd)
   - mkdir -p $HOME/dependencies
   - cd $HOME/dependencies
