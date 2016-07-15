@@ -17,9 +17,9 @@ namespace libverilog {
         /* The lexer preserves debug info. */
         class token {
         public:
-            const std::string str;
-            const size_t line;
-            const size_t col;
+            std::string str;
+            size_t line;
+            size_t col;
 
             token(const std::string& _str, size_t _line, size_t _col)
             : str(_str),
