@@ -1,0 +1,16 @@
+LANGUAGES   += c++
+COMPILEOPTS += -std=c++11
+COMPILEOPTS += -Wall
+COMPILEOPTS += -Wextra
+COMPILEOPTS += -pedantic
+COMPILEOPTS += -Werror
+
+LANGUAGES   += bash
+
+LANGUAGES   += c++
+COMPILEOPTS += -Isrc
+
+# Lists the top-level IOs of a circuit.
+BINARIES    += pcad-pipe-top2json
+SOURCES     += pipe-top2json.c++
+TESTSRC     += verilog-hello_world.bash
