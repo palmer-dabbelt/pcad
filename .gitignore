@@ -3,3 +3,5 @@
 /bin
 /check
 /obj
+
+*.swp
