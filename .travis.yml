@@ -1,5 +1,10 @@
 language: c++
 
+addons:
+  apt:
+    packages:
+      - libtclap-dev
+
 matrix:
   include:
     - env: PCONFIGURE_VERSION=0.11.6
