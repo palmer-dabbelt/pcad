@@ -26,8 +26,6 @@ circuit::ptr parser::parse_circuit(const std::vector<lexer::token>& tokens)
     auto current_module = std::vector<lexer::token>();
 
     for (const auto& token: tokens) {
-        std::cerr << "token: " << token.str << "\n";
-
         switch (state) {
         case circuit_parser_state::TOP:
             if (token == "module") {
@@ -44,6 +42,7 @@ circuit::ptr parser::parse_circuit(const std::vector<lexer::token>& tokens)
             if (token == "endmodule") {
                 state = circuit_parser_state::TOP;
                 modules.push_back(parse_module(current_module));
+                current_module = {};
             }
             break;
         }
@@ -118,6 +117,9 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens)
                 port_direction = libverilog::port_direction::OUTPUT;
             } else if (token == "[") {
                 state = module_parser_state::PORT_WIDTH_1;
+            } else if (token == "]") {
+                std::cerr << "unknown token ] in module_parser_state::PORTS\n";
+                abort();
             } else if (token == ")") {
             } else if (token == "(") {
             } else if (token == ",") {
@@ -130,10 +132,10 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens)
 
         case module_parser_state::PORT_WIDTH_1:
         {
-            char *end;
+            char *end = NULL;
             auto val = strtol(token.str.c_str(), &end, 0);
-            if (end != NULL && *end != '\0') {
-                port_width = val;
+            if (end != NULL && *end == '\0') {
+                port_width = val + 1;
                 state = module_parser_state::PORT_WIDTH_2;
             } else {
                 std::cerr << "unknown token " << token.str << " in module_parser_state::PORT_WIDTH_1\n";
@@ -153,6 +155,7 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens)
                 std::cerr << "unknown token " << token.str << " in module_parser_state::PORT_WIDTH_1\n";
                 abort();
             }
+            break;
         }
 
         case module_parser_state::PORT_NAME:

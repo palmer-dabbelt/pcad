@@ -24,8 +24,9 @@ lexer::lexer(const std::string& filename)
 bool isbreak(int c)
 {
     if (isspace(c)) return true;
-    if (c == ',') return true;
+    if (c == ',' || c == ';') return true;
     if (c == '(' || c == ')') return true;
+    if (c == '[' || c == ':' || c == ']') return true;
     if (c == '+' || c == '-' || c == '*' || c == '^') return true;
     return false;
 }
@@ -81,6 +82,9 @@ std::vector<lexer::token> lex(std::ifstream& i)
                     tokens.push_back(lexer::token(token_string, line, col));
                     token_string = "";
                 }
+
+                if (!isspace(cur_c))
+                    tokens.push_back(lexer::token(cur_s, line, col));
             } else {
                 token_string = token_string + cur_s;
             }
