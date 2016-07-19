@@ -1,6 +1,6 @@
 #include "_tempdir.bash"
 
-cat > $INFILE <<"EOF"
+cat > "${TOP}".v <<"EOF"
 module CSRFile(
   input   clk,
   input   reset,
@@ -103106,7 +103106,7 @@ module Top(
 endmodule
 EOF
 
-cat >$OUTFILE.gold <<"EOF"
+cat > "${TOP}.io.json.gold" <<"EOF"
 {
   "name": "Top",
   "ports": [

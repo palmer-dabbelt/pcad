@@ -1,7 +1,7 @@
-cat $INFILE
+cat "${TOP}.v"
 
-$PTEST_BINARY --top $TOP --input $INFILE --output $OUTFILE
+$PTEST_BINARY --top $TOP --input "${TOP}.v" --output "${TOP}.io.json"
 
-cat $OUTFILE
+cat "${TOP}.io.json"
 
-diff -u $OUTFILE $OUTFILE.gold
+diff -u "${TOP}.io.json" "${TOP}.io.json.gold"

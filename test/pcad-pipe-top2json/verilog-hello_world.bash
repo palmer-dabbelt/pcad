@@ -1,10 +1,8 @@
 #include "_tempdir.bash"
 
 TOP=hello_world
-INFILE=hello_world.v
-OUTFILE=hello_world.io.json
 
-cat >$INFILE <<EOF
+cat >"${TOP}".v <<EOF
 //-----------------------------------------------------
 // This is my first Verilog Program
 // Design Name : hello_world
@@ -22,7 +20,7 @@ end
 endmodule // End of Module hello_world
 EOF
 
-cat >$OUTFILE.gold <<EOF
+cat >"${TOP}.io.json.gold" <<EOF
 {
   "name": "hello_world",
   "ports": [

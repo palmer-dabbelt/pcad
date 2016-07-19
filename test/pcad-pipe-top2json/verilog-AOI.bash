@@ -1,10 +1,8 @@
 #include "_tempdir.bash"
 
 TOP=AOI
-INFILE=AOI.v
-OUTFILE=AOI.io.json
 
-cat >$INFILE <<EOF
+cat >"${TOP}".v <<EOF
 // Verilog code for AND-OR-INVERT gate
 module AOI (input A, input B, input C, input D, output F);
   assign F = ~((A & B) | (C & D));
@@ -12,7 +10,7 @@ endmodule
 // end of Verilog code
 EOF
 
-cat >$OUTFILE.gold <<EOF
+cat >"${TOP}".io.json.gold <<EOF
 {
   "name": "AOI",
   "ports": [
