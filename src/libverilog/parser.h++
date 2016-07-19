@@ -5,6 +5,7 @@
 
 #include <memory>
 #include "circuit.h++"
+#include "lexer.h++"
 
 namespace libverilog {
     /* A Verilog parser.  This is really only ever going to support the sort of
@@ -17,7 +18,7 @@ namespace libverilog {
         static circuit::ptr read_file(const std::string& filename);
 
         static circuit::ptr parse_circuit(const std::vector<lexer::token>& tokens);
-        static module::ptr parse_module(const std::vector<lexer::token>& tokens);
+        static pcad::module::ptr parse_module(const std::vector<lexer::token>& tokens);
     };
 }
 

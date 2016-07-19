@@ -1,7 +1,7 @@
 // See LICENSE for details
 
 #include "module.h++"
-using namespace libverilog;
+using namespace pcad;
 
 module::module(const decltype(_name)& name,
                const decltype(_ports)& ports)

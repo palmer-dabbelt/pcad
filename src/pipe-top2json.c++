@@ -40,7 +40,7 @@ int main(int argc, const char **argv)
 
         auto i = pcad::circuit::read_file(input.getValue(), top.getValue());
 
-        auto t = i->module(top.getValue());
+        auto t = i->find_module(top.getValue());
         if (t == nullptr) {
             std::cerr << "Unable to find module " << top.getValue() << std::endl;
             return 1;
@@ -55,7 +55,7 @@ int main(int argc, const char **argv)
             for (const auto& port: t->ports()) {
                 os << "    {\n"
                    << "      \"name\": \"" << port->name() << "\",\n"
-                   << "      \"direction\": \"" << libverilog::to_string(port->direction()) << "\",\n"
+                   << "      \"direction\": \"" << pcad::to_string(port->direction()) << "\",\n"
                    << "      \"type\": \"wire\",\n"
                    << "      \"width\": \"" << std::to_string(port->width()) << "\"\n"
                    << "    },\n";

@@ -5,16 +5,16 @@
 #include <iostream>
 using namespace pcad;
 
-static std::unordered_map<std::string, libverilog::module::ptr> build_name2module(const std::vector<libverilog::module::ptr>& modules);
+static std::unordered_map<std::string, module::ptr> build_name2module(const std::vector<module::ptr>& modules);
 
 circuit::circuit(const std::string& top, const libverilog::circuit::ptr& v)
 : _v(v),
   _name2module(build_name2module(v->modules())),
-  _top(this->module(top))
+  _top(this->find_module(top))
 {
 }
 
-libverilog::module::ptr circuit::module(const std::string& name) const
+module::ptr circuit::find_module(const std::string& name) const
 {
     auto l = _name2module.find(name);
     if (l == _name2module.end())
@@ -34,9 +34,9 @@ circuit::ptr circuit::read_file(const std::string& filename, const std::string& 
     abort();
 }
 
-std::unordered_map<std::string, libverilog::module::ptr> build_name2module(const std::vector<libverilog::module::ptr>& modules)
+std::unordered_map<std::string, module::ptr> build_name2module(const std::vector<module::ptr>& modules)
 {
-    std::unordered_map<std::string, libverilog::module::ptr> out;
+    std::unordered_map<std::string, module::ptr> out;
 
     for (const auto& module: modules)
         out[module->name()] = module;

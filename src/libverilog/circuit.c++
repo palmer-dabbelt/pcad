@@ -3,7 +3,7 @@
 #include "circuit.h++"
 using namespace libverilog;
 
-circuit::circuit(const std::vector<module::ptr>& modules)
+circuit::circuit(const std::vector<pcad::module::ptr>& modules)
 : _modules(modules)
 {
 }

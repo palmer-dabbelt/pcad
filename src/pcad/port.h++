@@ -1,11 +1,11 @@
 // See LICENSE for details
 
-#ifndef LIBVERILOG__PORT_HXX
-#define LIBVERILOG__PORT_HXX
+#ifndef PCAD__PORT_HXX
+#define PCAD__PORT_HXX
 
 #include <pcad/wire.h++>
 
-namespace libverilog {
+namespace pcad {
     /* FIXME: I think GCC can't handle this. */
     enum class port_direction {
         INPUT,

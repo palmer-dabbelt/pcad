@@ -3,8 +3,8 @@
 #ifndef LIBVERILOG__CIRCUIT_HXX
 #define LIBVERILOG__CIRCUIT_HXX
 
+#include <pcad/module.h++>
 #include <memory>
-#include "module.h++"
 
 namespace libverilog {
     /* The top-level class that holds a whole Verilog circuit. */
@@ -13,10 +13,10 @@ namespace libverilog {
         typedef std::shared_ptr<circuit> ptr;
 
     public:
-        std::vector<module::ptr> _modules;
+        std::vector<pcad::module::ptr> _modules;
 
     public:
-        circuit(const std::vector<module::ptr>& modules);
+        circuit(const std::vector<pcad::module::ptr>& modules);
 
     public:
         const decltype(_modules)& modules(void) const { return _modules; }

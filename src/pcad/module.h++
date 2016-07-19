@@ -1,15 +1,14 @@
 // See LICENSE for details
 
-#ifndef LIBVERILOG__MODULE_HXX
-#define LIBVERILOG__MODULE_HXX
+#ifndef PCAD__MODULE_HXX
+#define PCAD__MODULE_HXX
 
-#include "lexer.h++"
 #include "port.h++"
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace libverilog {
+namespace pcad {
     /* A Verilog circuit is just a collection of modules. */
     class module {
     public:

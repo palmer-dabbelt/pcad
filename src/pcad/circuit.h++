@@ -13,9 +13,9 @@ namespace pcad {
 
     private:
         libverilog::circuit::ptr _v;
-        std::unordered_map<std::string, libverilog::module::ptr> _name2module;
+        std::unordered_map<std::string, module::ptr> _name2module;
 
-        libverilog::module::ptr _top;
+        module::ptr _top;
 
     public:
         circuit(const std::string& top,
@@ -23,7 +23,7 @@ namespace pcad {
 
     public:
         /* Searches for a module by name. */
-        libverilog::module::ptr module(const std::string& name) const;
+        module::ptr find_module(const std::string& name) const;
 
     public:
         static ptr read_file(const std::string& filename, const std::string& top);

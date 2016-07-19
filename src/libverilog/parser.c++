@@ -2,10 +2,11 @@
 
 #include "parser.h++"
 #include "lexer.h++"
-#include "module.h++"
-#include "port.h++"
+#include <pcad/module.h++>
+#include <pcad/port.h++>
 #include <iostream>
 using namespace libverilog;
+using namespace pcad;
 
 circuit::ptr parser::read_file(const std::string& filename)
 {
@@ -112,9 +113,9 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens)
 
         case module_parser_state::PORTS:
             if (token == "input") {
-                port_direction = libverilog::port_direction::INPUT;
+                port_direction = pcad::port_direction::INPUT;
             } else if (token == "output") {
-                port_direction = libverilog::port_direction::OUTPUT;
+                port_direction = pcad::port_direction::OUTPUT;
             } else if (token == "[") {
                 state = module_parser_state::PORT_WIDTH_1;
             } else if (token == "]") {
