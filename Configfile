@@ -17,3 +17,8 @@ LINKOPTS    += `ppkg-config tclap --libs`
 BINARIES    += pcad-pipe-top2json
 SOURCES     += pipe-top2json.c++
 CONFIG      += testcases
+
+# Infers top-level DecoupledIOs from a circuit.
+BINARIES    += pcad-pipe-infer_decoupled
+SOURCES     += pipe-infer_decoupled.c++
+CONFIG      += testcases

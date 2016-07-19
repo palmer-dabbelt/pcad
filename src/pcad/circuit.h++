@@ -1,5 +1,6 @@
 // See LICENSE for details
 
+#include "decoupled.h++"
 #include <libverilog/circuit.h++>
 #include <unordered_map>
 #include <memory>

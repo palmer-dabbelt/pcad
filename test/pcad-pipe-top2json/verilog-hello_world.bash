@@ -28,4 +28,12 @@ cat >"${TOP}.io.json.gold" <<EOF
 }
 EOF
 
+cat >"${TOP}.decoupled.json.gold" <<EOF
+{
+  "name": "hello_world",
+  "decoupled io": [
+  ]
+}
+EOF
+
 #include "_harness.bash"

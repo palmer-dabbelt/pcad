@@ -103462,4 +103462,214 @@ cat > "${TOP}.io.json.gold" <<"EOF"
 }
 EOF
 
+cat > "${TOP}.decoupled.json.gold" <<EOF
+{
+  "name": "Top",
+  "decoupled io": [
+    {
+      "base": "io_mem_axi_0_aw",
+      "direction": "output",
+      "bits": [
+        {
+          "name": "addr",
+          "width": "32"
+        },
+        {
+          "name": "len",
+          "width": "8"
+        },
+        {
+          "name": "size",
+          "width": "3"
+        },
+        {
+          "name": "burst",
+          "width": "2"
+        },
+        {
+          "name": "lock",
+          "width": "1"
+        },
+        {
+          "name": "cache",
+          "width": "4"
+        },
+        {
+          "name": "prot",
+          "width": "3"
+        },
+        {
+          "name": "qos",
+          "width": "4"
+        },
+        {
+          "name": "region",
+          "width": "4"
+        },
+        {
+          "name": "id",
+          "width": "5"
+        },
+        {
+          "name": "user",
+          "width": "1"
+        },
+      ]
+    },
+    {
+      "base": "io_mem_axi_0_w",
+      "direction": "output",
+      "bits": [
+        {
+          "name": "data",
+          "width": "64"
+        },
+        {
+          "name": "last",
+          "width": "1"
+        },
+        {
+          "name": "id",
+          "width": "5"
+        },
+        {
+          "name": "strb",
+          "width": "8"
+        },
+        {
+          "name": "user",
+          "width": "1"
+        },
+      ]
+    },
+    {
+      "base": "io_mem_axi_0_b",
+      "direction": "input",
+      "bits": [
+        {
+          "name": "resp",
+          "width": "2"
+        },
+        {
+          "name": "id",
+          "width": "5"
+        },
+        {
+          "name": "user",
+          "width": "1"
+        },
+      ]
+    },
+    {
+      "base": "io_mem_axi_0_ar",
+      "direction": "output",
+      "bits": [
+        {
+          "name": "addr",
+          "width": "32"
+        },
+        {
+          "name": "len",
+          "width": "8"
+        },
+        {
+          "name": "size",
+          "width": "3"
+        },
+        {
+          "name": "burst",
+          "width": "2"
+        },
+        {
+          "name": "lock",
+          "width": "1"
+        },
+        {
+          "name": "cache",
+          "width": "4"
+        },
+        {
+          "name": "prot",
+          "width": "3"
+        },
+        {
+          "name": "qos",
+          "width": "4"
+        },
+        {
+          "name": "region",
+          "width": "4"
+        },
+        {
+          "name": "id",
+          "width": "5"
+        },
+        {
+          "name": "user",
+          "width": "1"
+        },
+      ]
+    },
+    {
+      "base": "io_mem_axi_0_r",
+      "direction": "input",
+      "bits": [
+        {
+          "name": "resp",
+          "width": "2"
+        },
+        {
+          "name": "data",
+          "width": "64"
+        },
+        {
+          "name": "last",
+          "width": "1"
+        },
+        {
+          "name": "id",
+          "width": "5"
+        },
+        {
+          "name": "user",
+          "width": "1"
+        },
+      ]
+    },
+    {
+      "base": "io_debug_req",
+      "direction": "input",
+      "bits": [
+        {
+          "name": "addr",
+          "width": "5"
+        },
+        {
+          "name": "op",
+          "width": "2"
+        },
+        {
+          "name": "data",
+          "width": "34"
+        },
+      ]
+    },
+    {
+      "base": "io_debug_resp",
+      "direction": "output",
+      "bits": [
+        {
+          "name": "resp",
+          "width": "2"
+        },
+        {
+          "name": "data",
+          "width": "34"
+        },
+      ]
+    },
+  ]
+}
+EOF
+
 #include "_harness.bash"
