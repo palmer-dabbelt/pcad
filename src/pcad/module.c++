@@ -41,7 +41,6 @@ std::vector<decoupled::ptr> module::infer_decoupled_io(void) const
         bool has_ready = false;
         std::vector<port::ptr> ports;
         auto base = port->name().substr(0, port->name().size() - 6);
-        std::cerr << "Looking for ports with base " << base << std::endl;
         for (const auto& candidate: this->ports()) {
             if (candidate->name() == base + "_ready")
                 has_ready = true;
