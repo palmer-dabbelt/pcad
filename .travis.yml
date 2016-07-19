@@ -7,19 +7,29 @@ addons:
 
 matrix:
   include:
-    - env: PCONFIGURE_VERSION=0.11.6
+    - env: PCONFIGURE_VERSION=0.11.6 TCLAP_VERSION=1.2.1
 
 before_install:
   - export MAKEFLAGS="-j3"
   - export S=$(pwd)
   - mkdir -p $HOME/dependencies
+  - :
   - cd $HOME/dependencies
   - wget https://github.com/palmer-dabbelt/pconfigure/archive/v${PCONFIGURE_VERSION}.tar.gz -O ${PCONFIGURE_VERSION}.tar.gz
   - tar -xvzpf ${PCONFIGURE_VERSION}.tar.gz -C $HOME/dependencies
   - cd pconfigure-${PCONFIGURE_VERSION}
   - ./bootstrap.sh --prefix $HOME/dependencies/install
   - make install
+  - :
+  - cd $HOME/dependencies/
+  - wget "http://downloads.sourceforge.net/project/tclap/tclap-${TCLAP_VERSION}.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Ftclap%2Ffiles%2F&ts=1468934271&use_mirror=superb-sea2" -O tclap-${TCLAP_VERSION}.tar.gz
+  - cd tclap-${TCLAP_VERSION}
+  - ./configure --prefix=$HOME/dependencies/install
+  - make
+  - make install
+  - :
   - export PATH="$HOME/dependencies/install/bin:$PATH"
+  - export PKG_CONFIG_PATH="$HOME/dependencies/install/lib/pkgconfig"
   - cd ${S}
 
 script:
