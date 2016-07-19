@@ -1,12 +1,12 @@
 // See LICENSE for details
 
-#ifndef LIBVERILOG__WIRE_HXX
-#define LIBVERILOG__WIRE_HXX
+#ifndef PCAD__WIRE_HXX
+#define PCAD__WIRE_HXX
 
 #include <memory>
 #include <string>
 
-namespace libverilog {
+namespace pcad {
     /* This class actually stores both Verilog wires and regs, since they're
      * pretty much the same thing. */
     class wire {

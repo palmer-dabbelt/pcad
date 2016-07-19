@@ -3,7 +3,7 @@
 #ifndef LIBVERILOG__PORT_HXX
 #define LIBVERILOG__PORT_HXX
 
-#include "wire.h++"
+#include <pcad/wire.h++>
 
 namespace libverilog {
     /* FIXME: I think GCC can't handle this. */
@@ -13,7 +13,7 @@ namespace libverilog {
     };
 
     /* Modules have ports, which are represented here. */
-    class port: public wire {
+    class port: public pcad::wire {
     public:
         typedef std::shared_ptr<port> ptr;
 
