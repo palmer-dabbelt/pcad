@@ -8,7 +8,7 @@
 using namespace libverilog;
 using namespace pcad;
 
-circuit::ptr parser::read_file(const std::string& filename)
+std::vector<module::ptr> parser::read_file(const std::string& filename)
 {
     auto l = lexer(filename);
     return parse_circuit(l.tokens());
@@ -19,7 +19,7 @@ enum class circuit_parser_state {
     MODULE_NAME,
 };
 
-circuit::ptr parser::parse_circuit(const std::vector<lexer::token>& tokens)
+std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& tokens)
 {
     auto state = circuit_parser_state::TOP;
 
@@ -49,7 +49,7 @@ circuit::ptr parser::parse_circuit(const std::vector<lexer::token>& tokens)
         }
     }
 
-    return std::make_shared<circuit>(modules);
+    return modules;
 }
 
 enum class module_parser_state {

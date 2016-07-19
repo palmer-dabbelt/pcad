@@ -1,7 +1,10 @@
 // See LICENSE for details
 
+#ifndef PCAD__CIRCUIT_HXX
+#define PCAD__CIRCUIT_HXX
+
 #include "decoupled.h++"
-#include <libverilog/circuit.h++>
+#include "module.h++"
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -13,14 +16,14 @@ namespace pcad {
         typedef std::shared_ptr<circuit> ptr;
 
     private:
-        libverilog::circuit::ptr _v;
+        std::vector<module::ptr> _modules;
         std::unordered_map<std::string, module::ptr> _name2module;
 
         module::ptr _top;
 
     public:
         circuit(const std::string& top,
-                const libverilog::circuit::ptr& v);
+                const std::vector<module::ptr>& modules);
 
     public:
         /* Searches for a module by name. */
@@ -30,3 +33,5 @@ namespace pcad {
         static ptr read_file(const std::string& filename, const std::string& top);
     };
 }
+
+#endif

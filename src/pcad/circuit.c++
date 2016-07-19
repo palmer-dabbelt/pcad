@@ -7,9 +7,9 @@ using namespace pcad;
 
 static std::unordered_map<std::string, module::ptr> build_name2module(const std::vector<module::ptr>& modules);
 
-circuit::circuit(const std::string& top, const libverilog::circuit::ptr& v)
-: _v(v),
-  _name2module(build_name2module(v->modules())),
+circuit::circuit(const std::string& top, const std::vector<module::ptr>& modules)
+: _modules(modules),
+  _name2module(build_name2module(modules)),
   _top(this->find_module(top))
 {
 }
@@ -26,7 +26,7 @@ module::ptr circuit::find_module(const std::string& name) const
 circuit::ptr circuit::read_file(const std::string& filename, const std::string& top)
 {
     auto v = libverilog::parser::read_file(filename);
-    if (v != nullptr) {
+    if (v.size() > 0) {
         return std::make_shared<circuit>(top, v);
     }
 
