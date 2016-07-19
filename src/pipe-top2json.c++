@@ -2,7 +2,7 @@
 
 #include <pcad/circuit.h++>
 #include <tclap/CmdLine.h>
-#include <fstream>
+#include <libjson/json_stream.h++>
 
 int main(int argc, const char **argv)
 {
@@ -47,23 +47,20 @@ int main(int argc, const char **argv)
         }
 
         {
-            std::ofstream os(output.getValue());
-            os << "{\n"
-               << "  \"name\": \"" << t->name() << "\",\n"
-               << "  \"ports\": [\n";
-
+            libjson::ofstream os(output.getValue());
+            os << libjson::stream_marker::BEGIN_STRUCTURE;
+            os << libjson::make_pair("name", t->name());
+            os << libjson::make_pair("ports", libjson::stream_marker::BEGIN_ARRAY);
             for (const auto& port: t->ports()) {
-                os << "    {\n"
-                   << "      \"name\": \"" << port->name() << "\",\n"
-                   << "      \"direction\": \"" << pcad::to_string(port->direction()) << "\",\n"
-                   << "      \"type\": \"wire\",\n"
-                   << "      \"width\": \"" << std::to_string(port->width()) << "\"\n"
-                   << "    },\n";
+                os << libjson::stream_marker::BEGIN_STRUCTURE;
+                os << libjson::make_pair("name", port->name());
+                os << libjson::make_pair("direction", pcad::to_string(port->direction()));
+                os << libjson::make_pair("type", "wire");
+                os << libjson::make_pair("width", std::to_string(port->width()));
+                os << libjson::stream_marker::END_STRUCTURE;
             }
-
-            os << "  ]\n"
-               << "}\n";
-            os.close();
+            os << libjson::stream_marker::END_ARRAY;
+            os << libjson::stream_marker::END_STRUCTURE;
         } 
 
         return 0;

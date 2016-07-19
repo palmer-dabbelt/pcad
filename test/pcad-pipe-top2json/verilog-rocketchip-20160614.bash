@@ -103457,7 +103457,7 @@ cat > "${TOP}.io.json.gold" <<"EOF"
       "direction": "output",
       "type": "wire",
       "width": "34"
-    },
+    }
   ]
 }
 EOF
@@ -103513,7 +103513,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "user",
           "width": "1"
-        },
+        }
       ]
     },
     {
@@ -103539,7 +103539,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "user",
           "width": "1"
-        },
+        }
       ]
     },
     {
@@ -103557,7 +103557,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "user",
           "width": "1"
-        },
+        }
       ]
     },
     {
@@ -103607,7 +103607,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "user",
           "width": "1"
-        },
+        }
       ]
     },
     {
@@ -103633,7 +103633,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "user",
           "width": "1"
-        },
+        }
       ]
     },
     {
@@ -103651,7 +103651,7 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "data",
           "width": "34"
-        },
+        }
       ]
     },
     {
@@ -103665,9 +103665,9 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
         {
           "name": "data",
           "width": "34"
-        },
+        }
       ]
-    },
+    }
   ]
 }
 EOF

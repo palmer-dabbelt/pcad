@@ -43,7 +43,7 @@ cat >"${TOP}".io.json.gold <<EOF
       "direction": "output",
       "type": "wire",
       "width": "1"
-    },
+    }
   ]
 }
 EOF

@@ -2,7 +2,7 @@
 
 #include <pcad/circuit.h++>
 #include <tclap/CmdLine.h>
-#include <fstream>
+#include <libjson/json_stream.h++>
 
 int main(int argc, const char **argv)
 {
@@ -47,29 +47,28 @@ int main(int argc, const char **argv)
         }
 
         {
-            std::ofstream os(output.getValue());
-            os << "{\n"
-               << "  \"name\": \"" << t->name() << "\",\n"
-               << "  \"decoupled io\": [\n";
+            libjson::ofstream os(output.getValue());
+            os << libjson::stream_marker::BEGIN_STRUCTURE;
+            os << libjson::make_pair("name", t->name());
+            os << libjson::make_pair("decoupled io", libjson::stream_marker::BEGIN_ARRAY);
 
             for (const auto& d: t->infer_decoupled_io()) {
-                os << "    {\n"
-                   << "      \"base\": \"" << d->base_name() << "\",\n"
-                   << "      \"direction\": \"" << pcad::to_string(d->direction()) << "\",\n"
-                   << "      \"bits\": [\n";
+                os << libjson::stream_marker::BEGIN_STRUCTURE;
+                os << libjson::make_pair("base", d->base_name());
+                os << libjson::make_pair("direction", pcad::to_string(d->direction()));
+                os << libjson::make_pair("bits", libjson::stream_marker::BEGIN_ARRAY);
                 for (const auto& w: d->ports()) {
-                    os << "        {\n"
-                       << "          \"name\": \"" << d->bits_name(w) << "\",\n"
-                       << "          \"width\": \"" << std::to_string(w->width()) << "\"\n"
-                       << "        },\n";
+                    os << libjson::stream_marker::BEGIN_STRUCTURE;
+                    os << libjson::make_pair("name", d->bits_name(w));
+                    os << libjson::make_pair("width", std::to_string(w->width()));
+                    os << libjson::stream_marker::END_STRUCTURE;
                 }
-                os << "      ]\n";
-                os << "    },\n";
+                os << libjson::stream_marker::END_ARRAY;
+                os << libjson::stream_marker::END_STRUCTURE;
             }
 
-            os << "  ]\n"
-               << "}\n";
-            os.close();
+            os << libjson::stream_marker::END_ARRAY;
+            os << libjson::stream_marker::END_STRUCTURE;
         } 
 
         return 0;
