@@ -9,6 +9,10 @@ LANGUAGES   += bash
 LANGUAGES   += c++
 COMPILEOPTS += -Isrc
 
+LANGUAGES   += c++
+COMPILEOPTS += `ppkg-config tclap --cflags`
+LINKOPTS    += `ppkg-config tclap --libs`
+
 # Lists the top-level IOs of a circuit.
 BINARIES    += pcad-pipe-top2json
 SOURCES     += pipe-top2json.c++
