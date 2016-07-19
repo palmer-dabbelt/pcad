@@ -1,0 +1,1 @@
+../pcad-pipe-top2json/verilog-decoupled.bash

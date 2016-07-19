@@ -1,3 +1,4 @@
 TESTSRC     += verilog-hello_world.bash
 TESTSRC     += verilog-AOI.bash
 TESTSRC     += verilog-rocketchip-20160614.bash
+TESTSRC     += verilog-decoupled.bash
