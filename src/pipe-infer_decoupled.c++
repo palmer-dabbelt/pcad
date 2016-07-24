@@ -59,7 +59,7 @@ int main(int argc, const char **argv)
                 os << libjson::make_pair("bits", libjson::stream_marker::BEGIN_ARRAY);
                 for (const auto& w: d->ports()) {
                     os << libjson::stream_marker::BEGIN_STRUCTURE;
-                    os << libjson::make_pair("name", d->bits_name(w));
+                    os << libjson::make_pair("name", w->name());
                     os << libjson::make_pair("width", std::to_string(w->width()));
                     os << libjson::stream_marker::END_STRUCTURE;
                 }

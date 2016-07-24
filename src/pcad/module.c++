@@ -39,19 +39,32 @@ std::vector<decoupled::ptr> module::infer_decoupled_io(void) const
             continue;
 
         bool has_ready = false;
+        bool has_valid = false;
         std::vector<port::ptr> ports;
         auto base = port->name().substr(0, port->name().size() - 6);
+        auto direction = port_direction::INPUT;
         for (const auto& candidate: this->ports()) {
             if (candidate->name() == base + "_ready")
                 has_ready = true;
+            if (candidate->name() == base + "_valid") {
+                has_valid = true;
+                direction = candidate->direction();
+            }
+
             if (hasBeginning(candidate->name(), base + "_bits_"))
+                ports.push_back(candidate);
+            if (candidate->name() == (base + "_bits"))
                 ports.push_back(candidate);
         }
 
         if (has_ready == false)
             continue;
+        if (has_valid == false)
+            continue;
+        if (ports.size() == 0)
+            continue;
 
-        out.push_back(std::make_shared<decoupled>(base, ports));
+        out.push_back(std::make_shared<decoupled>(base, ports, direction));
     }
 
     return out;

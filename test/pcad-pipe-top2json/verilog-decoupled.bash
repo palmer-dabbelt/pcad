@@ -47,7 +47,7 @@ cat >"${TOP}.decoupled.json.gold" <<EOF
       "direction": "output",
       "bits": [
         {
-          "name": "addr",
+          "name": "io_mem_axi_0_aw_bits_addr",
           "width": "32"
         }
       ]

@@ -103471,47 +103471,47 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "output",
       "bits": [
         {
-          "name": "addr",
+          "name": "io_mem_axi_0_aw_bits_addr",
           "width": "32"
         },
         {
-          "name": "len",
+          "name": "io_mem_axi_0_aw_bits_len",
           "width": "8"
         },
         {
-          "name": "size",
+          "name": "io_mem_axi_0_aw_bits_size",
           "width": "3"
         },
         {
-          "name": "burst",
+          "name": "io_mem_axi_0_aw_bits_burst",
           "width": "2"
         },
         {
-          "name": "lock",
+          "name": "io_mem_axi_0_aw_bits_lock",
           "width": "1"
         },
         {
-          "name": "cache",
+          "name": "io_mem_axi_0_aw_bits_cache",
           "width": "4"
         },
         {
-          "name": "prot",
+          "name": "io_mem_axi_0_aw_bits_prot",
           "width": "3"
         },
         {
-          "name": "qos",
+          "name": "io_mem_axi_0_aw_bits_qos",
           "width": "4"
         },
         {
-          "name": "region",
+          "name": "io_mem_axi_0_aw_bits_region",
           "width": "4"
         },
         {
-          "name": "id",
+          "name": "io_mem_axi_0_aw_bits_id",
           "width": "5"
         },
         {
-          "name": "user",
+          "name": "io_mem_axi_0_aw_bits_user",
           "width": "1"
         }
       ]
@@ -103521,23 +103521,23 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "output",
       "bits": [
         {
-          "name": "data",
+          "name": "io_mem_axi_0_w_bits_data",
           "width": "64"
         },
         {
-          "name": "last",
+          "name": "io_mem_axi_0_w_bits_last",
           "width": "1"
         },
         {
-          "name": "id",
+          "name": "io_mem_axi_0_w_bits_id",
           "width": "5"
         },
         {
-          "name": "strb",
+          "name": "io_mem_axi_0_w_bits_strb",
           "width": "8"
         },
         {
-          "name": "user",
+          "name": "io_mem_axi_0_w_bits_user",
           "width": "1"
         }
       ]
@@ -103547,15 +103547,15 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "input",
       "bits": [
         {
-          "name": "resp",
+          "name": "io_mem_axi_0_b_bits_resp",
           "width": "2"
         },
         {
-          "name": "id",
+          "name": "io_mem_axi_0_b_bits_id",
           "width": "5"
         },
         {
-          "name": "user",
+          "name": "io_mem_axi_0_b_bits_user",
           "width": "1"
         }
       ]
@@ -103565,47 +103565,47 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "output",
       "bits": [
         {
-          "name": "addr",
+          "name": "io_mem_axi_0_ar_bits_addr",
           "width": "32"
         },
         {
-          "name": "len",
+          "name": "io_mem_axi_0_ar_bits_len",
           "width": "8"
         },
         {
-          "name": "size",
+          "name": "io_mem_axi_0_ar_bits_size",
           "width": "3"
         },
         {
-          "name": "burst",
+          "name": "io_mem_axi_0_ar_bits_burst",
           "width": "2"
         },
         {
-          "name": "lock",
+          "name": "io_mem_axi_0_ar_bits_lock",
           "width": "1"
         },
         {
-          "name": "cache",
+          "name": "io_mem_axi_0_ar_bits_cache",
           "width": "4"
         },
         {
-          "name": "prot",
+          "name": "io_mem_axi_0_ar_bits_prot",
           "width": "3"
         },
         {
-          "name": "qos",
+          "name": "io_mem_axi_0_ar_bits_qos",
           "width": "4"
         },
         {
-          "name": "region",
+          "name": "io_mem_axi_0_ar_bits_region",
           "width": "4"
         },
         {
-          "name": "id",
+          "name": "io_mem_axi_0_ar_bits_id",
           "width": "5"
         },
         {
-          "name": "user",
+          "name": "io_mem_axi_0_ar_bits_user",
           "width": "1"
         }
       ]
@@ -103615,23 +103615,23 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "input",
       "bits": [
         {
-          "name": "resp",
+          "name": "io_mem_axi_0_r_bits_resp",
           "width": "2"
         },
         {
-          "name": "data",
+          "name": "io_mem_axi_0_r_bits_data",
           "width": "64"
         },
         {
-          "name": "last",
+          "name": "io_mem_axi_0_r_bits_last",
           "width": "1"
         },
         {
-          "name": "id",
+          "name": "io_mem_axi_0_r_bits_id",
           "width": "5"
         },
         {
-          "name": "user",
+          "name": "io_mem_axi_0_r_bits_user",
           "width": "1"
         }
       ]
@@ -103641,15 +103641,15 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "input",
       "bits": [
         {
-          "name": "addr",
+          "name": "io_debug_req_bits_addr",
           "width": "5"
         },
         {
-          "name": "op",
+          "name": "io_debug_req_bits_op",
           "width": "2"
         },
         {
-          "name": "data",
+          "name": "io_debug_req_bits_data",
           "width": "34"
         }
       ]
@@ -103659,11 +103659,11 @@ cat > "${TOP}.decoupled.json.gold" <<EOF
       "direction": "output",
       "bits": [
         {
-          "name": "resp",
+          "name": "io_debug_resp_bits_resp",
           "width": "2"
         },
         {
-          "name": "data",
+          "name": "io_debug_resp_bits_data",
           "width": "34"
         }
       ]
