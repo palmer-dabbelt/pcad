@@ -182,6 +182,10 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
     auto ifdef_depth = 0;
 
     for (const auto& token: tokens) {
+#ifdef PCAD__DEBUG_MODULE_PARSER
+        std::cerr << "parse_module(): state == " << to_string(state) << "\t" << token.str << std::endl;
+#endif
+
         switch (state) {
         case module_parser_state::TOP:
             if (token == "module")
