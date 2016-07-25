@@ -3,6 +3,108 @@
 TOP=RocketToFFTWrapper
 
 cat >"${TOP}".v <<"EOF"
+module Memory_RocketIOMem_toFFT_T127(
+  input CLK,
+  input RST,
+  input init,
+  input [10:0] W0A,
+  input W0E,
+  input [47:0] W0I,
+  input [10:0] R1A,
+  input R1E,
+  output [47:0] R1O
+);
+
+  reg [10:0] reg_R1A;
+  reg [47:0] ram [2047:0];
+  `ifndef SYNTHESIS
+    integer initvar;
+    initial begin
+      #0.002;
+      for (initvar = 0; initvar < 2048; initvar = initvar+1)
+        ram[initvar] = {2 {$random}};
+      reg_R1A = {1 {$random}};
+    end
+  `endif
+  integer i;
+  always @(posedge CLK) begin
+    if (R1E) reg_R1A <= R1A;
+    for (i = 0; i < 48; i=i+1) begin
+      if (W0E) ram[W0A][i] <= W0I[i];
+    end
+  end
+  assign R1O = ram[reg_R1A];
+
+endmodule
+
+module Memory_memA_4_T127(
+  input CLK,
+  input RST,
+  input init,
+  input [7:0] W0A,
+  input W0E,
+  input [47:0] W0I,
+  input [7:0] R1A,
+  input R1E,
+  output [47:0] R1O
+);
+
+  reg [7:0] reg_R1A;
+  reg [47:0] ram [239:0];
+  `ifndef SYNTHESIS
+    integer initvar;
+    initial begin
+      #0.002;
+      for (initvar = 0; initvar < 240; initvar = initvar+1)
+        ram[initvar] = {2 {$random}};
+      reg_R1A = {1 {$random}};
+    end
+  `endif
+  integer i;
+  always @(posedge CLK) begin
+    if (R1E) reg_R1A <= R1A;
+    for (i = 0; i < 48; i=i+1) begin
+      if (W0E) ram[W0A][i] <= W0I[i];
+    end
+  end
+  assign R1O = ram[reg_R1A];
+
+endmodule
+
+module Memory_memA_0_T127(
+  input CLK,
+  input RST,
+  input init,
+  input [8:0] W0A,
+  input W0E,
+  input [47:0] W0I,
+  input [8:0] R1A,
+  input R1E,
+  output [47:0] R1O
+);
+
+  reg [8:0] reg_R1A;
+  reg [47:0] ram [511:0];
+  `ifndef SYNTHESIS
+    integer initvar;
+    initial begin
+      #0.002;
+      for (initvar = 0; initvar < 512; initvar = initvar+1)
+        ram[initvar] = {2 {$random}};
+      reg_R1A = {1 {$random}};
+    end
+  `endif
+  integer i;
+  always @(posedge CLK) begin
+    if (R1E) reg_R1A <= R1A;
+    for (i = 0; i < 48; i=i+1) begin
+      if (W0E) ram[W0A][i] <= W0I[i];
+    end
+  end
+  assign R1O = ram[reg_R1A];
+
+endmodule
+
 module ClkDiv(input clk, input reset,
     output io_slowEn
 );
