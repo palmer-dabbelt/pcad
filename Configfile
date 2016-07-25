@@ -4,6 +4,9 @@ COMPILEOPTS += -Wall
 COMPILEOPTS += -Wextra
 COMPILEOPTS += -Werror
 
+LANGUAGES   += c++
+COMPILEOPTS += -Wno-unused-private-field
+
 LANGUAGES   += bash
 
 LANGUAGES   += c++
