@@ -564,8 +564,20 @@ enum parse_statements_state {
     BODY,
     BLOCK,
     IF_COND,
-    IF_BODY,
-    IF_ELSE,
+    IF_TRUE,
+    IF_TRUE_STATEMENT,
+    IF_TRUE_BLOCK,
+    IF_FALSE,
+    IF_FALSE_ELSE,
+    IF_FALSE_ELSE_IF,
+    IF_FALSE_ELSE_IF_COND,
+    IF_FALSE_STATEMENT,
+    IF_FALSE_BLOCK,
+    FOR_START,
+    FOR_HEADER,
+    FOR_BODY,
+    FOR_STATEMENT,
+    FOR_BLOCK,
     ASSIGN_TARGET,
     ASSIGN_SOURCE,
 };
@@ -576,10 +588,22 @@ std::string to_string(const enum parse_statements_state& state)
     case parse_statements_state::BODY: return "BODY";
     case parse_statements_state::BLOCK: return "BLOCK";
     case parse_statements_state::IF_COND: return "IF_COND";
-    case parse_statements_state::IF_BODY: return "IF_BODY";
-    case parse_statements_state::IF_ELSE: return "IF_ELSE";
+    case parse_statements_state::IF_TRUE: return "IF_TRUE";
+    case parse_statements_state::IF_TRUE_STATEMENT: return "IF_TRUE_STATEMENT";
+    case parse_statements_state::IF_TRUE_BLOCK: return "IF_TRUE_BLOCK";
+    case parse_statements_state::IF_FALSE: return "IF_FALSE";
+    case parse_statements_state::IF_FALSE_ELSE: return "IF_FALSE_ELSE";
+    case parse_statements_state::IF_FALSE_ELSE_IF: return "IF_FALSE_ELSE_IF";
+    case parse_statements_state::IF_FALSE_ELSE_IF_COND: return "IF_FALSE_ELSE_IF_COND";
+    case parse_statements_state::IF_FALSE_STATEMENT: return "IF_FALSE_STATEMENT";
+    case parse_statements_state::IF_FALSE_BLOCK: return "IF_FALSE_BLOCK";
     case parse_statements_state::ASSIGN_TARGET: return "ASSIGN_TARGET";
     case parse_statements_state::ASSIGN_SOURCE: return "ASSIGN_SOURCE";
+    case parse_statements_state::FOR_START: return "FOR_START";
+    case parse_statements_state::FOR_HEADER: return "FOR_HEADER";
+    case parse_statements_state::FOR_BODY: return "FOR_BODY";
+    case parse_statements_state::FOR_STATEMENT: return "FOR_STATEMENT";
+    case parse_statements_state::FOR_BLOCK: return "FOR_BLOCK";
     }
 
     abort();
@@ -615,12 +639,42 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
     auto assign_target = std::vector<lexer::token>();
     auto assign_source = std::vector<lexer::token>();
 
+    auto for_depth = 0;
+    auto for_header = std::vector<lexer::token>();
+    auto for_body = std::vector<lexer::token>();
+
+#ifdef PCAD__DEBUG_STATEMENTS_PARSER
+    std::cerr << "parse_stements()\n";
+#endif
+
     for (const auto& token: tokens) {
 #ifdef PCAD__DEBUG_STATEMENTS_PARSER
         std::cerr << "parse_statements(state = " << to_string(state) << "): " << token.str << "\n";
 #endif
 
         switch (state) {
+        case parse_statements_state::IF_FALSE:
+            if (token == "else") {
+                state = parse_statements_state::IF_FALSE_ELSE;
+                break;
+            } else {
+                state = parse_statements_state::BODY;
+                if_depth = 0;
+                if_cond_tokens = {};
+                if_body_tokens = {};
+                if_else_tokens = {};
+                #if 0
+                statements.push_back(
+                    std::make_shared<if_statement>(
+                        parse_statement(if_cond_tokens, scope),
+                        parse_statements(if_body_tokens, scope),
+                        parse_statements(if_else_tokens, scope)
+                    )
+                );
+                #endif
+            }
+            /* That's right: there's a conditional fall-through here! */
+
         case parse_statements_state::BODY:
             if (token == "begin") {
                 begin_depth = begin_depth_mod(token);
@@ -629,8 +683,13 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
                 if_depth = 0;
                 if_cond_tokens = {};
                 if_body_tokens = {};
-                if_else_tokens = {};
+
                 state = parse_statements_state::IF_COND;
+            } else if (token == "for") {
+                for_depth = 0;
+                for_header = {};
+                for_body = {};
+                state = parse_statements_state::FOR_HEADER;
             } else {
                 assign_target = {token};
                 state = parse_statements_state::ASSIGN_TARGET;
@@ -654,12 +713,81 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
             if_depth += parens_depth_mod(token);
             if_cond_tokens.push_back(token);
             if (if_depth == 0) {
-                state = parse_statements_state::IF_BODY;
+                state = parse_statements_state::IF_TRUE;
             }
             break;
 
-        case parse_statements_state::IF_BODY:
-        case parse_statements_state::IF_ELSE:
+        case parse_statements_state::IF_TRUE:
+            if (token == "begin") {
+                state = parse_statements_state::IF_TRUE_BLOCK;
+                if_depth = 1;
+                if_body_tokens = {token};
+            } else {
+                if_body_tokens.push_back(token);
+                state = parse_statements_state::IF_TRUE_STATEMENT;
+            }
+            break;
+
+        case parse_statements_state::IF_TRUE_STATEMENT:
+            if (token == ";") {
+                state = parse_statements_state::IF_FALSE;
+            } else {
+                if_body_tokens.push_back(token);
+            }
+            break;
+
+        case parse_statements_state::IF_TRUE_BLOCK:
+            if_body_tokens.push_back(token);
+            if_depth += begin_depth_mod(token);
+            if (if_depth == 0)
+                state = parse_statements_state::IF_FALSE;
+            break;
+
+        case parse_statements_state::IF_FALSE_ELSE:
+            if (token == "begin") {
+                state = parse_statements_state::IF_FALSE_BLOCK;
+                if_depth = 1;
+            } else if (token == "if") {
+                state = parse_statements_state::IF_FALSE_ELSE_IF;
+                if_else_tokens = {token};
+            } else {
+                if_else_tokens = {token};
+                state = parse_statements_state::IF_FALSE_STATEMENT;
+            }
+            break;
+
+        case parse_statements_state::IF_FALSE_STATEMENT:
+            if (token == ";") {
+                state = parse_statements_state::IF_FALSE;
+            } else {
+                if_else_tokens.push_back(token);
+            }
+            break;
+
+        case parse_statements_state::IF_FALSE_BLOCK:
+            if_else_tokens.push_back(token);
+            if_depth += begin_depth_mod(token);
+            if (if_depth == 0)
+                state = parse_statements_state::IF_FALSE;
+            break;
+
+        case parse_statements_state::IF_FALSE_ELSE_IF:
+            if (token == "(") {
+                if_depth = 1;
+                if_else_tokens.push_back(token);
+                state = parse_statements_state::IF_FALSE_ELSE_IF_COND;
+            } else {
+                std::cerr << "expected ( at start of token\n";
+                abort();
+            }
+            break;
+
+        case parse_statements_state::IF_FALSE_ELSE_IF_COND:
+            if_depth += parens_depth_mod(token);
+            if_cond_tokens.push_back(token);
+            if (if_depth == 0) {
+                state = parse_statements_state::IF_FALSE_ELSE;
+            }
             break;
 
         case parse_statements_state::ASSIGN_TARGET:
@@ -684,6 +812,39 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
             } else {
                 assign_source.push_back(token);
             }
+            break;
+
+        case parse_statements_state::FOR_START:
+            if (token == "(") {
+                for_header = {token};
+                state = parse_statements_state::FOR_HEADER;
+                for_depth = 1;
+            } else {
+                std::cerr << "Unknown token in FOR_START: " << token.str << "\n";
+                abort();
+            }
+            break;
+
+        case parse_statements_state::FOR_HEADER:
+            for_header.push_back(token);
+            for_depth += parens_depth_mod(token);
+            if (for_depth == 0)
+                state = parse_statements_state::FOR_BODY;
+            break;
+
+        case parse_statements_state::FOR_BODY:
+            if (token == "begin") {
+                for_depth = 1;
+                for_body = {token};
+                state = parse_statements_state::FOR_BLOCK;
+            } else {
+                for_body = {token};
+                state = parse_statements_state::FOR_STATEMENT;
+            }
+            break;
+
+        case parse_statements_state::FOR_STATEMENT:
+        case parse_statements_state::FOR_BLOCK:
             break;
         }
     }

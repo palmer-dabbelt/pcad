@@ -184,6 +184,22 @@ namespace pcad {
         : _clock(clock)
         {}
     };
+
+    class if_statement: public statement {
+    private:
+        const statement::ptr _cond;
+        const std::vector<statement::ptr> _on_true;
+        const std::vector<statement::ptr> _on_false;
+
+    public:
+        if_statement(const statement::ptr& cond,
+                     const std::vector<statement::ptr>& on_true,
+                     const std::vector<statement::ptr>& on_false)
+        : _cond(cond),
+          _on_true(on_true),
+          _on_false(on_false)
+        {}
+    };
 }
 
 #endif
