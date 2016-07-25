@@ -17,11 +17,11 @@ namespace pcad {
     /* There's a few differente types of statements. */
     class assign_statement: public statement {
     private:
-        const wire::ptr _dest;
+        const statement::ptr _dest;
         const statement::ptr _source;
         
     public:
-        assign_statement(const wire::ptr& dest,
+        assign_statement(const statement::ptr& dest,
                          const statement::ptr& source)
         : _dest(dest),
           _source(source)
@@ -159,6 +159,29 @@ namespace pcad {
                           const statement::ptr& usv)
         : _function(function),
           _arg(usv)
+        {}
+    };
+
+    class always_statement: public statement {
+    private:
+        const statement::ptr _trigger;
+        const std::vector<statement::ptr> _body;
+
+    public:
+        always_statement(const statement::ptr& trigger,
+                         const std::vector<statement::ptr>& body)
+        : _trigger(trigger),
+          _body(body)
+        {}
+    };
+
+    class posedge_statement: public statement {
+    private:
+        const wire::ptr _clock;
+
+    public:
+        posedge_statement(const wire::ptr& clock)
+        : _clock(clock)
         {}
     };
 }

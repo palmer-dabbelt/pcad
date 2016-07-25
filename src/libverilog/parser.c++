@@ -5,7 +5,7 @@
 #include <pcad/instance.h++>
 #include <pcad/module.h++>
 #include <pcad/port.h++>
-#include <pcad/random.h++>
+#include <pcad/builtin_wire.h++>
 #include <pcad/scope.h++>
 #include <pcad/statement.h++>
 #include <iostream>
@@ -485,6 +485,14 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
 
         case module_parser_state::ALWAYS_STATEMENT:
             if (token == ";") {
+                body_statements.push_back(
+                    std::make_shared<always_statement>(
+                        parse_statement(always_at_tokens, scope_stack.top()),
+                        parse_statements(always_statement_tokens, scope_stack.top())
+                    )
+                );
+                always_at_tokens = {};
+                always_statement_tokens = {};
                 state = module_parser_state::BODY;
             } else {
                 always_statement_tokens.push_back(token);
@@ -492,7 +500,6 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
             break;
 
         case module_parser_state::ALWAYS_BLOCK:
-            std::cerr << "begins " << std::to_string(always_begins) << "\n";
             always_statement_tokens.push_back(token);
             if (token == "begin") {
                 always_begins++;
@@ -501,6 +508,14 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
             }
 
             if (token == "end" && always_begins == 0) {
+                body_statements.push_back(
+                    std::make_shared<always_statement>(
+                        parse_statement(always_at_tokens, scope_stack.top()),
+                        parse_statements(always_statement_tokens, scope_stack.top())
+                    )
+                );
+                always_at_tokens = {};
+                always_statement_tokens = {};
                 state = module_parser_state::BODY;
             }
             break;
@@ -508,6 +523,14 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
         case module_parser_state::ALWAYS_CASE:
             always_statement_tokens.push_back(token);
             if (token == "endcase") {
+                body_statements.push_back(
+                    std::make_shared<always_statement>(
+                        parse_statement(always_at_tokens, scope_stack.top()),
+                        parse_statements(always_statement_tokens, scope_stack.top())
+                    )
+                );
+                always_at_tokens = {};
+                always_statement_tokens = {};
                 state = module_parser_state::BODY;
             }
             break;
@@ -535,6 +558,137 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
         ports,
         body_scope.value()
     );
+}
+
+enum parse_statements_state {
+    BODY,
+    BLOCK,
+    IF_COND,
+    IF_BODY,
+    IF_ELSE,
+    ASSIGN_TARGET,
+    ASSIGN_SOURCE,
+};
+
+std::string to_string(const enum parse_statements_state& state)
+{
+    switch (state) {
+    case parse_statements_state::BODY: return "BODY";
+    case parse_statements_state::BLOCK: return "BLOCK";
+    case parse_statements_state::IF_COND: return "IF_COND";
+    case parse_statements_state::IF_BODY: return "IF_BODY";
+    case parse_statements_state::IF_ELSE: return "IF_ELSE";
+    case parse_statements_state::ASSIGN_TARGET: return "ASSIGN_TARGET";
+    case parse_statements_state::ASSIGN_SOURCE: return "ASSIGN_SOURCE";
+    }
+
+    abort();
+}
+
+std::vector<pcad::statement::ptr>
+parser::parse_statements(const std::vector<lexer::token>& tokens,
+                         const pcad::scope::ptr& scope)
+{
+    std::vector<pcad::statement::ptr> statements;
+    auto state = parse_statements_state::BODY;
+
+    auto begin_depth_mod = [](lexer::token token) {
+        if (token == "begin") return 1;
+        if (token == "end")   return -1;
+        return 0;
+    };
+
+    auto parens_depth_mod = [](lexer::token token) {
+        if (token == "(") return  1;
+        if (token == ")") return -1;
+        return 0;
+    };
+
+    auto begin_tokens = std::vector<lexer::token>();
+    auto begin_depth = 0;
+
+    auto if_depth = 0;
+    auto if_cond_tokens = std::vector<lexer::token>();
+    auto if_body_tokens = std::vector<lexer::token>();
+    auto if_else_tokens = std::vector<lexer::token>();
+
+    auto assign_target = std::vector<lexer::token>();
+    auto assign_source = std::vector<lexer::token>();
+
+    for (const auto& token: tokens) {
+#ifdef PCAD__DEBUG_STATEMENTS_PARSER
+        std::cerr << "parse_statements(state = " << to_string(state) << "): " << token.str << "\n";
+#endif
+
+        switch (state) {
+        case parse_statements_state::BODY:
+            if (token == "begin") {
+                begin_depth = begin_depth_mod(token);
+                state = parse_statements_state::BLOCK;
+            } else if (token == "if") {
+                if_depth = 0;
+                if_cond_tokens = {};
+                if_body_tokens = {};
+                if_else_tokens = {};
+                state = parse_statements_state::IF_COND;
+            } else {
+                assign_target = {token};
+                state = parse_statements_state::ASSIGN_TARGET;
+            }
+            break;
+
+        case parse_statements_state::BLOCK:
+            begin_depth += begin_depth_mod(token);
+            if (begin_depth == 0) {
+                for (const auto& statement: parse_statements(begin_tokens, scope))
+                    statements.push_back(statement);
+                begin_tokens = {};
+                begin_depth = 0;
+                state = parse_statements_state::BODY;
+            } else {
+                begin_tokens.push_back(token);
+            }
+            break;
+
+        case parse_statements_state::IF_COND:
+            if_depth += parens_depth_mod(token);
+            if_cond_tokens.push_back(token);
+            if (if_depth == 0) {
+                state = parse_statements_state::IF_BODY;
+            }
+            break;
+
+        case parse_statements_state::IF_BODY:
+        case parse_statements_state::IF_ELSE:
+            break;
+
+        case parse_statements_state::ASSIGN_TARGET:
+            if (token == "<=") {
+                state = parse_statements_state::ASSIGN_SOURCE;
+            } else {
+                assign_target.push_back(token);
+            }
+            break;
+
+        case parse_statements_state::ASSIGN_SOURCE:
+            if (token == ";") {
+                statements.push_back(
+                    std::make_shared<assign_statement>(
+                        parse_statement(assign_target, scope),
+                        parse_statement(assign_source, scope)
+                    )
+                );
+                assign_target = {};
+                assign_source = {};
+                state = parse_statements_state::BODY;
+            } else {
+                assign_source.push_back(token);
+            }
+            break;
+        }
+    }
+
+    return statements;
 }
 
 pcad::statement::ptr parser::parse_statement(const std::vector<lexer::token>& tokens,
@@ -574,8 +728,14 @@ pcad::statement::ptr parser::parse_statement(const std::vector<lexer::token>& to
             rest.push_back(*it);
 
         return std::make_shared<assign_statement>(
-            parse_wire(tokens[1], scope),
+            parse_statement({tokens[1]}, scope),
             parse_statement(rest, scope)
+        );
+    }
+
+    if (tokens.size() == 2 && tokens[0] == "posedge") {
+        return std::make_shared<posedge_statement>(
+            parse_wire(tokens[1], scope)
         );
     }
 
@@ -796,6 +956,9 @@ pcad::wire::ptr parser::parse_wire(const lexer::token& token,
 {
     if (token == "$random")
         return std::make_shared<pcad::random>();
+
+    if (token == "*")
+        return std::make_shared<pcad::star>();
 
     auto lit = parse_literal(token);
     if (lit != nullptr)

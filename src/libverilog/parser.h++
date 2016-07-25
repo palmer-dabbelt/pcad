@@ -34,6 +34,10 @@ namespace libverilog {
         parse_statement(const std::vector<lexer::token>& tokens,
                         const pcad::scope::ptr& scope);
 
+        static std::vector<pcad::statement::ptr>
+        parse_statements(const std::vector<lexer::token>& tokens,
+                         const pcad::scope::ptr& scope);
+
         static pcad::wire::ptr parse_wire(const lexer::token& token,
                                           const pcad::scope::ptr& scope);
 

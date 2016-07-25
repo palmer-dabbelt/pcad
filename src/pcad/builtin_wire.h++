@@ -13,6 +13,14 @@ namespace pcad {
         : wire("$random", 1)
         {}
     };
+
+    /* All visible signals. */
+    class star: public wire {
+    public:
+        star(void)
+        : wire("*", 0)
+        {}
+    };
 }
 
 #endif
