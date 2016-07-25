@@ -83,6 +83,8 @@ enum class module_parser_state {
     ALWAYS_AT,
     ALWAYS_STATEMENT,
     ALWAYS_BLOCK,
+    ALWAYS_CASE,
+    ALWAYS_BODY,
     PP_IFDEF,
     DONE,
 };
@@ -109,8 +111,10 @@ std::string to_string(enum module_parser_state state) {
     case module_parser_state::INSTANCE: return "INSTANCE";
     case module_parser_state::ALWAYS_START: return "ALWAYS_START";
     case module_parser_state::ALWAYS_AT: return "ALWAYS_AT";
+    case module_parser_state::ALWAYS_BODY: return "ALWAYS_BODY";
     case module_parser_state::ALWAYS_STATEMENT: return "ALWAYS_STATEMENT";
     case module_parser_state::ALWAYS_BLOCK: return "ALWAYS_BLOCK";
+    case module_parser_state::ALWAYS_CASE: return "ALWAYS_CASE";
     case module_parser_state::PP_IFDEF: return "PP_IFDEF";
     case module_parser_state::DONE: return "DONE";
     }
@@ -178,6 +182,10 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
     auto instance_tokens = std::vector<lexer::token>();
 
     auto initial_begins = 0;
+
+    auto always_begins = 0;
+    auto always_at_tokens = std::vector<lexer::token>();
+    auto always_statement_tokens = std::vector<lexer::token>();
 
     auto ifdef_depth = 0;
 
@@ -446,9 +454,62 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
             break;
 
         case module_parser_state::ALWAYS_START:
+            if (token == "@") {
+                state = module_parser_state::ALWAYS_AT;
+            } else {
+                std::cerr << "Expected 'always @'\n";
+                abort();
+            }
+            break;
+
         case module_parser_state::ALWAYS_AT:
+            always_at_tokens.push_back(token);
+            if (token == ")") {
+                state = module_parser_state::ALWAYS_BODY;
+            };
+            break;
+
+        case module_parser_state::ALWAYS_BODY:
+            if (token == "begin") {
+                state = module_parser_state::ALWAYS_BLOCK;
+                always_statement_tokens = {token};
+                always_begins = 1;
+            } else if (token == "case") {
+                state = module_parser_state::ALWAYS_CASE;
+                always_statement_tokens = {token};
+            } else {
+                state = module_parser_state::ALWAYS_STATEMENT;
+                always_statement_tokens = {token};
+            }
+            break;
+
         case module_parser_state::ALWAYS_STATEMENT:
+            if (token == ";") {
+                state = module_parser_state::BODY;
+            } else {
+                always_statement_tokens.push_back(token);
+            }
+            break;
+
         case module_parser_state::ALWAYS_BLOCK:
+            std::cerr << "begins " << std::to_string(always_begins) << "\n";
+            always_statement_tokens.push_back(token);
+            if (token == "begin") {
+                always_begins++;
+            } else if (token == "end") {
+                always_begins--;
+            }
+
+            if (token == "end" && always_begins == 0) {
+                state = module_parser_state::BODY;
+            }
+            break;
+
+        case module_parser_state::ALWAYS_CASE:
+            always_statement_tokens.push_back(token);
+            if (token == "endcase") {
+                state = module_parser_state::BODY;
+            }
             break;
 
         case module_parser_state::PP_IFDEF:
