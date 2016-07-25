@@ -83,6 +83,7 @@ enum class module_parser_state {
     ALWAYS_AT,
     ALWAYS_STATEMENT,
     ALWAYS_BLOCK,
+    PP_IFDEF,
     DONE,
 };
 
@@ -110,6 +111,7 @@ std::string to_string(enum module_parser_state state) {
     case module_parser_state::ALWAYS_AT: return "ALWAYS_AT";
     case module_parser_state::ALWAYS_STATEMENT: return "ALWAYS_STATEMENT";
     case module_parser_state::ALWAYS_BLOCK: return "ALWAYS_BLOCK";
+    case module_parser_state::PP_IFDEF: return "PP_IFDEF";
     case module_parser_state::DONE: return "DONE";
     }
     return "";
@@ -176,6 +178,8 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
     auto instance_tokens = std::vector<lexer::token>();
 
     auto initial_begins = 0;
+
+    auto ifdef_depth = 0;
 
     for (const auto& token: tokens) {
         switch (state) {
@@ -263,6 +267,14 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "always") {
                 state = module_parser_state::ALWAYS_START;
+            } else if (token == "`ifdef") {
+                state = module_parser_state::PP_IFDEF;
+                ifdef_depth = 1;
+            } else if (token == "`ifndef") {
+                state = module_parser_state::PP_IFDEF;
+                ifdef_depth = 1;
+            } else if (token == "`endif") {
+                ifdef_depth--;
             } else {
                 instance_tokens.push_back(token);
                 state = module_parser_state::INSTANCE;
@@ -433,6 +445,19 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
         case module_parser_state::ALWAYS_AT:
         case module_parser_state::ALWAYS_STATEMENT:
         case module_parser_state::ALWAYS_BLOCK:
+            break;
+
+        case module_parser_state::PP_IFDEF:
+            if (token == "`ifdef") {
+                ifdef_depth++;
+            } else if (token == "`ifndef") {
+                ifdef_depth++;
+            } else if (token == "`endif") {
+                ifdef_depth--;
+            }
+
+            if (ifdef_depth == 0)
+                state = module_parser_state::BODY;
             break;
 
         case module_parser_state::DONE:

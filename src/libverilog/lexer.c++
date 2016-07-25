@@ -10,7 +10,6 @@ enum class lexer_state {
     BODY,
     LINE_COMMENT,
     STRING,
-    PP,
 };
 
 static std::vector<lexer::token> lex(const std::string& filename);
@@ -88,13 +87,6 @@ std::vector<lexer::token> lex(std::ifstream& i)
 
                 if (!isspace(cur_c))
                     tokens.push_back(lexer::token(cur_s, line, col));
-            } else if (cur_c == '`') {
-                token_string = token_string.substr(0, token_string.size() - 1);
-                if (token_string.size() > 0) {
-                    tokens.push_back(lexer::token(token_string, line, col));
-                    token_string = "";
-                }
-                state = lexer_state::PP;
             } else {
                 token_string = token_string + cur_s;
             }
@@ -115,10 +107,6 @@ std::vector<lexer::token> lex(std::ifstream& i)
                 state = lexer_state::BODY;
             }
             break;
-
-        case lexer_state::PP:
-            if (cur_c == '\n')
-                state = lexer_state::BODY;
         }
 
         prev_c = cur_c;
