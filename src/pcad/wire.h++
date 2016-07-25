@@ -16,13 +16,16 @@ namespace pcad {
     private:
         const std::string _name;
         const long _width;
+        const long _depth;
 
     public:
         wire(const std::string& name, const long& width);
+        wire(const std::string& name, const long& width, const long& depth);
 
     public:
         const decltype(_name)& name(void) const { return _name; }
         const decltype(_width)& width(void) const { return _width; }
+        const decltype(_depth)& depth(void) const { return _depth; }
     };
 }
 

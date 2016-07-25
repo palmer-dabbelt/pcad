@@ -5,6 +5,7 @@
 
 #include "decoupled.h++"
 #include "port.h++"
+#include "scope.h++"
 #include <memory>
 #include <string>
 #include <vector>
@@ -18,14 +19,17 @@ namespace pcad {
     public:
         const std::string _name;
         const std::vector<port::ptr> _ports;
+        const scope::ptr _body;
 
     public:
         module(const decltype(_name)& name,
-               const decltype(_ports)& ports);
+               const decltype(_ports)& ports,
+               const decltype(_body)& body);
 
     public:
         const decltype(_name)& name(void) const { return _name; }
         const decltype(_ports)& ports(void) const { return _ports; }
+        const decltype(_body)& body(void) const { return _body; }
 
     public:
         /* Infers decoupled IOs using port names.  This is fragile and will

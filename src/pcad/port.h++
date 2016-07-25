@@ -13,7 +13,7 @@ namespace pcad {
     };
 
     /* Modules have ports, which are represented here. */
-    class port: public pcad::wire {
+    class port: public wire {
     public:
         typedef std::shared_ptr<port> ptr;
 

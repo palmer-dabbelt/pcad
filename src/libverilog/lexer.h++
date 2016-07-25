@@ -45,4 +45,10 @@ bool operator==(const libverilog::lexer::token& t, const std::string& s)
     return t.str == s;
 }
 
+static inline
+bool operator!=(const libverilog::lexer::token& t, const std::string& s)
+{
+    return !(t == s);
+}
+
 #endif
