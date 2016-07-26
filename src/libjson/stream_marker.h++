@@ -8,7 +8,8 @@ namespace libjson {
         BEGIN_STRUCTURE,
         END_STRUCTURE,
         BEGIN_ARRAY,
-        END_ARRAY
+        END_ARRAY,
+        NEXT_STRUCTURE,
     };
 }
 

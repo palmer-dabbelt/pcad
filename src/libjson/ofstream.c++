@@ -60,6 +60,11 @@ ofstream* ofstream::operator<<(enum stream_marker marker)
             _os.close();
             abort();
             break;
+
+        case stream_state::STRUCTURE_NEXT:
+            _state_stack.pop();
+            _state_stack.push(stream_state::STRUCTURE_START);
+            break;
         }
         break;
 
@@ -74,6 +79,7 @@ ofstream* ofstream::operator<<(enum stream_marker marker)
         case stream_state::NONE:
         case stream_state::ARRAY_START:
         case stream_state::ARRAY:
+        case stream_state::STRUCTURE_NEXT:
             std::cerr << "<<(END_STRUCTURE) must be paired with <<(START_STRUCTURE)\n";
             std::cerr << "  state was " << std::to_string((int)state());
             _os.close();
@@ -93,6 +99,7 @@ ofstream* ofstream::operator<<(enum stream_marker marker)
         case stream_state::STRUCTURE:
         case stream_state::ARRAY_START:
         case stream_state::ARRAY:
+        case stream_state::STRUCTURE_NEXT:
             std::cerr << "<<(BEGIN_ARRAY) can only start a JSON file\n";
             _os.close();
             abort();
@@ -111,12 +118,18 @@ ofstream* ofstream::operator<<(enum stream_marker marker)
         case stream_state::NONE:
         case stream_state::STRUCTURE_START:
         case stream_state::STRUCTURE:
+        case stream_state::STRUCTURE_NEXT:
             std::cerr << "<<(END_ARRAY) must be paired with <<(START_ARRAY)\n";
             std::cerr << "  state was " << std::to_string((int)state());
             _os.close();
             abort();
             break;
         }
+        break;
+
+    case stream_marker::NEXT_STRUCTURE:
+        std::cerr << "<<(NEXT_STRUCTURE) isn't valid, NEXT_STRUCTURE is only for pairs\n";
+        abort();
         break;
     }
 
@@ -137,7 +150,9 @@ ofstream* ofstream::operator<<(const std::pair<std::string, std::string>& kv)
     case stream_state::NONE:
     case stream_state::ARRAY_START:
     case stream_state::ARRAY:
+    case stream_state::STRUCTURE_NEXT:
         _os.close();
+        std::cerr << "(string, string) can only be within a structure\n";
         abort();
         break;
     }
@@ -157,7 +172,9 @@ ofstream* ofstream::operator<<(const std::pair<std::string, enum stream_marker>&
         case stream_state::STRUCTURE:
         case stream_state::ARRAY_START:
         case stream_state::ARRAY:
+        case stream_state::STRUCTURE_NEXT:
             _os.close();
+            std::cerr << "<<(string, BEGIN_STRUCTURE) unimplemented\n";
             abort();
             break;
         }
@@ -175,6 +192,7 @@ ofstream* ofstream::operator<<(const std::pair<std::string, enum stream_marker>&
         case stream_state::NONE:
         case stream_state::ARRAY_START:
         case stream_state::ARRAY:
+        case stream_state::STRUCTURE_NEXT:
             std::cerr << "<<(string, BEGIN_ARRAY) needs to be within a structure\n";
             std::cerr << "  state was " << std::to_string((int)state());
             abort();
@@ -187,6 +205,27 @@ ofstream* ofstream::operator<<(const std::pair<std::string, enum stream_marker>&
     case stream_marker::END_ARRAY:
         _os.close();
         abort();
+        break;
+
+    case stream_marker::NEXT_STRUCTURE:
+        switch (state()) {
+        case stream_state::STRUCTURE:
+            _os << ",";
+        case stream_state::STRUCTURE_START:
+            _os << "\n" << indent() << "\"" << key << "\": {";
+            _state_stack.push(stream_state::STRUCTURE_NEXT);
+            break;
+
+        case stream_state::NONE:
+        case stream_state::ARRAY_START:
+        case stream_state::ARRAY:
+        case stream_state::STRUCTURE_NEXT:
+            std::cerr << "<<(string, NEXT_STRUCTURE) needs to be within a structure\n";
+            std::cerr << "  state was " << std::to_string((int)state());
+            abort();
+            _os.close();
+            break;
+        }
         break;
     }
 

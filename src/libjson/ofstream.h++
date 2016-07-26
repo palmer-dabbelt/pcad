@@ -17,7 +17,8 @@ namespace libjson {
             STRUCTURE_START,
             STRUCTURE,
             ARRAY_START,
-            ARRAY
+            ARRAY,
+            STRUCTURE_NEXT,
         };
 
     private:
