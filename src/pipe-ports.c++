@@ -8,7 +8,7 @@ int main(int argc, const char **argv)
 {
     try {
         TCLAP::CmdLine cmd(
-            "pcad-pipe-top2json: Lists the top-level IOs of a circuit\n",
+            "Lists the ports of a module\n",
             ' ',
             "0");
 
@@ -28,8 +28,8 @@ int main(int argc, const char **argv)
                                             "Top.io.json");
         cmd.add(output);
 
-        TCLAP::ValueArg<std::string> top("t",
-                                         "top",
+        TCLAP::ValueArg<std::string> top("m",
+                                         "module",
                                          "The module to find the IOs of",
                                          true,
                                          "",

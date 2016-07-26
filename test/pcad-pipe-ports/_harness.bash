@@ -1,4 +1,4 @@
-$PTEST_BINARY --top $TOP --input "${TOP}.v" --output "${TOP}.io.json"
+$PTEST_BINARY --module $TOP --input "${TOP}.v" --output "${TOP}.io.json"
 
 cat "${TOP}.io.json"
 

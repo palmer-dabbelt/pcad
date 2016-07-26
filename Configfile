@@ -17,8 +17,8 @@ COMPILEOPTS += `ppkg-config tclap --cflags`
 LINKOPTS    += `ppkg-config tclap --libs`
 
 # Lists the top-level IOs of a circuit.
-BINARIES    += pcad-pipe-top2json
-SOURCES     += pipe-top2json.c++
+BINARIES    += pcad-pipe-ports
+SOURCES     += pipe-ports.c++
 CONFIG      += testcases
 
 # Infers top-level DecoupledIOs from a circuit.
