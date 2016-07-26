@@ -1,6 +1,6 @@
 // See LICENSE for details
 
-#include "json_stream.h++"
+#include "ofstream.h++"
 #include <iostream>
 using namespace libjson;
 

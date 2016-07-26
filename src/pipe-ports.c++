@@ -2,7 +2,7 @@
 
 #include <pcad/circuit.h++>
 #include <tclap/CmdLine.h>
-#include <libjson/json_stream.h++>
+#include <libjson/ofstream.h++>
 
 int main(int argc, const char **argv)
 {
