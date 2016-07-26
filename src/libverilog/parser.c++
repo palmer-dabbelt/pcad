@@ -658,12 +658,6 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
                 state = parse_statements_state::IF_FALSE_ELSE;
                 break;
             } else {
-                state = parse_statements_state::BODY;
-                if_depth = 0;
-                if_cond_tokens = {};
-                if_body_tokens = {};
-                if_else_tokens = {};
-                #if 0
                 statements.push_back(
                     std::make_shared<if_statement>(
                         parse_statement(if_cond_tokens, scope),
@@ -671,7 +665,12 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
                         parse_statements(if_else_tokens, scope)
                     )
                 );
-                #endif
+
+                state = parse_statements_state::BODY;
+                if_depth = 0;
+                if_cond_tokens = {};
+                if_body_tokens = {};
+                if_else_tokens = {};
             }
             /* That's right: there's a conditional fall-through here! */
 
@@ -683,6 +682,7 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
                 if_depth = 0;
                 if_cond_tokens = {};
                 if_body_tokens = {};
+                if_else_tokens = {};
 
                 state = parse_statements_state::IF_COND;
             } else if (token == "for") {
@@ -784,7 +784,7 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
 
         case parse_statements_state::IF_FALSE_ELSE_IF_COND:
             if_depth += parens_depth_mod(token);
-            if_cond_tokens.push_back(token);
+            if_else_tokens.push_back(token);
             if (if_depth == 0) {
                 state = parse_statements_state::IF_FALSE_ELSE;
             }
