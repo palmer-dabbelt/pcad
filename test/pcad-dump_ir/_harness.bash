@@ -1,4 +1,4 @@
-gdb --ex r --ex bt --batch --args $PTEST_BINARY --top $TOP --input "${TOP}.v" --output "${TOP}.pcad.json"
+$PTEST_BINARY --top $TOP --input "${TOP}.v" --output "${TOP}.pcad.json"
 
 cat "${TOP}.pcad.json"
 
