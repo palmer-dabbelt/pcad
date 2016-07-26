@@ -556,7 +556,8 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
     return std::make_shared<module>(
         name.value(),
         ports,
-        body_scope.value()
+        body_scope.value(),
+        body_statements
     );
 }
 

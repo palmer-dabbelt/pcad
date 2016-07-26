@@ -23,15 +23,6 @@ bool hasBeginning (std::string const &fullString, std::string const &beginning) 
     }
 }
 
-module::module(const decltype(_name)& name,
-               const decltype(_ports)& ports,
-               const decltype(_body)& body)
-: _name(name),
-  _ports(ports),
-  _body(body)
-{
-}
-
 std::vector<decoupled::ptr> module::infer_decoupled_io(void) const
 {
     std::vector<decoupled::ptr> out;
