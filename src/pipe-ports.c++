@@ -56,7 +56,7 @@ int main(int argc, const char **argv)
                 os << libjson::make_pair("name", port->name());
                 os << libjson::make_pair("direction", pcad::to_string(port->direction()));
                 os << libjson::make_pair("type", "wire");
-                os << libjson::make_pair("width", std::to_string(port->width()));
+                os << libjson::make_pair("width", port->width());
                 os << libjson::stream_marker::END_STRUCTURE;
             }
             os << libjson::stream_marker::END_ARRAY;

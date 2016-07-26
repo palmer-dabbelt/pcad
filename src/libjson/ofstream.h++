@@ -49,6 +49,10 @@ namespace libjson {
     static inline std::pair<std::string, enum stream_marker>
     make_pair(const std::string& a, enum stream_marker b)
     { return std::make_pair(a, b); }
+
+    static inline std::pair<std::string, std::string>
+    make_pair(const std::string& a, long b)
+    { return std::make_pair(a, std::to_string(b)); }
 }
 
 #endif
