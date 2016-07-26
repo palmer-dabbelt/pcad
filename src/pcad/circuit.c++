@@ -23,6 +23,17 @@ module::ptr circuit::find_module(const std::string& name) const
     return l->second;
 }
 
+void circuit::dump(libjson::ofstream& os) const
+{
+    os << libjson::stream_marker::BEGIN_STRUCTURE;
+    os << libjson::make_pair("top", _top->name());
+    os << libjson::make_pair("modules", libjson::stream_marker::BEGIN_ARRAY);
+    for (const auto& module: _modules)
+        module->dump(os);
+    os << libjson::stream_marker::END_ARRAY;
+    os << libjson::stream_marker::END_STRUCTURE;
+}
+
 circuit::ptr circuit::read_file(const std::string& filename, const std::string& top)
 {
     auto v = libverilog::parser::read_file(filename);

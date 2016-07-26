@@ -5,6 +5,7 @@
 
 #include "decoupled.h++"
 #include "module.h++"
+#include <libjson/ofstream.h++>
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -28,6 +29,9 @@ namespace pcad {
     public:
         /* Searches for a module by name. */
         module::ptr find_module(const std::string& name) const;
+
+        /* Dumps this circuit as various output formats. */
+        virtual void dump(libjson::ofstream& os) const;
 
     public:
         static ptr read_file(const std::string& filename, const std::string& top);

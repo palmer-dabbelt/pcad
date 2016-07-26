@@ -3,6 +3,7 @@
 #ifndef PCAD__WIRE_HXX
 #define PCAD__WIRE_HXX
 
+#include <libjson/ofstream.h++>
 #include <memory>
 #include <string>
 
@@ -26,6 +27,10 @@ namespace pcad {
         const decltype(_name)& name(void) const { return _name; }
         const decltype(_width)& width(void) const { return _width; }
         const decltype(_depth)& depth(void) const { return _depth; }
+
+    public:
+        /* Dumps this wire as various formats. */
+        virtual void dump(libjson::ofstream& os) const;
     };
 }
 

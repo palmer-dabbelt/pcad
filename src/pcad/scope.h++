@@ -24,6 +24,9 @@ namespace pcad {
         scope(const ptr& parent);
 
     public:
+        const decltype(_vars)& vars(void) const { return _vars; }
+
+    public:
         /* Adds a new variable to this scope. */
         void add_var(const wire::ptr& wire);
 

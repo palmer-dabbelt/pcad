@@ -16,6 +16,19 @@ LANGUAGES   += c++
 COMPILEOPTS += `ppkg-config tclap --cflags`
 LINKOPTS    += `ppkg-config tclap --libs`
 
+###############################################################################
+# User-facing binaries
+###############################################################################
+
+# Dumps a textual representation of the PCAD IR
+BINARIES    += pcad-dump_ir
+SOURCES     += dump_ir.c++
+CONFIG      += testcases
+
+###############################################################################
+# Binaries suitable for scripts
+###############################################################################
+
 # Lists the top-level IOs of a circuit.
 BINARIES    += pcad-pipe-ports
 SOURCES     += pipe-ports.c++

@@ -16,3 +16,12 @@ wire::wire(const std::string& name, const long& width, const long& depth)
   _depth(depth)
 {
 }
+
+void wire::dump(libjson::ofstream& os) const
+{
+    os << libjson::stream_marker::BEGIN_STRUCTURE;
+    os << libjson::make_pair("name", _name);
+    os << libjson::make_pair("width", _width);
+    os << libjson::make_pair("depth", _depth);
+    os << libjson::stream_marker::END_STRUCTURE;
+}

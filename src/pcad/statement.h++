@@ -5,6 +5,7 @@
 
 #include "scope.h++"
 #include "literal.h++"
+#include <libjson/ofstream.h++>
 #include <memory>
 
 namespace pcad {
@@ -12,6 +13,9 @@ namespace pcad {
     class statement {
     public:
         typedef std::shared_ptr<statement> ptr;
+
+        /* This one is funny -- it expects a BEGIN/END pair outside it! */
+        virtual void dump(libjson::ofstream& os) = 0;
     };
 
     /* There's a few differente types of statements. */
@@ -26,6 +30,8 @@ namespace pcad {
         : _dest(dest),
           _source(source)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class wire_statement: public statement {
@@ -36,6 +42,8 @@ namespace pcad {
         wire_statement(const wire::ptr& wire)
         : _wire(wire)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class unop_statement: public statement {
@@ -54,6 +62,8 @@ namespace pcad {
         : _op(operation),
           _statement(statement)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class biop_statement: public statement {
@@ -89,6 +99,8 @@ namespace pcad {
           _a(a),
           _b(b)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class slice_statement: public statement {
@@ -105,6 +117,8 @@ namespace pcad {
           _hi(hi),
           _lo(lo)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class cat_statement: public statement {
@@ -118,6 +132,8 @@ namespace pcad {
         : _hi(hi),
           _lo(lo)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class trop_statement: public statement {
@@ -134,6 +150,8 @@ namespace pcad {
           _ont(ont),
           _onf(onf)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class rep_statement: public statement {
@@ -147,6 +165,8 @@ namespace pcad {
         : _width(width),
           _value(value)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class builtin_statement: public statement {
@@ -160,6 +180,8 @@ namespace pcad {
         : _function(function),
           _arg(usv)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class always_statement: public statement {
@@ -173,6 +195,8 @@ namespace pcad {
         : _trigger(trigger),
           _body(body)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class posedge_statement: public statement {
@@ -183,6 +207,8 @@ namespace pcad {
         posedge_statement(const wire::ptr& clock)
         : _clock(clock)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 
     class if_statement: public statement {
@@ -199,6 +225,8 @@ namespace pcad {
           _on_true(on_true),
           _on_false(on_false)
         {}
+
+        virtual void dump(libjson::ofstream& os);
     };
 }
 

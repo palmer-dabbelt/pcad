@@ -27,6 +27,10 @@ namespace pcad {
 
     public:
         const decltype(_direction)& direction(void) const { return _direction; }
+
+
+    public:
+        virtual void dump(libjson::ofstream& os) const;
     };
 
     std::string to_string(const enum port_direction& d);
