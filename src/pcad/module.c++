@@ -83,5 +83,10 @@ void module::dump(libjson::ofstream& os) const
         statement->dump(os);
     os << libjson::stream_marker::END_ARRAY;
 
+    os << libjson::make_pair("instances", libjson::stream_marker::BEGIN_ARRAY);
+    for (const auto& instance: _instances)
+        instance->dump(os);
+    os << libjson::stream_marker::END_ARRAY;
+
     os << libjson::stream_marker::END_STRUCTURE;
 }

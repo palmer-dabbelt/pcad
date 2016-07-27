@@ -3,7 +3,12 @@
 #ifndef PCAD__MODULE_HXX
 #define PCAD__MODULE_HXX
 
+namespace pcad {
+    class module;
+}
+
 #include "decoupled.h++"
+#include "instance.h++"
 #include "port.h++"
 #include "scope.h++"
 #include "statement.h++"
@@ -23,16 +28,19 @@ namespace pcad {
         const std::vector<port::ptr> _ports;
         const scope::ptr _body;
         const std::vector<statement::ptr> _statements;
+        const std::vector<std::shared_ptr<instance>> _instances;
 
     public:
         module(const decltype(_name)& name,
                const decltype(_ports)& ports,
                const decltype(_body)& body,
-               const decltype(_statements)& statements)
+               const decltype(_statements)& statements,
+               const decltype(_instances)& instance)
         : _name(name),
           _ports(ports),
           _body(body),
-          _statements(statements)
+          _statements(statements),
+          _instances(instance)
         {}
 
     public:

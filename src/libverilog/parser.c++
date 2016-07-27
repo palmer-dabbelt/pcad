@@ -557,7 +557,8 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
         name.value(),
         ports,
         body_scope.value(),
-        body_statements
+        body_statements,
+        body_instances
     );
 }
 
@@ -1175,14 +1176,23 @@ enum instance_parser_state {
     MODULE_NAME,
     INSTANCE_NAME,
     PORTS,
+    PORT_DOT,
     PORT_NAME,
     PORT_STATEMENT,
+    PORT_COMMA,
+    PORT_END,
 };
 
 pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& tokens,
                                            const std::unordered_map<std::string, pcad::module::ptr>& module_lookup,
-                                           const pcad::scope::ptr& scope __attribute__((unused)))
+                                           const pcad::scope::ptr& scope)
 {
+    auto parens_depth_mod = [](lexer::token token) {
+        if (token == "(") return  1;
+        if (token == ")") return -1;
+        return 0;
+    };
+
     auto state = instance_parser_state::MODULE_NAME;
 
     auto instance_name = option<std::string>();
@@ -1191,9 +1201,16 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
     auto port_tokens = std::vector<lexer::token>();
 
     auto ports = std::vector<port::ptr>();
-    auto assignments = std::vector<statement::ptr>();
+    auto name2port = std::unordered_map<std::string, port::ptr>();
 
     auto module = option<pcad::module::ptr>();
+
+    auto assignments = std::vector<statement::ptr>();
+    auto assign_port_tokens = std::vector<lexer::token>();
+    auto assign_statement_tokens = std::vector<lexer::token>();
+    auto assign_depth = 0;
+
+    scope::ptr port_scope = nullptr;
 
     for (const auto& token: tokens) {
         switch (state) {
@@ -1205,6 +1222,16 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
                 abort();
             }
             module = l->second;
+            for (const auto& port_in_module: module.value()->ports()) {
+                auto port_in_instance = std::make_shared<port>(
+                    port_in_module->name(),
+                    port_in_module->width(),
+                    port_in_module->direction()
+                );
+                ports.push_back(port_in_instance);
+                name2port[port_in_instance->name()] = port_in_instance;
+            }
+            port_scope = std::make_shared<pcad::scope>(ports);
             state = instance_parser_state::INSTANCE_NAME;
             break;
         }
@@ -1227,20 +1254,69 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
 
         case instance_parser_state::PORTS:
             if (token == "(") {
-                state = instance_parser_state::PORT_NAME;
+                state = instance_parser_state::PORT_DOT;
             } else {
                 std::cerr << "Expected ( at start of module port list\n";
                 abort();
             }
             break;
 
+        case instance_parser_state::PORT_DOT:
+            if (token.str[0] == '.') {
+                assign_port_tokens = {
+                    lexer::token(
+                        token.str.substr(1),
+                        token.line,
+                        token.col+1
+                    )
+                };
+                state = instance_parser_state::PORT_NAME;
+            } else {
+                std::cerr << "Expected . in module port list\n";
+                abort();
+            }
+            break;
+
         case instance_parser_state::PORT_NAME:
+            if (token == "(") {
+                assign_statement_tokens = {token};
+                assign_depth = 1;
+                state = instance_parser_state::PORT_STATEMENT;
+            } else {
+                assign_port_tokens.push_back(token);
+            }
+            break;
+
         case instance_parser_state::PORT_STATEMENT:
+            assign_statement_tokens.push_back(token);
+            assign_depth += parens_depth_mod(token);
+            if (assign_depth == 0) {
+                assignments.push_back(
+                    std::make_shared<assign_statement>(
+                        parse_statement(assign_port_tokens, port_scope),
+                        parse_statement(assign_statement_tokens, scope)
+                    )
+                );
+
+                state = instance_parser_state::PORT_COMMA;
+                assign_statement_tokens = {};
+                assign_port_tokens = {};
+                assign_depth = 0;
+            }
+            break;
+
+        case instance_parser_state::PORT_COMMA:
+            if (token == ",") {
+                state = instance_parser_state::PORT_DOT;
+            } else if (token == ")") {
+                state = instance_parser_state::PORT_END;
+            }
+            break;
+
+        case instance_parser_state::PORT_END:
             break;
         }
     }
-
-    std::cerr << "Created Instance " << instance_name.value() << " of module " << module.value()->name() << "\n";
 
     return std::make_shared<instance>(
         instance_name.value(),
