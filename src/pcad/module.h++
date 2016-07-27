@@ -12,7 +12,7 @@ namespace pcad {
 #include "port.h++"
 #include "scope.h++"
 #include "statement.h++"
-#include <libjson/ofstream.h++>
+#include "serialize/json/ofstream.h++"
 #include <memory>
 #include <string>
 #include <vector>
@@ -56,7 +56,7 @@ namespace pcad {
         std::vector<decoupled::ptr> infer_decoupled_io(void) const;
 
         /* Dumps this module as various output formats. */
-        virtual void dump(libjson::ofstream& os) const;
+        virtual void dump(pcad::serialize::json::ofstream& os) const;
     };
 }
 

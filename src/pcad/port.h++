@@ -30,7 +30,7 @@ namespace pcad {
 
 
     public:
-        virtual void dump(libjson::ofstream& os) const;
+        virtual void dump(pcad::serialize::json::ofstream& os) const;
     };
 
     std::string to_string(const enum port_direction& d);

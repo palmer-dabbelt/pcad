@@ -17,11 +17,11 @@ wire::wire(const std::string& name, const long& width, const long& depth)
 {
 }
 
-void wire::dump(libjson::ofstream& os) const
+void wire::dump(pcad::serialize::json::ofstream& os) const
 {
-    os << libjson::stream_marker::BEGIN_STRUCTURE;
-    os << libjson::make_pair("name", _name);
-    os << libjson::make_pair("width", _width);
-    os << libjson::make_pair("depth", _depth);
-    os << libjson::stream_marker::END_STRUCTURE;
+    os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+    os << pcad::serialize::json::make_pair("name", _name);
+    os << pcad::serialize::json::make_pair("width", _width);
+    os << pcad::serialize::json::make_pair("depth", _depth);
+    os << pcad::serialize::json::stream_marker::END_STRUCTURE;
 }

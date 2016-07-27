@@ -23,15 +23,15 @@ module::ptr circuit::find_module(const std::string& name) const
     return l->second;
 }
 
-void circuit::dump(libjson::ofstream& os) const
+void circuit::dump(pcad::serialize::json::ofstream& os) const
 {
-    os << libjson::stream_marker::BEGIN_STRUCTURE;
-    os << libjson::make_pair("top", _top->name());
-    os << libjson::make_pair("modules", libjson::stream_marker::BEGIN_ARRAY);
+    os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+    os << pcad::serialize::json::make_pair("top", _top->name());
+    os << pcad::serialize::json::make_pair("modules", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
     for (const auto& module: _modules)
         module->dump(os);
-    os << libjson::stream_marker::END_ARRAY;
-    os << libjson::stream_marker::END_STRUCTURE;
+    os << pcad::serialize::json::stream_marker::END_ARRAY;
+    os << pcad::serialize::json::stream_marker::END_STRUCTURE;
 }
 
 circuit::ptr circuit::read_file(const std::string& filename, const std::string& top)

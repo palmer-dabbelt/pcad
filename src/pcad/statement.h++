@@ -5,7 +5,7 @@
 
 #include "scope.h++"
 #include "literal.h++"
-#include <libjson/ofstream.h++>
+#include "serialize/json/ofstream.h++"
 #include <memory>
 
 namespace pcad {
@@ -15,7 +15,7 @@ namespace pcad {
         typedef std::shared_ptr<statement> ptr;
 
         /* This one is funny -- it expects a BEGIN/END pair outside it! */
-        virtual void dump(libjson::ofstream& os) = 0;
+        virtual void dump(pcad::serialize::json::ofstream& os) = 0;
     };
 
     /* There's a few differente types of statements. */
@@ -31,7 +31,7 @@ namespace pcad {
           _source(source)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class wire_statement: public statement {
@@ -43,7 +43,7 @@ namespace pcad {
         : _wire(wire)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class unop_statement: public statement {
@@ -63,7 +63,7 @@ namespace pcad {
           _statement(statement)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class biop_statement: public statement {
@@ -100,7 +100,7 @@ namespace pcad {
           _b(b)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class slice_statement: public statement {
@@ -118,7 +118,7 @@ namespace pcad {
           _lo(lo)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class cat_statement: public statement {
@@ -133,7 +133,7 @@ namespace pcad {
           _lo(lo)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class trop_statement: public statement {
@@ -151,7 +151,7 @@ namespace pcad {
           _onf(onf)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class rep_statement: public statement {
@@ -166,7 +166,7 @@ namespace pcad {
           _value(value)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class builtin_statement: public statement {
@@ -181,7 +181,7 @@ namespace pcad {
           _arg(usv)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class always_statement: public statement {
@@ -196,7 +196,7 @@ namespace pcad {
           _body(body)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class posedge_statement: public statement {
@@ -208,7 +208,7 @@ namespace pcad {
         : _clock(clock)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 
     class if_statement: public statement {
@@ -226,7 +226,7 @@ namespace pcad {
           _on_false(on_false)
         {}
 
-        virtual void dump(libjson::ofstream& os);
+        virtual void dump(pcad::serialize::json::ofstream& os);
     };
 }
 

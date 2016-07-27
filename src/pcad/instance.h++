@@ -9,7 +9,7 @@ namespace pcad {
 
 #include "module.h++"
 #include "statement.h++"
-#include <libjson/ofstream.h++>
+#include "serialize/json/ofstream.h++"
 #include <memory>
 
 namespace pcad {
@@ -42,7 +42,7 @@ namespace pcad {
         const decltype(_assignments)& assignments(void) const { return _assignments; }
 
     public:
-        virtual void dump(libjson::ofstream& os) const;
+        virtual void dump(pcad::serialize::json::ofstream& os) const;
     };
 }
 

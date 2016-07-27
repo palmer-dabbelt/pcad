@@ -3,7 +3,7 @@
 #ifndef PCAD__WIRE_HXX
 #define PCAD__WIRE_HXX
 
-#include <libjson/ofstream.h++>
+#include "serialize/json/ofstream.h++"
 #include <memory>
 #include <string>
 
@@ -30,7 +30,7 @@ namespace pcad {
 
     public:
         /* Dumps this wire as various formats. */
-        virtual void dump(libjson::ofstream& os) const;
+        virtual void dump(pcad::serialize::json::ofstream& os) const;
     };
 }
 

@@ -1,8 +1,8 @@
 // See LICENSE for details
 
 #include <pcad/circuit.h++>
+#include <pcad/serialize/json/ofstream.h++>
 #include <tclap/CmdLine.h>
-#include <libjson/ofstream.h++>
 
 int main(int argc, const char **argv)
 {
@@ -39,7 +39,7 @@ int main(int argc, const char **argv)
         cmd.parse(argc, argv);
 
         auto i = pcad::circuit::read_file(input.getValue(), top.getValue());
-        libjson::ofstream os(output.getValue());
+        pcad::serialize::json::ofstream os(output.getValue());
         i->dump(os);
 
         return 0;

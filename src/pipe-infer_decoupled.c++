@@ -1,8 +1,8 @@
 // See LICENSE for details
 
 #include <pcad/circuit.h++>
+#include <pcad/serialize/json/ofstream.h++>
 #include <tclap/CmdLine.h>
-#include <libjson/ofstream.h++>
 
 int main(int argc, const char **argv)
 {
@@ -47,28 +47,28 @@ int main(int argc, const char **argv)
         }
 
         {
-            libjson::ofstream os(output.getValue());
-            os << libjson::stream_marker::BEGIN_STRUCTURE;
-            os << libjson::make_pair("name", t->name());
-            os << libjson::make_pair("decoupled io", libjson::stream_marker::BEGIN_ARRAY);
+            pcad::serialize::json::ofstream os(output.getValue());
+            os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+            os << pcad::serialize::json::make_pair("name", t->name());
+            os << pcad::serialize::json::make_pair("decoupled io", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
 
             for (const auto& d: t->infer_decoupled_io()) {
-                os << libjson::stream_marker::BEGIN_STRUCTURE;
-                os << libjson::make_pair("base", d->base_name());
-                os << libjson::make_pair("direction", pcad::to_string(d->direction()));
-                os << libjson::make_pair("bits", libjson::stream_marker::BEGIN_ARRAY);
+                os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+                os << pcad::serialize::json::make_pair("base", d->base_name());
+                os << pcad::serialize::json::make_pair("direction", pcad::to_string(d->direction()));
+                os << pcad::serialize::json::make_pair("bits", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
                 for (const auto& w: d->ports()) {
-                    os << libjson::stream_marker::BEGIN_STRUCTURE;
-                    os << libjson::make_pair("name", w->name());
-                    os << libjson::make_pair("width", std::to_string(w->width()));
-                    os << libjson::stream_marker::END_STRUCTURE;
+                    os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+                    os << pcad::serialize::json::make_pair("name", w->name());
+                    os << pcad::serialize::json::make_pair("width", std::to_string(w->width()));
+                    os << pcad::serialize::json::stream_marker::END_STRUCTURE;
                 }
-                os << libjson::stream_marker::END_ARRAY;
-                os << libjson::stream_marker::END_STRUCTURE;
+                os << pcad::serialize::json::stream_marker::END_ARRAY;
+                os << pcad::serialize::json::stream_marker::END_STRUCTURE;
             }
 
-            os << libjson::stream_marker::END_ARRAY;
-            os << libjson::stream_marker::END_STRUCTURE;
+            os << pcad::serialize::json::stream_marker::END_ARRAY;
+            os << pcad::serialize::json::stream_marker::END_STRUCTURE;
         } 
 
         return 0;

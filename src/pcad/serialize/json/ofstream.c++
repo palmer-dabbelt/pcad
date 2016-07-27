@@ -2,7 +2,7 @@
 
 #include "ofstream.h++"
 #include <iostream>
-using namespace libjson;
+using namespace pcad::serialize::json;
 
 ofstream::ofstream(const std::string& filename)
 : _os(filename),

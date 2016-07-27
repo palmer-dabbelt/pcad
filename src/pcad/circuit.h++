@@ -5,7 +5,7 @@
 
 #include "decoupled.h++"
 #include "module.h++"
-#include <libjson/ofstream.h++>
+#include "serialize/json/ofstream.h++"
 #include <unordered_map>
 #include <memory>
 #include <string>
@@ -31,7 +31,7 @@ namespace pcad {
         module::ptr find_module(const std::string& name) const;
 
         /* Dumps this circuit as various output formats. */
-        virtual void dump(libjson::ofstream& os) const;
+        virtual void dump(pcad::serialize::json::ofstream& os) const;
 
     public:
         static ptr read_file(const std::string& filename, const std::string& top);

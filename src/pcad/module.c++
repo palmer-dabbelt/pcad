@@ -63,30 +63,30 @@ std::vector<decoupled::ptr> module::infer_decoupled_io(void) const
     return out;
 }
 
-void module::dump(libjson::ofstream& os) const
+void module::dump(pcad::serialize::json::ofstream& os) const
 {
-    os << libjson::stream_marker::BEGIN_STRUCTURE;
-    os << libjson::make_pair("name", _name);
+    os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
+    os << pcad::serialize::json::make_pair("name", _name);
 
-    os << libjson::make_pair("ports", libjson::stream_marker::BEGIN_ARRAY);
+    os << pcad::serialize::json::make_pair("ports", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
     for (const auto& port: _ports)
         port->dump(os);
-    os << libjson::stream_marker::END_ARRAY;
+    os << pcad::serialize::json::stream_marker::END_ARRAY;
 
-    os << libjson::make_pair("wires", libjson::stream_marker::BEGIN_ARRAY);
+    os << pcad::serialize::json::make_pair("wires", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
     for (const auto& wire: _body->vars())
         wire->dump(os);
-    os << libjson::stream_marker::END_ARRAY;
+    os << pcad::serialize::json::stream_marker::END_ARRAY;
 
-    os << libjson::make_pair("statements", libjson::stream_marker::BEGIN_ARRAY);
+    os << pcad::serialize::json::make_pair("statements", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
     for (const auto& statement: _statements)
         statement->dump(os);
-    os << libjson::stream_marker::END_ARRAY;
+    os << pcad::serialize::json::stream_marker::END_ARRAY;
 
-    os << libjson::make_pair("instances", libjson::stream_marker::BEGIN_ARRAY);
+    os << pcad::serialize::json::make_pair("instances", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
     for (const auto& instance: _instances)
         instance->dump(os);
-    os << libjson::stream_marker::END_ARRAY;
+    os << pcad::serialize::json::stream_marker::END_ARRAY;
 
-    os << libjson::stream_marker::END_STRUCTURE;
+    os << pcad::serialize::json::stream_marker::END_STRUCTURE;
 }
