@@ -150,6 +150,12 @@ public:
         return _value;
     }
 
+    const T& value(const T& invalid) {
+        if (_valid == true)
+            return _value;
+        return invalid;
+    }
+
     bool valid(void) const {
         return _valid;
     }
@@ -391,7 +397,8 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
                 scope_stack.top()->add_var(
                     std::make_shared<wire>(
                         wire_name.value(),
-                        wire_width.value()
+                        wire_width.value(),
+                        wire_depth.value(1)
                     ));
                 wire_name = option<std::string>();
                 wire_width = option<long>();
