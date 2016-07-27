@@ -1,7 +1,7 @@
 // See LICENSE for details
 
 #include "circuit.h++"
-#include <libverilog/parser.h++>
+#include "serialize/verilog/parser.h++"
 #include <iostream>
 using namespace pcad;
 
@@ -36,7 +36,7 @@ void circuit::dump(libjson::ofstream& os) const
 
 circuit::ptr circuit::read_file(const std::string& filename, const std::string& top)
 {
-    auto v = libverilog::parser::read_file(filename);
+    auto v = serialize::verilog::parser::read_file(filename);
     if (v.size() > 0) {
         return std::make_shared<circuit>(top, v);
     }

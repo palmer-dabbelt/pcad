@@ -10,8 +10,8 @@
 #include <pcad/statement.h++>
 #include <iostream>
 #include <stack>
-using namespace libverilog;
 using namespace pcad;
+using namespace pcad::serialize::verilog;
 
 std::vector<module::ptr> parser::read_file(const std::string& filename)
 {

@@ -4,7 +4,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
-using namespace libverilog;
+using namespace pcad::serialize::verilog;
 
 enum class lexer_state {
     BODY,
