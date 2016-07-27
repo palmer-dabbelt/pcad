@@ -79,6 +79,8 @@ void slice_statement::dump(libjson::ofstream& os)
 {
     os << libjson::stream_marker::BEGIN_STRUCTURE;
     os << libjson::make_pair("type", "slice");
+    os << libjson::make_pair("source", libjson::stream_marker::NEXT_STRUCTURE);
+    _source->dump(os);
     os << libjson::make_pair("hi", libjson::stream_marker::NEXT_STRUCTURE);
     _hi->dump(os);
     os << libjson::make_pair("lo", libjson::stream_marker::NEXT_STRUCTURE);
