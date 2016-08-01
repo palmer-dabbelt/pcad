@@ -28,6 +28,10 @@ matrix:
     - env: TRAVIS_CC=clang-3.5 TRAVIS_CXX=clang++-3.5
 
 before_install:
+  - export PATH="${HOME}/dependencies/install/bin:$PATH"
+  - export PKG_CONFIG_PATH="${HOME}/dependencies/install/lib/pkgconfig"
+  - export CC=$TRAVIS_CC
+  - export CXX=$TRAVIS_CXX
   - PCONFIGURE_VERSION=0.11.9
   - export MAKEFLAGS="-j3"
   - export S="$(pwd)"
@@ -38,10 +42,6 @@ before_install:
   - cd "pconfigure-${PCONFIGURE_VERSION}"
   - ./bootstrap.sh --prefix "${HOME}/dependencies/install"
   - make install
-  - export PATH="${HOME}/dependencies/install/bin:$PATH"
-  - export PKG_CONFIG_PATH="${HOME}/dependencies/install/lib/pkgconfig"
-  - export CC=$TRAVIS_CC
-  - export CXX=$TRAVIS_CXX
   - cd "${S}"
 
 script:
