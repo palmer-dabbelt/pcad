@@ -2,15 +2,11 @@
 
 #include "parser.h++"
 #include "lexer.h++"
-#include <pcad/instance.h++>
-#include <pcad/module.h++>
-#include <pcad/port.h++>
-#include <pcad/builtin_wire.h++>
-#include <pcad/scope.h++>
-#include <pcad/statement.h++>
+#include <pcad/hdlast/builtin_wire.h++>
 #include <iostream>
 #include <stack>
 using namespace pcad;
+using namespace pcad::hdlast;
 using namespace pcad::serialize::verilog;
 
 std::vector<module::ptr> parser::read_file(const std::string& filename)
@@ -30,7 +26,7 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
 
     auto modules = std::vector<module::ptr>();
     auto current_module = std::vector<lexer::token>();
-    auto module_lookup = std::unordered_map<std::string, pcad::module::ptr>();
+    auto module_lookup = std::unordered_map<std::string, pcad::hdlast::module::ptr>();
 
     for (const auto& token: tokens) {
         switch (state) {
@@ -161,7 +157,7 @@ public:
     }
 };
 
-module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const std::unordered_map<std::string, pcad::module::ptr>& module_lookup)
+module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup)
 {
     auto state = module_parser_state::TOP;
 
@@ -217,9 +213,9 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
 
         case module_parser_state::PORTS:
             if (token == "input") {
-                port_direction = pcad::port_direction::INPUT;
+                port_direction = pcad::hdlast::port_direction::INPUT;
             } else if (token == "output") {
-                port_direction = pcad::port_direction::OUTPUT;
+                port_direction = pcad::hdlast::port_direction::OUTPUT;
             } else if (token == "[") {
                 state = module_parser_state::PORT_WIDTH_1;
             } else if (token == "]") {
@@ -618,11 +614,11 @@ std::string to_string(const enum parse_statements_state& state)
     abort();
 }
 
-std::vector<pcad::statement::ptr>
+std::vector<pcad::hdlast::statement::ptr>
 parser::parse_statements(const std::vector<lexer::token>& tokens,
-                         const pcad::scope::ptr& scope)
+                         const pcad::hdlast::scope::ptr& scope)
 {
-    std::vector<pcad::statement::ptr> statements;
+    std::vector<pcad::hdlast::statement::ptr> statements;
     auto state = parse_statements_state::BODY;
 
     auto begin_depth_mod = [](lexer::token token) {
@@ -861,8 +857,8 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
     return statements;
 }
 
-pcad::statement::ptr parser::parse_statement(const std::vector<lexer::token>& tokens,
-                                             const pcad::scope::ptr& scope)
+pcad::hdlast::statement::ptr parser::parse_statement(const std::vector<lexer::token>& tokens,
+                                             const pcad::hdlast::scope::ptr& scope)
 {
 #ifdef PCAD__DEBUG_STATEMENT_PARSER
     std::cerr << "statement: ";
@@ -1121,14 +1117,14 @@ pcad::statement::ptr parser::parse_statement(const std::vector<lexer::token>& to
     return nullptr;
 }
 
-pcad::wire::ptr parser::parse_wire(const lexer::token& token,
-                                   const pcad::scope::ptr& scope)
+pcad::hdlast::wire::ptr parser::parse_wire(const lexer::token& token,
+                                   const pcad::hdlast::scope::ptr& scope)
 {
     if (token == "$random")
-        return std::make_shared<pcad::random>();
+        return std::make_shared<pcad::hdlast::random>();
 
     if (token == "*")
-        return std::make_shared<pcad::star>();
+        return std::make_shared<pcad::hdlast::star>();
 
     auto lit = parse_literal(token);
     if (lit != nullptr)
@@ -1142,7 +1138,7 @@ pcad::wire::ptr parser::parse_wire(const lexer::token& token,
     return wire;
 }
 
-pcad::literal::ptr parser::parse_literal(const lexer::token& token)
+pcad::hdlast::literal::ptr parser::parse_literal(const lexer::token& token)
 {
     auto apos = token.str.find('\'');
 
@@ -1173,7 +1169,7 @@ pcad::literal::ptr parser::parse_literal(const lexer::token& token)
 
     auto val = strtol(token.str.c_str() + apos, &end, bitwidth);
     if (end != NULL && *end == '\0') {
-        return std::make_shared<pcad::literal>(val, width);
+        return std::make_shared<pcad::hdlast::literal>(val, width);
     } else {
         return nullptr;
     }
@@ -1190,9 +1186,9 @@ enum instance_parser_state {
     PORT_END,
 };
 
-pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& tokens,
-                                           const std::unordered_map<std::string, pcad::module::ptr>& module_lookup,
-                                           const pcad::scope::ptr& scope)
+pcad::hdlast::instance::ptr parser::parse_instance(const std::vector<lexer::token>& tokens,
+                                           const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup,
+                                           const pcad::hdlast::scope::ptr& scope)
 {
     auto parens_depth_mod = [](lexer::token token) {
         if (token == "(") return  1;
@@ -1210,7 +1206,7 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
     auto ports = std::vector<port::ptr>();
     auto name2port = std::unordered_map<std::string, port::ptr>();
 
-    auto module = option<pcad::module::ptr>();
+    auto module = option<pcad::hdlast::module::ptr>();
 
     auto assignments = std::vector<statement::ptr>();
     auto assign_port_tokens = std::vector<lexer::token>();
@@ -1238,7 +1234,7 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
                 ports.push_back(port_in_instance);
                 name2port[port_in_instance->name()] = port_in_instance;
             }
-            port_scope = std::make_shared<pcad::scope>(ports);
+            port_scope = std::make_shared<pcad::hdlast::scope>(ports);
             state = instance_parser_state::INSTANCE_NAME;
             break;
         }
@@ -1248,7 +1244,7 @@ pcad::instance::ptr parser::parse_instance(const std::vector<lexer::token>& toke
 
             for (const auto& port: module.value()->ports()) {
                 ports.push_back(
-                    std::make_shared<pcad::port>(
+                    std::make_shared<pcad::hdlast::port>(
                         token.str + "." + port->name(),
                         port->width(),
                         port->direction()

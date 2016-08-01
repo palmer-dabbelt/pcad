@@ -1,11 +1,12 @@
 LANGUAGES   += c++
-COMPILEOPTS += -std=c++11
+COMPILEOPTS += -std=c++14
 COMPILEOPTS += -Wall
 COMPILEOPTS += -Wextra
 COMPILEOPTS += -Werror
 
 LANGUAGES   += c++
 COMPILEOPTS += -Wno-unused-private-field
+COMPILEOPTS += -Wno-unused-parameter
 
 LANGUAGES   += bash
 

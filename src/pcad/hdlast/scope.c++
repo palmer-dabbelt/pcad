@@ -1,7 +1,7 @@
 // See LICENSE for details
 
 #include "scope.h++"
-using namespace pcad;
+using namespace pcad::hdlast;
 
 std::vector<wire::ptr> port2wire(const std::vector<port::ptr>& ports)
 {

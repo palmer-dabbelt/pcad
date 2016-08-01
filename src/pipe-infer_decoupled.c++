@@ -1,6 +1,7 @@
 // See LICENSE for details
 
-#include <pcad/circuit.h++>
+#include <pcad/open.h++>
+#include <pcad/passes/infer_decoupled_io.h++>
 #include <pcad/serialize/json/ofstream.h++>
 #include <tclap/CmdLine.h>
 
@@ -38,7 +39,7 @@ int main(int argc, const char **argv)
 
         cmd.parse(argc, argv);
 
-        auto i = pcad::circuit::read_file(input.getValue(), top.getValue());
+        auto i = pcad::open_circuit(input.getValue());
 
         auto t = i->find_module(top.getValue());
         if (t == nullptr) {
@@ -52,10 +53,10 @@ int main(int argc, const char **argv)
             os << pcad::serialize::json::make_pair("name", t->name());
             os << pcad::serialize::json::make_pair("decoupled io", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
 
-            for (const auto& d: t->infer_decoupled_io()) {
+            for (const auto& d: pcad::passes::infer_decoupled_io(t)) {
                 os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
                 os << pcad::serialize::json::make_pair("base", d->base_name());
-                os << pcad::serialize::json::make_pair("direction", pcad::to_string(d->direction()));
+                os << pcad::serialize::json::make_pair("direction", to_string(d->direction()));
                 os << pcad::serialize::json::make_pair("bits", pcad::serialize::json::stream_marker::BEGIN_ARRAY);
                 for (const auto& w: d->ports()) {
                     os << pcad::serialize::json::stream_marker::BEGIN_STRUCTURE;
