@@ -28,7 +28,7 @@ matrix:
     - env: TRAVIS_CC=clang-3.5 TRAVIS_CXX=clang++-3.5
 
 before_install:
-  - PCONFIGURE_VERSION=0.11.8
+  - PCONFIGURE_VERSION=0.11.9
   - export MAKEFLAGS="-j3"
   - export S="$(pwd)"
   - mkdir -p "${HOME}/dependencies"
