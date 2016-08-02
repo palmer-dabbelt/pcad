@@ -32,7 +32,7 @@ before_install:
   - export PKG_CONFIG_PATH="${HOME}/dependencies/install/lib/pkgconfig"
   - export CC=$TRAVIS_CC
   - export CXX=$TRAVIS_CXX
-  - PCONFIGURE_VERSION=0.11.9
+  - PCONFIGURE_VERSION=0.11.10
   - export MAKEFLAGS="-j3"
   - export S="$(pwd)"
   - mkdir -p "${HOME}/dependencies"
