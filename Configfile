@@ -10,12 +10,20 @@ COMPILEOPTS += -Wno-unused-parameter
 
 LANGUAGES   += bash
 
+LANGUAGES   += h
+
 LANGUAGES   += c++
 COMPILEOPTS += -Isrc
 
 LANGUAGES   += c++
 COMPILEOPTS += `ppkg-config tclap --cflags`
 LINKOPTS    += `ppkg-config tclap --libs`
+
+# This big shared object contains the C++ pcad interface, which is the native
+# interface.
+LIBRARIES   += libpcad.so
+CONFIG      += library-sources
+CONFIG      += library-headers
 
 ###############################################################################
 # User-facing binaries

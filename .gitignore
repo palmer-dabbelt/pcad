@@ -2,6 +2,8 @@
 /Makefile
 /bin
 /check
+/include
+/lib
 /obj
 
 *.swp

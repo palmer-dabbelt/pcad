@@ -1,0 +1,6 @@
+#!/bin/bash
+
+find src/pcad -iname "*.c++" | sed 's@^src/@@' | while read f
+do
+    echo "SOURCES += $f"
+done
