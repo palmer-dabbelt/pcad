@@ -156,7 +156,7 @@ cat >"${TOP}".pcad.json.gold <<EOF
                 }
               },
               "source": {
-                "type": "slice",
+                "type": "index",
                 "source": {
                   "type": "wire",
                   "wire": {
@@ -165,16 +165,7 @@ cat >"${TOP}".pcad.json.gold <<EOF
                     "depth": "128"
                   }
                 },
-                "hi": {
-                  "type": "wire",
-                  "wire": {
-                    "name": "raddr",
-                    "width": "8",
-                    "depth": "1",
-                    "direction": "input"
-                  }
-                },
-                "lo": {
+                "index": {
                   "type": "wire",
                   "wire": {
                     "name": "raddr",
@@ -188,7 +179,7 @@ cat >"${TOP}".pcad.json.gold <<EOF
             {
               "type": "assign",
               "dest": {
-                "type": "slice",
+                "type": "index",
                 "source": {
                   "type": "wire",
                   "wire": {
@@ -197,16 +188,7 @@ cat >"${TOP}".pcad.json.gold <<EOF
                     "depth": "128"
                   }
                 },
-                "hi": {
-                  "type": "wire",
-                  "wire": {
-                    "name": "waddr",
-                    "width": "8",
-                    "depth": "1",
-                    "direction": "input"
-                  }
-                },
-                "lo": {
+                "index": {
                   "type": "wire",
                   "wire": {
                     "name": "waddr",

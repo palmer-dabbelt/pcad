@@ -138,6 +138,23 @@ namespace pcad {
             const decltype(_lo)& lo(void) const { return _lo; }
         };
 
+        class index_statement: public statement {
+        private:
+            const statement::ptr _source;
+            const statement::ptr _index;
+
+        public:
+            index_statement(const statement::ptr& source,
+                            const statement::ptr index)
+            : _source(source),
+              _index(index)
+            {}
+
+        public:
+            const decltype(_source) source(void) const { return _source; }
+            const decltype(_index) index(void) const { return _index; }
+        };
+
         class cat_statement: public statement {
         private:
             const statement::ptr _hi;

@@ -102,6 +102,13 @@ void pcad::serialize::json::dump(ofstream& os, const statement::ptr& statement)
             os << make_pair("lo", stream_marker::NEXT_STRUCTURE);
             dump(os, s.lo());
         },
+        some<hdlast::index_statement>(), [&](auto s) {
+            os << make_pair("type", "index");
+            os << make_pair("source", stream_marker::NEXT_STRUCTURE);
+            dump(os, s.source());
+            os << make_pair("index", stream_marker::NEXT_STRUCTURE);
+            dump(os, s.index());
+        },
         some<hdlast::cat_statement>(), [&](auto s) {
             os << make_pair("type", "cat");
         },

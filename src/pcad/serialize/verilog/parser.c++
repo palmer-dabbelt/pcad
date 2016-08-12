@@ -945,9 +945,8 @@ pcad::hdlast::statement::ptr parser::parse_statement(const std::vector<lexer::to
     /* The bit-slice syntax is odd and I'm not sure how to fit it into a
      * regular in-fix parser, so I'm kind of just hacking it together here. */
     if (tokens.size() == 4 && tokens[1] == "[" && tokens[3] == "]") {
-        return std::make_shared<slice_statement>(
+        return std::make_shared<index_statement>(
             parse_statement({tokens[0]}, scope),
-            parse_statement({tokens[2]}, scope),
             parse_statement({tokens[2]}, scope)
         );
     }
