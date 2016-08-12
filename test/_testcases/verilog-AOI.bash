@@ -56,4 +56,16 @@ cat >"${TOP}".decoupled.json.gold <<EOF
 }
 EOF
 
+cat >"${TOP}".canonical.v.gold <<EOF
+module AOI(
+  input A,
+  input B,
+  input C,
+  input D,
+  output F
+);
+  assign F = ~(((A & B) | (C & D)));
+endmodule
+EOF
+
 #include "_harness.bash"

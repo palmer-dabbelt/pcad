@@ -169,6 +169,10 @@ namespace pcad {
             : _hi(hi),
               _lo(lo)
             {}
+
+        public:
+            const decltype(_hi)& hi(void) const { return _hi; }
+            const decltype(_lo)& lo(void) const { return _lo; }
         };
 
         class trop_statement: public statement {
@@ -185,6 +189,11 @@ namespace pcad {
               _ont(ont),
               _onf(onf)
             {}
+
+        public:
+            const decltype(_sel) sel(void) const { return _sel; }
+            const decltype(_ont) ont(void) const { return _ont; }
+            const decltype(_onf) onf(void) const { return _onf; }
         };
 
         class rep_statement: public statement {
@@ -198,6 +207,10 @@ namespace pcad {
             : _width(width),
               _value(value)
             {}
+
+        public:
+            const decltype(_width)& width(void) const { return _width; }
+            const decltype(_value)& value(void) const { return _value; }
         };
 
         class builtin_statement: public statement {
@@ -211,6 +224,10 @@ namespace pcad {
             : _function(function),
               _arg(usv)
             {}
+
+        public:
+            const decltype(_function) function(void) const { return _function; }
+            const decltype(_arg) arg(void) const { return _arg; }
         };
 
         class always_statement: public statement {

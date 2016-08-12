@@ -47,3 +47,8 @@ CONFIG      += testcases
 BINARIES    += pcad-pipe-infer_decoupled
 SOURCES     += pipe-infer_decoupled.c++
 CONFIG      += testcases
+
+# Canonicalizes a Verilog file
+BINARIES    += pcad-pipe-to_verilog
+SOURCES     += pipe-to_verilog.c++
+CONFIG      += testcases

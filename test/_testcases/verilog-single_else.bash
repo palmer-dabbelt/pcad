@@ -17,6 +17,28 @@ module ifelse (input clk, input a, input b, output c);
 endmodule
 EOF
 
+cat >"${TOP}".v <<EOF
+module ifelse (
+  input clk,
+  input a,
+  input b,
+  output c
+);
+  always @(posedge clk)
+  begin
+    if (a)
+    begin
+      c <= b;
+      c <= b;
+    end
+    else
+    begin
+      c <= ~b;
+    end
+  end
+endmodule
+EOF
+
 cat >"${TOP}".io.json.gold <<EOF
 {
   "name": "ifelse",
