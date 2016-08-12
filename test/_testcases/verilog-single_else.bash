@@ -131,9 +131,10 @@ cat > "${TOP}".pcad.json.gold <<EOF
                   "source": {
                     "type": "wire",
                     "wire": {
-                      "name": "0",
-                      "width": "32",
-                      "depth": "1"
+                      "name": "b",
+                      "width": "1",
+                      "depth": "1",
+                      "direction": "input"
                     }
                   }
                 },
@@ -151,9 +152,10 @@ cat > "${TOP}".pcad.json.gold <<EOF
                   "source": {
                     "type": "wire",
                     "wire": {
-                      "name": "0",
-                      "width": "32",
-                      "depth": "1"
+                      "name": "b",
+                      "width": "1",
+                      "depth": "1",
+                      "direction": "input"
                     }
                   }
                 }
@@ -175,9 +177,10 @@ cat > "${TOP}".pcad.json.gold <<EOF
                     "statement": {
                       "type": "wire",
                       "wire": {
-                        "name": "0",
-                        "width": "32",
-                        "depth": "1"
+                        "name": "b",
+                        "width": "1",
+                        "depth": "1",
+                        "direction": "input"
                       }
                     }
                   }

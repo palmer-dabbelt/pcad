@@ -1187,6 +1187,9 @@ pcad::hdlast::wire::ptr parser::parse_wire(const lexer::token& token,
 
 pcad::hdlast::literal::ptr parser::parse_literal(const lexer::token& token)
 {
+    if (token.str == "b" || token.str == "s" || token.str == "h" || token.str == "d")
+        return nullptr;
+
     auto apos = token.str.find('\'');
 
     char *end = NULL;
