@@ -166,42 +166,6 @@ cat > "${TOP}.pcad.json.gold" <<EOF
           "name": "_Q",
           "width": "1",
           "depth": "1"
-        },
-        {
-          "name": "A",
-          "width": "1",
-          "depth": "1",
-          "direction": "input"
-        },
-        {
-          "name": "B",
-          "width": "1",
-          "depth": "1",
-          "direction": "input"
-        },
-        {
-          "name": "Q",
-          "width": "1",
-          "depth": "1",
-          "direction": "output"
-        },
-        {
-          "name": "AndGate.A",
-          "width": "1",
-          "depth": "1",
-          "direction": "input"
-        },
-        {
-          "name": "AndGate.B",
-          "width": "1",
-          "depth": "1",
-          "direction": "input"
-        },
-        {
-          "name": "AndGate.Q",
-          "width": "1",
-          "depth": "1",
-          "direction": "output"
         }
       ],
       "statements": [
@@ -242,66 +206,6 @@ cat > "${TOP}.pcad.json.gold" <<EOF
               "width": "1",
               "depth": "1",
               "direction": "input"
-            }
-          }
-        },
-        {
-          "type": "assign",
-          "dest": {
-            "type": "wire",
-            "wire": {
-              "name": "A",
-              "width": "1",
-              "depth": "1",
-              "direction": "input"
-            }
-          },
-          "source": {
-            "type": "wire",
-            "wire": {
-              "name": "_A",
-              "width": "1",
-              "depth": "1"
-            }
-          }
-        },
-        {
-          "type": "assign",
-          "dest": {
-            "type": "wire",
-            "wire": {
-              "name": "B",
-              "width": "1",
-              "depth": "1",
-              "direction": "input"
-            }
-          },
-          "source": {
-            "type": "wire",
-            "wire": {
-              "name": "_B",
-              "width": "1",
-              "depth": "1"
-            }
-          }
-        },
-        {
-          "type": "assign",
-          "dest": {
-            "type": "wire",
-            "wire": {
-              "name": "Q",
-              "width": "1",
-              "depth": "1",
-              "direction": "output"
-            }
-          },
-          "source": {
-            "type": "wire",
-            "wire": {
-              "name": "_Q",
-              "width": "1",
-              "depth": "1"
             }
           }
         },

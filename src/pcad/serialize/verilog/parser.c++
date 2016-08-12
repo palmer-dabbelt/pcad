@@ -445,11 +445,6 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
                     module_lookup,
                     scope_stack.top());
                 body_instances.push_back(instance);
-                for (const auto& port: instance->ports())
-                    scope_stack.top()->add_var(port);
-                for (const auto& statement: instance->assignments())
-                    body_statements.push_back(statement);
-
                 instance_tokens = {};
             } else {
                 instance_tokens.push_back(token);
