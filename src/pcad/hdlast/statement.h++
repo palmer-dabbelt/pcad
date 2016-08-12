@@ -67,6 +67,9 @@ namespace pcad {
             : _op(operation),
               _statement(statement)
             {}
+
+            const decltype(_op)& opcode(void) const { return _op; }
+            const decltype(_statement)& statement(void) const { return _statement; }
         };
 
         class biop_statement: public statement {
@@ -254,6 +257,11 @@ namespace pcad {
               _on_true(on_true),
               _on_false(on_false)
             {}
+
+        public:
+            const decltype(_cond)& cond(void) const { return _cond; }
+            const decltype(_on_true)& on_true(void) const { return _on_true; }
+            const decltype(_on_false)& on_false(void) const { return _on_false; }
         };
     }
 }

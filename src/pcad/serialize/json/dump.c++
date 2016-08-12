@@ -84,6 +84,8 @@ void pcad::serialize::json::dump(ofstream& os, const statement::ptr& statement)
         },
         some<hdlast::unop_statement>(), [&](auto s) {
             os << make_pair("type", "unop");
+            os << make_pair("statement", stream_marker::NEXT_STRUCTURE);
+            dump(os, s.statement());
         },
         some<hdlast::biop_statement>(), [&](auto s) {
             os << make_pair("type", "biop");
@@ -138,6 +140,16 @@ void pcad::serialize::json::dump(ofstream& os, const statement::ptr& statement)
         },
         some<hdlast::if_statement>(), [&](auto s) {
             os << make_pair("type", "if");
+            os << make_pair("cond", stream_marker::NEXT_STRUCTURE);
+            dump(os, s.cond());
+            os << make_pair("on true", stream_marker::BEGIN_ARRAY);
+            for (const auto& ss: s.on_true())
+                dump(os, ss);
+            os << stream_marker::END_ARRAY;
+            os << make_pair("on false", stream_marker::BEGIN_ARRAY);
+            for (const auto& ss: s.on_false())
+                dump(os, ss);
+            os << stream_marker::END_ARRAY;
         },
         some<hdlast::statement>(), [&](auto s){
             std::cerr << "Unknown statement of type " << typeid(s).name() << std::endl;
