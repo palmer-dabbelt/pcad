@@ -25,13 +25,13 @@ namespace pcad {
             const std::string _name;
             const std::shared_ptr<hdlast::module> _module;
             const std::vector<port::ptr> _ports;
-            const std::vector<statement::ptr> _assignments;
+            const std::vector<std::shared_ptr<assign_statement>> _assignments;
 
         public:
             instance(const std::string& name,
                      const decltype(_module)& module,
                      const std::vector<port::ptr>& ports,
-                     const std::vector<statement::ptr> assignments)
+                     const decltype(_assignments)& assignments)
             : _name(name),
               _module(module),
               _ports(ports),

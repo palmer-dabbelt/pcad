@@ -1253,7 +1253,7 @@ pcad::hdlast::instance::ptr parser::parse_instance(const std::vector<lexer::toke
 
     auto module = option<pcad::hdlast::module::ptr>();
 
-    auto assignments = std::vector<statement::ptr>();
+    auto assignments = std::vector<std::shared_ptr<assign_statement>>();
     auto assign_port_tokens = std::vector<lexer::token>();
     auto assign_statement_tokens = std::vector<lexer::token>();
     auto assign_depth = 0;
