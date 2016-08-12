@@ -5,3 +5,4 @@ TESTSRC     += verilog-RocketToFFTWrapper-20160724.bash
 TESTSRC     += verilog-decoupled.bash
 TESTSRC     += verilog-single_instance.bash
 TESTSRC     += verilog-deep_wire.bash
+TESTSRC     += verilog-single_else.bash

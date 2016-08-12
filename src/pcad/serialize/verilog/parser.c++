@@ -854,6 +854,54 @@ parser::parse_statements(const std::vector<lexer::token>& tokens,
         }
     }
 
+    switch (state) {
+    case parse_statements_state::BODY:
+        break;
+
+    case parse_statements_state::BLOCK:
+    case parse_statements_state::IF_COND:
+    case parse_statements_state::IF_TRUE:
+    case parse_statements_state::IF_TRUE_STATEMENT:
+    case parse_statements_state::IF_TRUE_BLOCK:
+    case parse_statements_state::IF_FALSE_ELSE:
+    case parse_statements_state::IF_FALSE_ELSE_IF:
+    case parse_statements_state::IF_FALSE_ELSE_IF_COND:
+    case parse_statements_state::IF_FALSE_STATEMENT:
+    case parse_statements_state::IF_FALSE_BLOCK:
+    case parse_statements_state::FOR_START:
+    case parse_statements_state::FOR_HEADER:
+    case parse_statements_state::FOR_BODY:
+    case parse_statements_state::FOR_STATEMENT:
+    case parse_statements_state::FOR_BLOCK:
+    case parse_statements_state::ASSIGN_TARGET:
+#ifdef STRICT_STATEMENT_PARSER
+        std::cerr << "statement parser ended in " << to_string(state) << "\n";
+        for (const auto& token: tokens)
+            std::cerr << "  token: " << token.str << "\n";
+        abort();
+#endif
+        break;
+
+    case parse_statements_state::IF_FALSE:
+        statements.push_back(
+            std::make_shared<if_statement>(
+                parse_statement(if_cond_tokens, scope),
+                parse_statements(if_body_tokens, scope),
+                parse_statements(if_else_tokens, scope)
+            )
+        );
+        break;
+
+    case parse_statements_state::ASSIGN_SOURCE:
+        statements.push_back(
+            std::make_shared<assign_statement>(
+                parse_statement(assign_target, scope),
+                parse_statement(assign_source, scope)
+            )
+        );
+        break;
+    }
+
     return statements;
 }
 
