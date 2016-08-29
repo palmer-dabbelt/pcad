@@ -1088,6 +1088,7 @@ pcad::hdlast::statement::ptr parser::parse_statement(const std::vector<lexer::to
                 if (token == "-")   return biop_statement::op::SUB;
                 if (token == "*")   return biop_statement::op::MUL;
                 if (token == ">")   return biop_statement::op::GT;
+                if (token == "||")  return biop_statement::op::OROR;
                 return option<biop_statement::op>();
             }();
 

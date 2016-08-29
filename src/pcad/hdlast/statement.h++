@@ -90,6 +90,7 @@ namespace pcad {
                 RSHL,
                 RSHA,
                 GT,
+                OROR,
             };
 
         private:
