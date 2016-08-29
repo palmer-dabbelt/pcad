@@ -487,6 +487,9 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
         case module_parser_state::ALWAYS_START:
             if (token == "@") {
                 state = module_parser_state::ALWAYS_AT;
+            } else if (token.str[0] == '#') {
+                // FIXME: Don't treat always# like always@
+                state = module_parser_state::ALWAYS_AT;
             } else {
                 std::cerr << "Expected 'always @'\n";
                 abort();
