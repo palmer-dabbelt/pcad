@@ -34,7 +34,7 @@ namespace pcad {
                 std::vector<token> _tokens;
 
             public:
-                lexer(const std::string& filename);
+                lexer(const std::vector<std::string>& filenames);
 
             public:
                 const decltype(_tokens)& tokens(void) const { return _tokens; }

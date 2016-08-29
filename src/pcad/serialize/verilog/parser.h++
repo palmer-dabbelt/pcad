@@ -24,6 +24,9 @@ namespace pcad {
                 static std::vector<pcad::hdlast::module::ptr>
                 read_file(const std::string& filename);
 
+                static std::vector<pcad::hdlast::module::ptr>
+                read_files(const std::vector<std::string>& filenames);
+
             private:
                 static std::vector<pcad::hdlast::module::ptr>
                 parse_circuit(const std::vector<lexer::token>& tokens);

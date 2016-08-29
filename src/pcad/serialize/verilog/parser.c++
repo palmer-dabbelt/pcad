@@ -11,7 +11,12 @@ using namespace pcad::serialize::verilog;
 
 std::vector<module::ptr> parser::read_file(const std::string& filename)
 {
-    auto l = lexer(filename);
+    return read_files({filename});
+}
+
+std::vector<module::ptr> parser::read_files(const std::vector<std::string>& filenames)
+{
+    auto l = lexer(filenames);
     return parse_circuit(l.tokens());
 }
 

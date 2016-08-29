@@ -12,12 +12,12 @@ enum class lexer_state {
     STRING,
 };
 
-static std::vector<lexer::token> lex(const std::string& filename);
+static std::vector<lexer::token> lex(const std::vector<std::string>& filename);
 static std::vector<lexer::token> lex(std::ifstream& i);
 static bool isbreak(int c);
 
-lexer::lexer(const std::string& filename)
-: _tokens(lex(filename))
+lexer::lexer(const std::vector<std::string>& filenames)
+: _tokens(lex(filenames))
 {
 }
 
@@ -33,10 +33,15 @@ bool isbreak(int c)
     return false;
 }
 
-std::vector<lexer::token> lex(const std::string& filename)
+std::vector<lexer::token> lex(const std::vector<std::string>& filenames)
 {
-    std::ifstream ifs(filename);
-    return lex(ifs);
+    std::vector<lexer::token> out;
+    for (const auto& filename: filenames) {
+        std::ifstream ifs(filename);
+        for (const auto& token: lex(ifs))
+            out.push_back(token);
+    }
+    return out;
 }
 
 std::vector<lexer::token> lex(std::ifstream& i)
