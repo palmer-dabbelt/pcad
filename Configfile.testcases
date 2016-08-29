@@ -6,3 +6,4 @@ TESTSRC     += verilog-decoupled.bash
 TESTSRC     += verilog-single_instance.bash
 TESTSRC     += verilog-deep_wire.bash
 TESTSRC     += verilog-single_else.bash
+TESTSRC     += verilog-SimDTM.bash

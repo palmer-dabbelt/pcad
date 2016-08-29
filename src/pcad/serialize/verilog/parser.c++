@@ -23,6 +23,7 @@ std::vector<module::ptr> parser::read_files(const std::vector<std::string>& file
 enum class circuit_parser_state {
     TOP,
     MODULE_NAME,
+    IMPORT,
 };
 
 std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& tokens)
@@ -33,12 +34,18 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
     auto current_module = std::vector<lexer::token>();
     auto module_lookup = std::unordered_map<std::string, pcad::hdlast::module::ptr>();
 
+    auto current_import = std::vector<lexer::token>();
+    auto import_depth = 0;
+
     for (const auto& token: tokens) {
         switch (state) {
         case circuit_parser_state::TOP:
             if (token == "module") {
                 state = circuit_parser_state::MODULE_NAME;
                 current_module.push_back(token);
+            } else if (token == "import") {
+                state = circuit_parser_state::IMPORT;
+                current_import.push_back(token);
             } else {
                 std::cerr << "parser/TOP: " << token.str << "\n";
                 abort();
@@ -53,6 +60,17 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
                 modules.push_back(module);
                 module_lookup[module->name()] = module;
                 current_module = {};
+            }
+            break;
+        case circuit_parser_state::IMPORT:
+            current_import.push_back(token);
+            if (token == "(") import_depth++;
+            if (token == ")") import_depth--;
+
+            if (token == ";" && import_depth == 0) {
+                state = circuit_parser_state::TOP;
+                current_import = {};
+                import_depth = 0;
             }
             break;
         }
@@ -284,6 +302,12 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "integer") {
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "bit") {
+                state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "int") {
+                state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "longint") {
+                state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "always") {
                 state = module_parser_state::ALWAYS_START;
             } else if (token == "`ifdef") {
@@ -301,8 +325,12 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
             break;
 
         case module_parser_state::ASSIGN_NAME:
-            statement_tokens.push_back(token);
-            state = module_parser_state::ASSIGN_OP;
+            if (token.str[0] == '#') {
+                // FIXME: Don't silently drop delay statements
+            } else {
+                statement_tokens.push_back(token);
+                state = module_parser_state::ASSIGN_OP;
+            }
             break;
             
         case module_parser_state::ASSIGN_OP:
