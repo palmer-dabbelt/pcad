@@ -91,6 +91,7 @@ namespace pcad {
                 RSHA,
                 GT,
                 OROR,
+                DIV,
             };
 
         private:

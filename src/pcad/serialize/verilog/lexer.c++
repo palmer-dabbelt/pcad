@@ -53,6 +53,7 @@ std::vector<lexer::token> lex(std::ifstream& i)
     size_t col = 0;
     auto state = lexer_state::BODY;
 
+    auto pre2_c = '\0';
     auto prev_c = '\0';
     while (!i.eof()) {
         auto cur_c = i.get();
@@ -92,6 +93,16 @@ std::vector<lexer::token> lex(std::ifstream& i)
 
                 if (!isspace(cur_c))
                     tokens.push_back(lexer::token(cur_s, line, col));
+            } else if (pre2_c != '/' && prev_c == '/') {
+                if (token_string.size() > 1) {
+                    auto token_without_slash = token_string.substr(
+                        0,
+                        token_string.size() - 1
+                    );
+                    tokens.push_back(lexer::token(token_without_slash, line, col));
+                    tokens.push_back(lexer::token("/", line, col));
+                }
+                token_string = cur_s;
             } else {
                 token_string = token_string + cur_s;
             }
@@ -114,6 +125,7 @@ std::vector<lexer::token> lex(std::ifstream& i)
             break;
         }
 
+        pre2_c = prev_c;
         prev_c = cur_c;
     }
 

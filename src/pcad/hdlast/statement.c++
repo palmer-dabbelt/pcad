@@ -30,6 +30,7 @@ std::string biop_statement::opstr(const enum biop_statement::op& op)
     case biop_statement::op::RSHA: return "RSHA";
     case biop_statement::op::GT:   return "GT";
     case biop_statement::op::OROR: return "OROR";
+    case biop_statement::op::DIV:  return "DIV";
     }
     abort();
 }
