@@ -11,3 +11,4 @@ TESTSRC     += verilog-always_hash.bash
 TESTSRC     += verilog-define.bash
 TESTSRC     += verilog-clockgen.bash
 TESTSRC     += verilog-rocketchip-20160830.bash
+TESTSRC     += verilog-ooo_instance.bash

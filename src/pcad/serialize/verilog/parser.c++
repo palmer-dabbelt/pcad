@@ -23,6 +23,7 @@ std::vector<module::ptr> parser::read_files(const std::vector<std::string>& file
 enum class circuit_parser_state {
     TOP,
     MODULE_NAME,
+    MODULE_BODY,
     IMPORT,
     DEFINE_NAME,
     DEFINE_VALUE,
@@ -32,9 +33,11 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
 {
     auto state = circuit_parser_state::TOP;
 
-    auto modules = std::vector<module::ptr>();
+    auto module_names = std::vector<std::string>();
+    auto module_bodies = std::unordered_map<std::string, std::vector<lexer::token>>();
+    auto current_module_name = std::string();
     auto current_module = std::vector<lexer::token>();
-    auto module_lookup = std::unordered_map<std::string, pcad::hdlast::module::ptr>();
+    auto elaborated_modules = std::unordered_map<std::string, pcad::hdlast::module::ptr>();
 
     auto current_import = std::vector<lexer::token>();
     auto import_depth = 0;
@@ -42,6 +45,23 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
     auto define_table = std::unordered_map<std::string, std::string>();
     auto current_define_name = std::string();
     auto current_define_value = std::string();
+
+    /* All the modules are lazily evaluated. */
+    std::function<pcad::hdlast::module::ptr(std::string)> module_lookup =
+    [&](std::string name) -> pcad::hdlast::module::ptr
+        {
+            auto eml = elaborated_modules.find(name);
+            if (eml != elaborated_modules.end())
+                return eml->second;
+
+            auto mbl = module_bodies.find(name);
+            if (mbl == module_bodies.end())
+                return nullptr;
+
+            auto pm = parse_module(mbl->second, module_lookup);
+            elaborated_modules[name] = pm;
+            return pm;
+        };
 
     for (const auto& nopp_token: tokens) {
         auto token = [&]()
@@ -69,12 +89,17 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
             break;
 
         case circuit_parser_state::MODULE_NAME:
+            current_module_name = token.str;
+            module_names.push_back(current_module_name);
+            state = circuit_parser_state::MODULE_BODY;
+            /* This falls through on purpose! */
+
+        case circuit_parser_state::MODULE_BODY:
             current_module.push_back(token);
             if (token == "endmodule") {
                 state = circuit_parser_state::TOP;
-                auto module = parse_module(current_module, module_lookup);
-                modules.push_back(module);
-                module_lookup[module->name()] = module;
+                module_bodies[current_module_name] = current_module;
+                current_module_name = "";
                 current_module = {};
             }
             break;
@@ -104,6 +129,9 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
         }
     }
 
+    auto modules = std::vector<module::ptr>();
+    for (const auto& module_to_elaborate: module_names)
+        modules.push_back(module_lookup(module_to_elaborate));
     return modules;
 }
 
@@ -208,7 +236,9 @@ public:
     }
 };
 
-module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup)
+module::ptr parser::parse_module(
+    const std::vector<lexer::token>& tokens,
+    std::function<pcad::hdlast::module::ptr(std::string)> module_lookup)
 {
     auto state = module_parser_state::TOP;
 
@@ -1330,9 +1360,10 @@ enum instance_parser_state {
     PORT_END,
 };
 
-pcad::hdlast::instance::ptr parser::parse_instance(const std::vector<lexer::token>& tokens,
-                                           const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup,
-                                           const pcad::hdlast::scope::ptr& scope)
+pcad::hdlast::instance::ptr parser::parse_instance(
+    const std::vector<lexer::token>& tokens,
+    std::function<pcad::hdlast::module::ptr(std::string)> module_lookup,
+    const pcad::hdlast::scope::ptr& scope)
 {
     auto parens_depth_mod = [](lexer::token token) {
         if (token == "(") return  1;
@@ -1363,12 +1394,12 @@ pcad::hdlast::instance::ptr parser::parse_instance(const std::vector<lexer::toke
         switch (state) {
         case instance_parser_state::MODULE_NAME:
         {
-            auto l = module_lookup.find(token.str);
-            if (l == module_lookup.end()) {
+            auto lm = module_lookup(token.str);
+            if (lm == nullptr) {
                 std::cerr << "unable to find module " << token.str << "\n";
                 abort();
             }
-            module = l->second;
+            module = lm;
             for (const auto& port_in_module: module.value()->ports()) {
                 auto port_in_instance = std::make_shared<port>(
                     port_in_module->name(),

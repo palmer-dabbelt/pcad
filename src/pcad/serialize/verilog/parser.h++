@@ -33,7 +33,7 @@ namespace pcad {
 
                 static pcad::hdlast::module::ptr
                 parse_module(const std::vector<lexer::token>& tokens,
-                             const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup);
+                             std::function<pcad::hdlast::module::ptr(std::string)> module_lookup);
 
                 static pcad::hdlast::statement::ptr
                 parse_statement(const std::vector<lexer::token>& tokens,
@@ -50,7 +50,7 @@ namespace pcad {
 
                 static pcad::hdlast::instance::ptr
                 parse_instance(const std::vector<lexer::token>& tokens,
-                               const std::unordered_map<std::string, pcad::hdlast::module::ptr>& module_lookup,
+                               std::function<pcad::hdlast::module::ptr(std::string)> module_lookup,
                                const pcad::hdlast::scope::ptr& scope);
             };
         }
