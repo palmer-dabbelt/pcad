@@ -18,12 +18,18 @@ namespace pcad {
         private:
             std::vector<module::ptr> _modules;
             std::unordered_map<std::string, module::ptr> _name2module;
+            module::ptr _top;
 
         public:
-            circuit(const std::vector<module::ptr>& modules);
+            circuit(const std::vector<module::ptr>& modules,
+                    const std::string& top_name);
+
+            circuit(const std::vector<module::ptr>& modules,
+                    const module::ptr& top);
 
         public:
             const decltype(_modules)& modules(void) const { return _modules; }
+            const decltype(_top)& top(void) const { return _top; }
 
         public:
             /* Searches for a module by name. */

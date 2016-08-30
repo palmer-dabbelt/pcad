@@ -28,9 +28,18 @@ int main(int argc, const char **argv)
                                             "Top-out.v");
         cmd.add(output);
 
+        TCLAP::ValueArg<std::string> top("t",
+                                         "top",
+                                         "",
+                                         true,
+                                         "",
+                                         "Top");
+        cmd.add(top);
+
         cmd.parse(argc, argv);
 
-        auto circuit = pcad::open_circuit(input.getValue());
+        auto circuit = pcad::open_circuit(input.getValue(), top.getValue());
+
         {
             std::ofstream os(output.getValue());
             pcad::serialize::verilog::dump(os, circuit);

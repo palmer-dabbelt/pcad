@@ -38,7 +38,7 @@ int main(int argc, const char **argv)
 
         cmd.parse(argc, argv);
 
-        auto i = pcad::open_circuit(input.getValue());
+        auto i = pcad::open_circuit(input.getValue(), top.getValue());
 
         auto t = i->find_module(top.getValue());
         if (t == nullptr) {

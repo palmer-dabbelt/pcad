@@ -39,7 +39,7 @@ int main(int argc, const char **argv)
 
         cmd.parse(argc, argv);
 
-        auto circuit = pcad::open_circuit(input.getValue());
+        auto circuit = pcad::open_circuit(input.getValue(), top.getValue());
         {
             pcad::serialize::json::ofstream os(output.getValue());
             pcad::serialize::json::dump(os, circuit, top.getValue());
