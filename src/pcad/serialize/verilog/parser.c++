@@ -378,6 +378,10 @@ module::ptr parser::parse_module(
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "longint") {
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "parameter") {
+                state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "localparam") {
+                state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "input") {
                 port_direction = pcad::hdlast::port_direction::INPUT;
                 state = module_parser_state::PORTS;
