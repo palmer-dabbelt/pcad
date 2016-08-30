@@ -92,6 +92,7 @@ namespace pcad {
                 GT,
                 OROR,
                 DIV,
+                ANDAND,
             };
 
         private:

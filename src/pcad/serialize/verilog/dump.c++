@@ -31,23 +31,24 @@ static inline std::string v_string(const enum unop_statement::op& opcode)
 static inline std::string v_string(const enum biop_statement::op& opcode)
 {
     switch (opcode) {
-    case biop_statement::op::AND:  return "&";
-    case biop_statement::op::OR:   return "|";
-    case biop_statement::op::EQEQ: return "==";
-    case biop_statement::op::LT:   return "<";
-    case biop_statement::op::SUB:  return "-";
-    case biop_statement::op::LTEQ: return "<=";
-    case biop_statement::op::ADD:  return "+";
-    case biop_statement::op::NEQ:  return "!=";
-    case biop_statement::op::MUL:  return "*";
-    case biop_statement::op::XOR:  return "^";
-    case biop_statement::op::GTEQ: return ">=";
-    case biop_statement::op::LSH:  return "<<";
-    case biop_statement::op::RSHL: return ">>";
-    case biop_statement::op::RSHA: return ">>";
-    case biop_statement::op::GT:   return ">";
-    case biop_statement::op::OROR: return "||";
-    case biop_statement::op::DIV:  return "/";
+    case biop_statement::op::AND:    return "&";
+    case biop_statement::op::OR:     return "|";
+    case biop_statement::op::EQEQ:   return "==";
+    case biop_statement::op::LT:     return "<";
+    case biop_statement::op::SUB:    return "-";
+    case biop_statement::op::LTEQ:   return "<=";
+    case biop_statement::op::ADD:    return "+";
+    case biop_statement::op::NEQ:    return "!=";
+    case biop_statement::op::MUL:    return "*";
+    case biop_statement::op::XOR:    return "^";
+    case biop_statement::op::GTEQ:   return ">=";
+    case biop_statement::op::LSH:    return "<<";
+    case biop_statement::op::RSHL:   return ">>";
+    case biop_statement::op::RSHA:   return ">>";
+    case biop_statement::op::GT:     return ">";
+    case biop_statement::op::OROR:   return "||";
+    case biop_statement::op::DIV:    return "/";
+    case biop_statement::op::ANDAND: return "&&";
     }
     abort();
     return "";
