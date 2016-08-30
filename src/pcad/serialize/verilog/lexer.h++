@@ -55,4 +55,12 @@ bool operator!=(const pcad::serialize::verilog::lexer::token& t, const std::stri
     return !(t == s);
 }
 
+static inline
+pcad::serialize::verilog::lexer::token
+operator+(const pcad::serialize::verilog::lexer::token& a,
+          const pcad::serialize::verilog::lexer::token& b)
+{
+    return pcad::serialize::verilog::lexer::token(a.str + b.str, a.line, a.col);
+}
+
 #endif
