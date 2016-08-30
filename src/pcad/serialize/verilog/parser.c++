@@ -1243,8 +1243,14 @@ pcad::hdlast::statement::ptr parser::parse_statement(const std::vector<lexer::to
     }
 
     std::cerr << "Unable to parse statement:\n";
-    for (const auto& token: tokens)
-        std::cerr << "token: " << token.str << "\n";
+    for (const auto& token: tokens) {
+        std::cerr << "token: " << token.str
+                  << " ("
+                  << "line: " << std::to_string(token.line)
+                  << ", "
+                  << "col: " << std::to_string(token.col)
+                  << ")\n";
+    }
     abort();
     return nullptr;
 }
