@@ -1,6 +1,7 @@
 // See LICENSE for details
 
 #include <pcad/open.h++>
+#include <pcad/passes/strip.h++>
 #include <pcad/serialize/verilog/dump.h++>
 #include <tclap/CmdLine.h>
 
@@ -39,10 +40,11 @@ int main(int argc, const char **argv)
         cmd.parse(argc, argv);
 
         auto circuit = pcad::open_circuit(input.getValue(), top.getValue());
+        auto stripped = pcad::passes::strip(circuit);
 
         {
             std::ofstream os(output.getValue());
-            pcad::serialize::verilog::dump(os, circuit);
+            pcad::serialize::verilog::dump(os, stripped);
         }
 
         return 0;
