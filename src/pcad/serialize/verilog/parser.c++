@@ -1249,10 +1249,11 @@ pcad::hdlast::literal::ptr parser::parse_literal(const lexer::token& token)
         apos++;
     }
 
-
     auto val = strtol(token.str.c_str() + apos, &end, bitwidth);
     if (end != NULL && *end == '\0') {
         return std::make_shared<pcad::hdlast::literal>(val, width);
+    } else if (end != NULL && *end == '.') {
+        return std::make_shared<pcad::hdlast::literal>(std::stof(end+1), width);
     } else {
         return nullptr;
     }
