@@ -54,7 +54,8 @@ namespace pcad {
         class unop_statement: public statement {
         public:
             enum class op {
-                NOT
+                NOT,
+                BANG,
             };
 
         private:

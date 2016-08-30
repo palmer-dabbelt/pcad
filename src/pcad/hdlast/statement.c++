@@ -6,7 +6,8 @@ using namespace pcad::hdlast;
 std::string unop_to_string(const enum unop_statement::op& op)
 {
     switch (op) {
-    case unop_statement::op::NOT: return "NOT";
+    case unop_statement::op::NOT:  return "NOT";
+    case unop_statement::op::BANG: return "BANG";
     }
     abort();
 }

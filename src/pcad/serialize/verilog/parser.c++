@@ -1207,6 +1207,7 @@ pcad::hdlast::statement::ptr parser::parse_statement(const std::vector<lexer::to
     if (tokens.size() >= 2) {
         auto unop_op = [&]() -> option<unop_statement::op> {
             if (tokens[0] == "~")  return unop_statement::op::NOT;
+            if (tokens[0] == "!")  return unop_statement::op::BANG;
             return option<unop_statement::op>();
         }();
 

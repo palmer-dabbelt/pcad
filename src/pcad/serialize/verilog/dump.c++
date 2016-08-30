@@ -22,7 +22,8 @@ static inline std::string v_string(const port_direction& dir)
 static inline std::string v_string(const enum unop_statement::op& opcode)
 {
     switch (opcode) {
-    case unop_statement::op::NOT: return "~";
+    case unop_statement::op::NOT:  return "~";
+    case unop_statement::op::BANG: return "!";
     }
     abort();
     return "";
