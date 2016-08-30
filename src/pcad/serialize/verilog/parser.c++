@@ -24,6 +24,8 @@ enum class circuit_parser_state {
     TOP,
     MODULE_NAME,
     IMPORT,
+    DEFINE_NAME,
+    DEFINE_VALUE,
 };
 
 std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& tokens)
@@ -37,7 +39,19 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
     auto current_import = std::vector<lexer::token>();
     auto import_depth = 0;
 
-    for (const auto& token: tokens) {
+    auto define_table = std::unordered_map<std::string, std::string>();
+    auto current_define_name = std::string();
+    auto current_define_value = std::string();
+
+    for (const auto& nopp_token: tokens) {
+        auto token = [&]()
+            {
+                auto l = define_table.find(nopp_token.str);
+                if (l == define_table.end())
+                    return nopp_token;
+                return lexer::token(l->second, nopp_token.col, nopp_token.line);
+            }();
+
         switch (state) {
         case circuit_parser_state::TOP:
             if (token == "module") {
@@ -46,6 +60,8 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
             } else if (token == "import") {
                 state = circuit_parser_state::IMPORT;
                 current_import.push_back(token);
+            } else if (token == "`define") {
+                state = circuit_parser_state::DEFINE_NAME;
             } else {
                 std::cerr << "parser/TOP: " << token.str << "\n";
                 abort();
@@ -62,6 +78,7 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
                 current_module = {};
             }
             break;
+
         case circuit_parser_state::IMPORT:
             current_import.push_back(token);
             if (token == "(") import_depth++;
@@ -72,6 +89,17 @@ std::vector<module::ptr> parser::parse_circuit(const std::vector<lexer::token>& 
                 current_import = {};
                 import_depth = 0;
             }
+            break;
+
+        case circuit_parser_state::DEFINE_NAME:
+            current_define_name = "`" + token.str;
+            state = circuit_parser_state::DEFINE_VALUE;
+            break;
+
+        case circuit_parser_state::DEFINE_VALUE:
+            current_define_value = token.str;
+            state = circuit_parser_state::TOP;
+            define_table[current_define_name] = current_define_value;
             break;
         }
     }
@@ -209,6 +237,7 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
     auto initial_begins = 0;
 
     auto always_begins = 0;
+    auto always_at_depth = 0;
     auto always_at_tokens = std::vector<lexer::token>();
     auto always_statement_tokens = std::vector<lexer::token>();
 
@@ -486,10 +515,14 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
 
         case module_parser_state::ALWAYS_START:
             if (token == "@") {
-                state = module_parser_state::ALWAYS_AT;
+                state = module_parser_state::ALWAYS_START;
             } else if (token.str[0] == '#') {
                 // FIXME: Don't treat always# like always@
+                state = module_parser_state::ALWAYS_START;
+            } else if (token == "(") {
                 state = module_parser_state::ALWAYS_AT;
+                always_at_depth = 1;
+                always_at_tokens = {token};
             } else {
                 std::cerr << "Expected 'always @'\n";
                 abort();
@@ -498,7 +531,9 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
 
         case module_parser_state::ALWAYS_AT:
             always_at_tokens.push_back(token);
-            if (token == ")") {
+            if (token == "(") always_at_depth++;
+            if (token == ")") always_at_depth--;
+            if (always_at_depth == 0) {
                 state = module_parser_state::ALWAYS_BODY;
             };
             break;

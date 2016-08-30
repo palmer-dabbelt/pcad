@@ -8,3 +8,4 @@ TESTSRC     += verilog-deep_wire.bash
 TESTSRC     += verilog-single_else.bash
 TESTSRC     += verilog-SimDTM.bash
 TESTSRC     += verilog-always_hash.bash
+TESTSRC     += verilog-define.bash
