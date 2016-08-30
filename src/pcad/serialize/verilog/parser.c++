@@ -415,6 +415,23 @@ module::ptr parser::parse_module(const std::vector<lexer::token>& tokens, const 
                     wire_width = 1;
                     state = module_parser_state::WIRE_DEPTH;
                 }
+            } else if (token == "=") {
+                scope_stack.top()->add_var(
+                    std::make_shared<wire>(
+                        wire_name.value(),
+                        1
+                    ));
+
+                statement_tokens = std::vector<lexer::token>{
+                    lexer::token("assign", token.col, token.line),
+                    lexer::token(wire_name.value(), token.col, token.line),
+                    token
+                };
+                state = module_parser_state::ASSIGN_STATEMENT;
+
+                wire_name = option<std::string>();
+                wire_width = option<long>();
+                wire_depth = option<long>();
             } else if (token == ";") {
                 scope_stack.top()->add_var(
                     std::make_shared<wire>(
