@@ -13,11 +13,10 @@ int main(int argc, const char **argv)
             ' ',
             "0");
 
-        TCLAP::ValueArg<std::string> input("i",
+        TCLAP::MultiArg<std::string> input("i",
                                            "input",
                                            "A circuit, in any format pcad supports",
                                            true,
-                                           "",
                                            "Top-in.v");
         cmd.add(input);
 
