@@ -10,6 +10,7 @@ enum class lexer_state {
     BODY,
     LINE_COMMENT,
     STRING,
+    BANG,
 };
 
 static std::vector<lexer::token> lex(const std::vector<std::string>& filename);
@@ -85,6 +86,12 @@ std::vector<lexer::token> lex(std::ifstream& i)
             } else if (cur_c == '"') {
                 token_string = token_string + cur_s;
                 state = lexer_state::STRING;
+            } else if (cur_c == '!') {
+                state = lexer_state::BANG;
+                if (token_string.size() > 0) {
+                    tokens.push_back(lexer::token(token_string, line, col));
+                    token_string = "";
+                }
             } else if (isbreak(cur_c)) {
                 if (token_string.size() > 0) {
                     tokens.push_back(lexer::token(token_string, line, col));
@@ -122,6 +129,19 @@ std::vector<lexer::token> lex(std::ifstream& i)
                 token_string = "";
                 state = lexer_state::BODY;
             }
+            break;
+
+        /* ! is a special character -- sometimes it causes a lexing token
+         * break, sometimes it doesn't. */
+        case lexer_state::BANG:
+            if (cur_c == '=') {
+                tokens.push_back(lexer::token("!=", line, col));
+                token_string = "";
+            } else {
+                tokens.push_back(lexer::token("!", line, col));
+                token_string = cur_s;
+            }
+            state = lexer_state::BODY;
             break;
         }
 
