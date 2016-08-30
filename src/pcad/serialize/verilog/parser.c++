@@ -248,6 +248,11 @@ module::ptr parser::parse_module(
     auto port_direction = option<enum port_direction>();
     auto port_width = option<long>();
 
+    /* Verilog allows ports to be declared in two ways: either all at the top
+     * or half at the top or half in the middle of the code. */
+    auto ports_without_directions = std::vector<std::string>();
+    auto wire_is_actually_port = std::unordered_map<std::string, bool>();
+
     auto scope_stack = std::stack<scope::ptr>();
 
     auto wire_name = option<std::string>();
@@ -312,7 +317,13 @@ module::ptr parser::parse_module(
                 body_scope = std::make_shared<scope>(scope_stack.top());
                 scope_stack.push(body_scope.value());
             } else {
-                ports.push_back(std::make_shared<port>(token.str, 1, port_direction.value()));
+                if (port_direction.valid() == false) {
+                    ports_without_directions.push_back(token.str);
+                    wire_is_actually_port[token.str] = true;
+                } else {
+                    ports.push_back(std::make_shared<port>(token.str, 1, port_direction.value()));
+                    wire_is_actually_port[token.str] = false;
+                }
             }
             break;
 
@@ -367,6 +378,12 @@ module::ptr parser::parse_module(
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
             } else if (token == "longint") {
                 state = module_parser_state::WIRE_NAME_OR_WIDTH;
+            } else if (token == "input") {
+                port_direction = pcad::hdlast::port_direction::INPUT;
+                state = module_parser_state::PORTS;
+            } else if (token == "output") {
+                port_direction = pcad::hdlast::port_direction::OUTPUT;
+                state = module_parser_state::PORTS;
             } else if (token == "always") {
                 state = module_parser_state::ALWAYS_START;
             } else if (token == "`ifdef") {
