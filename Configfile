@@ -52,3 +52,9 @@ CONFIG      += testcases
 BINARIES    += pcad-pipe-to_verilog
 SOURCES     += pipe-to_verilog.c++
 CONFIG      += testcases
+
+# Generates a blackbox configuration file, which describes modules that will be
+# blackboxed into a circuit later.
+BINARIES    += pcad-pipe-to_blackbox
+SOURCES     += pipe-to_blackbox.c++
+CONFIG      += testcases

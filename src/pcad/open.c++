@@ -5,17 +5,28 @@
 #include <iostream>
 using namespace pcad;
 
-pcad::hdlast::circuit::ptr pcad::open_circuit(const std::string& path, const std::string& top)
+pcad::hdlast::circuit::ptr
+pcad::open_circuit(const std::string& path, const std::string& top)
 {
     return open_circuit(std::vector<std::string>{path}, top);
 }
 
-pcad::hdlast::circuit::ptr pcad::open_circuit(const std::vector<std::string>& names, const std::string& top)
+pcad::hdlast::circuit::ptr
+pcad::open_circuit(const std::vector<std::string>& names, const std::string& top)
+{
+    return std::make_shared<hdlast::circuit>(
+        open_modules(names),
+        top
+    );
+}
+
+std::vector<hdlast::module::ptr>
+pcad::open_modules(const std::vector<std::string>& names)
 {
     try {
         auto v = serialize::verilog::parser::read_files(names);
         if (v.size() > 0)
-            return std::make_shared<hdlast::circuit>(v, top);
+            return v;
     } catch (...) {
         abort();
     }
@@ -24,5 +35,5 @@ pcad::hdlast::circuit::ptr pcad::open_circuit(const std::vector<std::string>& na
     for (const auto& name: names)
         std::cerr << "  " << name << "\n";
     abort();
-    return nullptr;
+    return {};
 }
