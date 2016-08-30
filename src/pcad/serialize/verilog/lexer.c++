@@ -11,6 +11,7 @@ enum class lexer_state {
     LINE_COMMENT,
     STRING,
     BANG,
+    SLASH,
 };
 
 static std::vector<lexer::token> lex(const std::vector<std::string>& filename);
@@ -54,7 +55,6 @@ std::vector<lexer::token> lex(std::ifstream& i)
     size_t col = 0;
     auto state = lexer_state::BODY;
 
-    auto pre2_c = '\0';
     auto prev_c = '\0';
     while (!i.eof()) {
         auto cur_c = i.get();
@@ -76,18 +76,17 @@ std::vector<lexer::token> lex(std::ifstream& i)
 
         switch (state) {
         case lexer_state::BODY:
-            if (std::strcmp(prev_s, "//") == 0) {
-                token_string = token_string.substr(0, token_string.size() - 1);
-                if (token_string.size() > 0) {
-                    tokens.push_back(lexer::token(token_string, line, col));
-                    token_string = "";
-                }
-                state = lexer_state::LINE_COMMENT;
-            } else if (cur_c == '"') {
+            if (cur_c == '"') {
                 token_string = token_string + cur_s;
                 state = lexer_state::STRING;
             } else if (cur_c == '!') {
                 state = lexer_state::BANG;
+                if (token_string.size() > 0) {
+                    tokens.push_back(lexer::token(token_string, line, col));
+                    token_string = "";
+                }
+            } else if (cur_c == '/') {
+                state = lexer_state::SLASH;
                 if (token_string.size() > 0) {
                     tokens.push_back(lexer::token(token_string, line, col));
                     token_string = "";
@@ -100,16 +99,6 @@ std::vector<lexer::token> lex(std::ifstream& i)
 
                 if (!isspace(cur_c))
                     tokens.push_back(lexer::token(cur_s, line, col));
-            } else if (pre2_c != '/' && prev_c == '/') {
-                if (token_string.size() > 1) {
-                    auto token_without_slash = token_string.substr(
-                        0,
-                        token_string.size() - 1
-                    );
-                    tokens.push_back(lexer::token(token_without_slash, line, col));
-                    tokens.push_back(lexer::token("/", line, col));
-                }
-                token_string = cur_s;
             } else {
                 token_string = token_string + cur_s;
             }
@@ -143,9 +132,20 @@ std::vector<lexer::token> lex(std::ifstream& i)
             }
             state = lexer_state::BODY;
             break;
+
+        /* Slashes are also a special case: they might trigger a line comment.
+         * Handle this like !. */
+        case lexer_state::SLASH:
+            if (cur_c == '/') {
+                state = lexer_state::LINE_COMMENT;
+            } else {
+                tokens.push_back(lexer::token("/", line, col));
+                token_string = cur_s;
+                state = lexer_state::BODY;
+            }
+            break;
         }
 
-        pre2_c = prev_c;
         prev_c = cur_c;
     }
 
