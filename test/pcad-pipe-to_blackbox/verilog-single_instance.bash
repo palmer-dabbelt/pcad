@@ -1,1 +1,1 @@
-../_testcases/verilog-single_instance.bash
+../_testcases-hdlast/verilog-single_instance.bash

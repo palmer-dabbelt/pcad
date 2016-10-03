@@ -1,1 +1,1 @@
-../_testcases/verilog-AOI.bash
+../_testcases-hdlast/verilog-AOI.bash

@@ -1,1 +1,1 @@
-../_testcases/verilog-clockgen.bash
+../_testcases-hdlast/verilog-clockgen.bash

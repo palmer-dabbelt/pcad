@@ -1,1 +1,1 @@
-../_testcases/verilog-rocketchip-20160614.bash
+../_testcases-hdlast/verilog-rocketchip-20160614.bash

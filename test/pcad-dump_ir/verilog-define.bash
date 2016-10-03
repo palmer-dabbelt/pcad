@@ -1,1 +1,1 @@
-../_testcases/verilog-define.bash
+../_testcases-hdlast/verilog-define.bash

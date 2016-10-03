@@ -1,1 +1,1 @@
-../_testcases/verilog-SimDTM.bash
+../_testcases-hdlast/verilog-SimDTM.bash

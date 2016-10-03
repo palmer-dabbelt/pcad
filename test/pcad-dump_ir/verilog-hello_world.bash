@@ -1,1 +1,1 @@
-../_testcases/verilog-hello_world.bash
+../_testcases-hdlast/verilog-hello_world.bash

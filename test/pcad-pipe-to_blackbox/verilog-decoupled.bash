@@ -1,1 +1,1 @@
-../_testcases/verilog-decoupled.bash
+../_testcases-hdlast/verilog-decoupled.bash

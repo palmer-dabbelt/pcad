@@ -1,1 +1,1 @@
-../_testcases/verilog-deep_wire.bash
+../_testcases-hdlast/verilog-deep_wire.bash
