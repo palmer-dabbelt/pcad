@@ -32,7 +32,7 @@ CONFIG      += library-headers
 # Dumps a textual representation of the PCAD IR
 BINARIES    += pcad-dump_ir
 SOURCES     += dump_ir.c++
-CONFIG      += testcases
+CONFIG      += testcases-hdlast
 
 ###############################################################################
 # Binaries suitable for scripts
@@ -41,20 +41,20 @@ CONFIG      += testcases
 # Lists the top-level IOs of a circuit.
 BINARIES    += pcad-pipe-ports
 SOURCES     += pipe-ports.c++
-CONFIG      += testcases
+CONFIG      += testcases-hdlast
 
 # Infers top-level DecoupledIOs from a circuit.
 BINARIES    += pcad-pipe-infer_decoupled
 SOURCES     += pipe-infer_decoupled.c++
-CONFIG      += testcases
+CONFIG      += testcases-hdlast
 
 # Canonicalizes a Verilog file
 BINARIES    += pcad-pipe-to_verilog
 SOURCES     += pipe-to_verilog.c++
-CONFIG      += testcases
+CONFIG      += testcases-hdlast
 
 # Generates a blackbox configuration file, which describes modules that will be
 # blackboxed into a circuit later.
 BINARIES    += pcad-pipe-to_blackbox
 SOURCES     += pipe-to_blackbox.c++
-CONFIG      += testcases
+CONFIG      += testcases-hdlast
