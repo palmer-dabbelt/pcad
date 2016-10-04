@@ -3,8 +3,9 @@
 #ifndef PCAD__NETLIST__MACRO_HXX
 #define PCAD__NETLIST__MACRO_HXX
 
-#include <memory>
 #include "module.h++"
+#include <pcad/util/option.h++>
+#include <memory>
 
 namespace pcad {
     namespace netlist {
@@ -30,7 +31,7 @@ namespace pcad {
         private:
             std::string _direction;
             std::string _clock_name;
-            int _mask_gran;
+            util::option<int> _mask_gran;
             std::string _output_port_name;
             std::string _input_port_name;
             std::string _address_port_name;

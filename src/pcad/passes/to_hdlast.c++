@@ -47,28 +47,52 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
 
                 auto output = std::make_shared<hdlast::port>(
                     p->output_port_name(),
-                    1,
-                    hdlast::port_direction::INPUT
+                    m.width(),
+                    hdlast::port_direction::OUTPUT
                 );
                 ports.push_back(output);
 
                 auto input = std::make_shared<hdlast::port>(
                     p->input_port_name(),
-                    1,
+                    m.width(),
                     hdlast::port_direction::INPUT
                 );
                 ports.push_back(input);
 
-                auto mask = std::make_shared<hdlast::port>(
-                    p->mask_port_name(),
-                    1,
-                    hdlast::port_direction::INPUT
-                );
-                ports.push_back(mask);
+                auto mask_gran = p->mask_gran().data(1);
+                auto mask = [&]() -> hdlast::wire::ptr {
+                    if (p->mask_gran().valid() == true) {
+                        auto mp = std::make_shared<hdlast::port>(
+                            p->mask_port_name(),
+                            mask_gran,
+                            hdlast::port_direction::INPUT
+                        );
+                        ports.push_back(mp);
+                        return mp;
+                    } else {
+                        auto mp = std::make_shared<hdlast::wire>(
+                            "mask_" + std::to_string(i),
+                             m.width()
+                        );
+                        wires.push_back(mp);
+                        logic.push_back(
+                            std::make_shared<hdlast::assign_statement>(
+                                std::make_shared<hdlast::wire_statement>(mp),
+                                std::make_shared<hdlast::unop_statement>(
+                                    hdlast::unop_statement::op::NOT,
+                                    std::make_shared<hdlast::wire_statement>(
+                                        std::make_shared<hdlast::literal>(0, m.width())
+                                    )
+                                )
+                            )
+                        );
+                        return mp;
+                    }
+                }();
 
                 auto address = std::make_shared<hdlast::port>(
                     p->address_port_name(),
-                    1,
+                    std::ceil(std::log2(m.depth())),
                     hdlast::port_direction::INPUT
                 );
                 ports.push_back(address);
@@ -111,21 +135,50 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
 
                 auto write_block = std::vector<hdlast::statement::ptr>();
-                write_block.push_back(
-                    std::make_shared<hdlast::if_statement>(
-                        std::make_shared<hdlast::wire_statement>(enable),
-                        std::vector<hdlast::statement::ptr>{
-                            std::make_shared<hdlast::assign_statement>(
+                for (auto i = 0; i < m.width(); ++i) {
+                    auto mask_index = std::make_shared<hdlast::wire_statement>(
+                        std::make_shared<hdlast::literal>(
+                            i / mask_gran,
+                            std::ceil(std::log2(m.width()))
+                        )
+                    );
+
+                    auto mem_index = std::make_shared<hdlast::wire_statement>(
+                        std::make_shared<hdlast::literal>(
+                            i,
+                            std::ceil(std::log2(m.width()))
+                        )
+                    );
+
+                    write_block.push_back(
+                        std::make_shared<hdlast::if_statement>(
+                            std::make_shared<hdlast::biop_statement>(
+                                hdlast::biop_statement::op::AND,
+                                std::make_shared<hdlast::wire_statement>(enable),
                                 std::make_shared<hdlast::index_statement>(
-                                    std::make_shared<hdlast::wire_statement>(memory),
-                                    std::make_shared<hdlast::wire_statement>(address)
-                                ),
-                                std::make_shared<hdlast::wire_statement>(input)
-                            )
-                        },
-                        std::vector<hdlast::statement::ptr>()
-                    )
-                );
+                                    std::make_shared<hdlast::wire_statement>(mask),
+                                    mask_index
+                                )
+                            ),
+                            std::vector<hdlast::statement::ptr>{
+                                std::make_shared<hdlast::assign_statement>(
+                                    std::make_shared<hdlast::index_statement>(
+                                        std::make_shared<hdlast::index_statement>(
+                                            std::make_shared<hdlast::wire_statement>(memory),
+                                            std::make_shared<hdlast::wire_statement>(address)
+                                        ),
+                                        mem_index
+                                    ),
+                                    std::make_shared<hdlast::index_statement>(
+                                        std::make_shared<hdlast::wire_statement>(input),
+                                        mem_index
+                                    )
+                                )
+                            },
+                            std::vector<hdlast::statement::ptr>()
+                        )
+                    );
+                }
 
                 logic.push_back(
                     std::make_shared<hdlast::always_statement>(

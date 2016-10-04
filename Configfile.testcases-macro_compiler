@@ -1,1 +1,2 @@
-TESTSRC     += behav_sram-128x2048.bash
+TESTSRC     += behav_sram-16x2048-mrw.bash
+TESTSRC     += behav_sram-8x2048-rw.bash

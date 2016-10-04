@@ -4,6 +4,7 @@
 #include "rtlir/port.h++"
 #include "serialize/verilog/parser.h++"
 #include "util/collection.h++"
+#include "util/option.h++"
 #include <pson/parser.h++>
 #include <simple_match/simple_match.hpp>
 #include <iostream>
@@ -73,7 +74,7 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     return std::make_shared<netlist::memory_macro_port>(
                                         direction.data(),
                                         clock_name.data(),
-                                        mask_gran.data(),
+                                        util::to_option(mask_gran),
                                         output_port_name.data(),
                                         input_port_name.data(),
                                         address_port_name.data(),
