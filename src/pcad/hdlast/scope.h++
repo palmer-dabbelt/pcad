@@ -23,6 +23,7 @@ namespace pcad {
         public:
             scope(const std::vector<port::ptr>& ports);
             scope(const ptr& parent);
+            scope(const ptr& parent, const std::vector<wire::ptr>& wires);
 
         public:
             const decltype(_vars)& vars(void) const { return _vars; }

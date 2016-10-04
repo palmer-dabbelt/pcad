@@ -33,6 +33,12 @@ scope::scope(const ptr& parent)
 {
 }
 
+scope::scope(const ptr& parent, const std::vector<wire::ptr>& wires)
+: _parent(parent),
+  _vars(wires),
+  _name2var(wire2map(_vars))
+{}
+
 void scope::add_var(const wire::ptr& wire)
 {
     _name2var[wire->name()] = wire;
