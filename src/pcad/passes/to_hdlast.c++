@@ -4,6 +4,7 @@
 #include <pcad/netlist/macro.h++>
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
+#include <cmath>
 #include <iostream>
 using namespace pcad;
 using namespace simple_match;
@@ -26,24 +27,123 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
 {
     auto out = match(module,
         some<netlist::memory_macro>(), [](auto m) {
-            auto ports = 
-                putil::collection::flatten(
-                    putil::collection::map(
-                        m.ports(),
-                        [](auto port){ return to_hdlast(port); }
+            /* The whole point of a memory is to store stuff.  Here's where all
+             * the bits live. */
+            auto memory = std::make_shared<hdlast::wire>("mem", m.width(), m.depth());
+            auto wires = std::vector<hdlast::wire::ptr>{memory};
+
+            /* Generates all the ports (and the logic associated with each
+             * port) for the memory. */
+            auto logic = std::vector<hdlast::statement::ptr>();
+            auto ports = std::vector<hdlast::port::ptr>();
+            for (size_t i = 0; i < m.ports().size(); ++i) {
+                auto p = m.ports()[i];
+                auto clock = std::make_shared<hdlast::port>(
+                    p->clock_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(clock);
+
+                auto output = std::make_shared<hdlast::port>(
+                    p->output_port_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(output);
+
+                auto input = std::make_shared<hdlast::port>(
+                    p->input_port_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(input);
+
+                auto mask = std::make_shared<hdlast::port>(
+                    p->mask_port_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(mask);
+
+                auto address = std::make_shared<hdlast::port>(
+                    p->address_port_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(address);
+
+                auto enable = std::make_shared<hdlast::port>(
+                    p->enable_port_name(),
+                    1,
+                    hdlast::port_direction::INPUT
+                );
+                ports.push_back(enable);
+
+                auto read_data = std::make_shared<hdlast::wire>(
+                    "read_data_" + std::to_string(i),
+                    m.width()
+                );
+                wires.push_back(read_data);
+
+                auto read_block = std::vector<hdlast::statement::ptr>();
+                read_block.push_back(
+                    std::make_shared<hdlast::assign_statement>(
+                        std::make_shared<hdlast::wire_statement>(read_data),
+                        std::make_shared<hdlast::index_statement>(
+                            std::make_shared<hdlast::wire_statement>(memory),
+                            std::make_shared<hdlast::wire_statement>(address)
+                        )
                     )
                 );
-            auto memory = std::make_shared<hdlast::wire>("mem", m.width(), m.depth());
+                read_block.push_back(
+                    std::make_shared<hdlast::assign_statement>(
+                        std::make_shared<hdlast::wire_statement>(output),
+                        std::make_shared<hdlast::wire_statement>(read_data)
+                    )
+                );
+
+                logic.push_back(
+                    std::make_shared<hdlast::always_statement>(
+                        std::make_shared<hdlast::posedge_statement>(clock),
+                        read_block
+                    )
+                );
+
+                auto write_block = std::vector<hdlast::statement::ptr>();
+                write_block.push_back(
+                    std::make_shared<hdlast::if_statement>(
+                        std::make_shared<hdlast::wire_statement>(enable),
+                        std::vector<hdlast::statement::ptr>{
+                            std::make_shared<hdlast::assign_statement>(
+                                std::make_shared<hdlast::index_statement>(
+                                    std::make_shared<hdlast::wire_statement>(memory),
+                                    std::make_shared<hdlast::wire_statement>(address)
+                                ),
+                                std::make_shared<hdlast::wire_statement>(input)
+                            )
+                        },
+                        std::vector<hdlast::statement::ptr>()
+                    )
+                );
+
+                logic.push_back(
+                    std::make_shared<hdlast::always_statement>(
+                        std::make_shared<hdlast::posedge_statement>(clock),
+                        write_block
+                    )
+                );
+            }
             auto body = std::make_shared<hdlast::scope>(
                 std::make_shared<hdlast::scope>(ports),
-                std::vector<hdlast::wire::ptr>{memory}
+                wires
             );
 
             return std::make_shared<hdlast::module>(
                 m.name(),
                 ports,
                 body,
-                std::vector<hdlast::statement::ptr>{},
+                logic,
                 std::vector<hdlast::instance::ptr>{}
             );
         },
@@ -60,9 +160,4 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
     }
 
     return out;
-}
-
-std::vector<hdlast::port::ptr> passes::to_hdlast(const netlist::memory_macro_port::ptr& p)
-{
-    return std::vector<hdlast::port::ptr>();
 }

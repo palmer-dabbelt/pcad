@@ -66,6 +66,7 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     auto mask_gran = port_object->template get<int>("mask granularity");
                                     auto output_port_name = port_object->template get<std::string>("output port name");
                                     auto input_port_name = port_object->template get<std::string>("input port name");
+                                    auto address_port_name = port_object->template get<std::string>("address port name");
                                     auto mask_port_name = port_object->template get<std::string>("mask port name");
                                     auto enable_port_name = port_object->template get<std::string>("enable port name");
 
@@ -75,6 +76,7 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         mask_gran.data(),
                                         output_port_name.data(),
                                         input_port_name.data(),
+                                        address_port_name.data(),
                                         mask_port_name.data(),
                                         enable_port_name.data()
                                     );
