@@ -86,11 +86,12 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module
     os << ");\n";
 
     for (const auto& wire: module->body()->vars()) {
-        os << "  wire "
+        os << "  wire"
            << (wire->width() == 1 ? "" : " ")
            << width_string(wire->width())
            << " "
            << wire->name()
+           << (wire->depth() == 1 ? "" : " " + width_string(wire->depth()))
            << ";\n";
     }
 
