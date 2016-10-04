@@ -1,6 +1,7 @@
 // See LICENSE for details
 
 #include "dump.h++"
+#include <pcad/passes/to_hdlast.h++>
 #include <simple_match/simple_match.hpp>
 #include <iostream>
 
@@ -67,6 +68,11 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const circuit::ptr& circu
 {
     for (const auto& module: circuit->modules())
         dump(os, module);
+}
+
+void pcad::serialize::verilog::dump(std::ofstream& os, const rtlir::circuit::ptr& circuit)
+{
+    dump(os, passes::to_hdlast(circuit));
 }
 
 void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module)

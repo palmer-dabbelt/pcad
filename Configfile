@@ -7,6 +7,7 @@ COMPILEOPTS += -Werror
 LANGUAGES   += c++
 COMPILEOPTS += -Wno-unused-private-field
 COMPILEOPTS += -Wno-unused-parameter
+COMPILEOPTS += -Wno-unused-variable
 
 LANGUAGES   += bash
 
@@ -18,6 +19,8 @@ COMPILEOPTS += -Isrc
 LANGUAGES   += c++
 COMPILEOPTS += `ppkg-config tclap --cflags`
 LINKOPTS    += `ppkg-config tclap --libs`
+COMPILEOPTS += `ppkg-config pson --cflags`
+LINKOPTS    += `ppkg-config pson --libs`
 
 # This big shared object contains the C++ pcad interface, which is the native
 # interface.
@@ -58,3 +61,10 @@ CONFIG      += testcases-hdlast
 BINARIES    += pcad-pipe-to_blackbox
 SOURCES     += pipe-to_blackbox.c++
 CONFIG      += testcases-hdlast
+
+# Takes a library of already-implemented black box macros and compiles
+# arbitrary PCAD macros to those, generating synthesizable Verilog to impedence
+# match.
+BINARIES    += pcad-pipe-macro_compiler
+SOURCES     += pipe-macro_compiler.c++
+CONFIG      += testcases-macro_compiler

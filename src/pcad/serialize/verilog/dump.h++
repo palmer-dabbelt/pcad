@@ -4,6 +4,7 @@
 #define PCAD__SERIALIZE__VERILOG__DUMP_HXX
 
 #include <pcad/hdlast/circuit.h++>
+#include <pcad/rtlir/circuit.h++>
 #include <fstream>
 
 namespace pcad {
@@ -12,6 +13,8 @@ namespace pcad {
             /* Writes a circuit out as Verilog. */
             void dump(std::ofstream& out,
                       const hdlast::circuit::ptr& circuit);
+            void dump(std::ofstream& out,
+                      const rtlir::circuit::ptr& circuit);
 
             /* These are used internally by the top-level dumper, but might
              * also be useful. */
