@@ -36,6 +36,18 @@ namespace putil {
             std::transform(v.begin(), v.end(), std::back_inserter(o), f);
             return o;
         }
+
+        /* Flattes a vector-of-vectors into a vector. */
+        template <typename V>
+        static inline auto flatten(const V& v)
+            -> std::vector<typename V::value_type::value_type>
+        {
+            std::vector<typename V::value_type::value_type> o;
+            for (const auto& vv: v)
+                for (const auto& e: vv)
+                    o.push_back(e);
+            return o;
+        }
     }
 }
 
