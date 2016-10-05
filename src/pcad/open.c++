@@ -75,10 +75,10 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         direction.data(),
                                         clock_name.data(),
                                         util::to_option(mask_gran),
-                                        output_port_name.data(),
-                                        input_port_name.data(),
+                                        util::to_option(output_port_name),
+                                        util::to_option(input_port_name),
                                         address_port_name.data(),
-                                        mask_port_name.data(),
+                                        util::to_option(mask_port_name),
                                         enable_port_name.data()
                                     );
                                 }

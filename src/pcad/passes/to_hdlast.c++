@@ -45,25 +45,49 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
                 ports.push_back(clock);
 
-                auto output = std::make_shared<hdlast::port>(
-                    p->output_port_name(),
-                    m.width(),
-                    hdlast::port_direction::OUTPUT
-                );
-                ports.push_back(output);
+                auto output = [&]() -> hdlast::wire::ptr {
+                    if (p->output_port_name().valid() == true) {
+                        auto op = std::make_shared<hdlast::port>(
+                            p->output_port_name().data(),
+                            m.width(),
+                            hdlast::port_direction::OUTPUT
+                        );
+                        ports.push_back(op);
+                        return op;
+                    } else {
+                        auto op = std::make_shared<hdlast::wire>(
+                            "output_" + std::to_string(i),
+                            m.width()
+                        );
+                        wires.push_back(op);
+                        return op;
+                    }
+                }();
 
-                auto input = std::make_shared<hdlast::port>(
-                    p->input_port_name(),
-                    m.width(),
-                    hdlast::port_direction::INPUT
-                );
-                ports.push_back(input);
+                auto input = [&]() -> hdlast::wire::ptr {
+                    if (p->input_port_name().valid() == true) {
+                        auto ip = std::make_shared<hdlast::port>(
+                            p->input_port_name().data(),
+                            m.width(),
+                            hdlast::port_direction::INPUT
+                        );
+                        ports.push_back(ip);
+                        return ip;
+                    } else {
+                        auto ip = std::make_shared<hdlast::wire>(
+                            "input_" + std::to_string(i),
+                            m.width()
+                        );
+                        wires.push_back(ip);
+                        return ip;
+                    }
+                }();
 
                 auto mask_gran = p->mask_gran().data(1);
                 auto mask = [&]() -> hdlast::wire::ptr {
                     if (p->mask_gran().valid() == true) {
                         auto mp = std::make_shared<hdlast::port>(
-                            p->mask_port_name(),
+                            p->mask_port_name().data(),
                             mask_gran,
                             hdlast::port_direction::INPUT
                         );

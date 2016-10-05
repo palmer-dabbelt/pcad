@@ -32,10 +32,10 @@ namespace pcad {
             std::string _direction;
             std::string _clock_name;
             util::option<int> _mask_gran;
-            std::string _output_port_name;
-            std::string _input_port_name;
+            util::option<std::string> _output_port_name;
+            util::option<std::string> _input_port_name;
             std::string _address_port_name;
-            std::string _mask_port_name;
+            util::option<std::string> _mask_port_name;
             std::string _enable_port_name;
 
         public:
