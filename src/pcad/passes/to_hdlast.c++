@@ -239,12 +239,14 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     );
                 }
 
-                logic.push_back(
-                    std::make_shared<hdlast::always_statement>(
-                        std::make_shared<hdlast::posedge_statement>(clock),
-                        write_block
-                    )
-                );
+                if (p->input_port_name().valid() == true) {
+                    logic.push_back(
+                        std::make_shared<hdlast::always_statement>(
+                            std::make_shared<hdlast::posedge_statement>(clock),
+                            write_block
+                        )
+                    );
+                }
             }
             auto body = std::make_shared<hdlast::scope>(
                 std::make_shared<hdlast::scope>(ports),

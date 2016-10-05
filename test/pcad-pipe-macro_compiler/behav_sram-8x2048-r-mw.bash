@@ -55,65 +55,6 @@ module name_of_sram_module(
     read_data_0 <= mem[R0A];
     R0O <= read_data_0;
   end
-  always @(posedge clock)
-  begin
-    if (((R0E & write_enable_0) & mask_0[0]))
-    begin
-      mem[R0A][0] <= input_0[0];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[1]))
-    begin
-      mem[R0A][1] <= input_0[1];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[2]))
-    begin
-      mem[R0A][2] <= input_0[2];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[3]))
-    begin
-      mem[R0A][3] <= input_0[3];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[4]))
-    begin
-      mem[R0A][4] <= input_0[4];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[5]))
-    begin
-      mem[R0A][5] <= input_0[5];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[6]))
-    begin
-      mem[R0A][6] <= input_0[6];
-    end
-    else
-    begin
-    end
-    if (((R0E & write_enable_0) & mask_0[7]))
-    begin
-      mem[R0A][7] <= input_0[7];
-    end
-    else
-    begin
-    end
-  end
   assign write_enable_1 = ~(0);
   assign mask_1 = ~(0);
   always @(posedge clock)
