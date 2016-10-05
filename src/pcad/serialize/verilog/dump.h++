@@ -22,6 +22,8 @@ namespace pcad {
             void dump(std::ofstream& out, const hdlast::wire::ptr& wire);
             void dump(std::ofstream& out, const hdlast::statement::ptr& statement, std::string indent);
             void dump(std::ofstream& out, const hdlast::instance::ptr& instance);
+
+            void dump(std::ofstream& out, const std::vector<rtlir::module::ptr>& modules);
         }
     }
 }

@@ -2,6 +2,7 @@
 
 #include <pcad/open.h++>
 #include <pcad/passes/compile.h++>
+#include <pcad/passes/link.h++>
 #include <pcad/serialize/verilog/dump.h++>
 #include <pcad/util/collection.h++>
 #include <tclap/CmdLine.h>
@@ -47,13 +48,10 @@ int main(int argc, const char **argv)
             )
         );
         auto compiled = pcad::passes::compile(to_compile, {compile_to});
-        if (compiled.size() > 1) {
-            std::cerr << "internal error: multiple compiled circuits\n";
-            abort();
-        }
+        auto flattened = pcad::passes::link(compiled);
 
         std::ofstream os(verilog.getValue());
-        pcad::serialize::verilog::dump(os, compiled[0]);
+        pcad::serialize::verilog::dump(os, flattened);
 
         return 0;
     } catch (TCLAP::ArgException &e) {

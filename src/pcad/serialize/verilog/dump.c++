@@ -75,6 +75,12 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const rtlir::circuit::ptr
     dump(os, passes::to_hdlast(circuit));
 }
 
+void pcad::serialize::verilog::dump(std::ofstream& os, const std::vector<rtlir::module::ptr>& modules)
+{
+    for (const auto& module: modules)
+        dump(os, passes::to_hdlast(module));
+}
+
 void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module)
 {
     os << "module " << module->name() << "(\n";
