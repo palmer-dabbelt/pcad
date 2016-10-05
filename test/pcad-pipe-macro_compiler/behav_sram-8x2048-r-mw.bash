@@ -39,7 +39,7 @@ module name_of_sram_module(
   input [10:0] W1A,
   input W1E
 );
-  wire [7:0] mem [2047:0];
+  reg [7:0] mem [2047:0];
   wire [7:0] input_0;
   wire write_enable_0;
   wire [7:0] mask_0;

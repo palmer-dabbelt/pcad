@@ -1,6 +1,7 @@
 // See LICENSE for details
 
 #include "to_hdlast.h++"
+#include <pcad/hdlast/reg.h++>
 #include <pcad/netlist/macro.h++>
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
@@ -29,7 +30,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
         some<netlist::memory_macro>(), [](auto m) {
             /* The whole point of a memory is to store stuff.  Here's where all
              * the bits live. */
-            auto memory = std::make_shared<hdlast::wire>("mem", m.width(), m.depth());
+            auto memory = std::make_shared<hdlast::reg>("mem", m.width(), m.depth());
             auto wires = std::vector<hdlast::wire::ptr>{memory};
 
             /* Generates all the ports (and the logic associated with each

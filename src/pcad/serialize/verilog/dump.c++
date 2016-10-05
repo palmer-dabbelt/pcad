@@ -2,6 +2,7 @@
 
 #include "dump.h++"
 #include <pcad/passes/to_hdlast.h++>
+#include <pcad/hdlast/reg.h++>
 #include <simple_match/simple_match.hpp>
 #include <iostream>
 
@@ -98,13 +99,26 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module
     os << ");\n";
 
     for (const auto& wire: module->body()->vars()) {
-        os << "  wire"
-           << (wire->width() == 1 ? "" : " ")
-           << width_string(wire->width())
-           << " "
-           << wire->name()
-           << (wire->depth() == 1 ? "" : " " + width_string(wire->depth()))
-           << ";\n";
+        match(wire,
+            some<hdlast::reg>(), [&](auto r) {
+                os << "  reg"
+                   << (r.width() == 1 ? "" : " ")
+                   << width_string(r.width())
+                   << " "
+                   << r.name()
+                   << (r.depth() == 1 ? "" : " " + width_string(r.depth()))
+                   << ";\n";
+            },
+            some<hdlast::wire>(), [&](auto w) {
+                os << "  wire"
+                   << (w.width() == 1 ? "" : " ")
+                   << width_string(w.width())
+                   << " "
+                   << w.name()
+                   << (w.depth() == 1 ? "" : " " + width_string(w.depth()))
+                   << ";\n";
+            }
+        );
     }
 
     for (const auto& instance: module->instances()) {

@@ -33,7 +33,7 @@ module name_of_sram_module(
   input [10:0] RW0A,
   input RW0E
 );
-  wire [15:0] mem [2047:0];
+  reg [15:0] mem [2047:0];
   wire [15:0] read_data_0;
   always @(posedge clock)
   begin
