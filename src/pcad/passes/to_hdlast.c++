@@ -83,6 +83,36 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     }
                 }();
 
+                auto write_enable = [&]() -> hdlast::wire::ptr {
+                    if (p->write_enable_port_name().valid() == true) {
+                        auto wep = std::make_shared<hdlast::port>(
+                            p->write_enable_port_name().data(),
+                            1,
+                            hdlast::port_direction::INPUT
+                        );
+                        ports.push_back(wep);
+                        return wep;
+                    } else {
+                        auto wep = std::make_shared<hdlast::wire>(
+                            "write_enable_" + std::to_string(i),
+                            1
+                        );
+                        wires.push_back(wep);
+                        logic.push_back(
+                            std::make_shared<hdlast::assign_statement>(
+                                std::make_shared<hdlast::wire_statement>(wep),
+                                std::make_shared<hdlast::unop_statement>(
+                                    hdlast::unop_statement::op::NOT,
+                                    std::make_shared<hdlast::wire_statement>(
+                                        std::make_shared<hdlast::literal>(0, 1)
+                                    )
+                                )
+                            )
+                        );
+                        return wep;
+                    }
+                }();
+
                 auto mask_gran = p->mask_gran().data(1);
                 auto mask = [&]() -> hdlast::wire::ptr {
                     if (p->mask_gran().valid() == true) {
@@ -178,7 +208,11 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                         std::make_shared<hdlast::if_statement>(
                             std::make_shared<hdlast::biop_statement>(
                                 hdlast::biop_statement::op::AND,
-                                std::make_shared<hdlast::wire_statement>(enable),
+                                std::make_shared<hdlast::biop_statement>(
+                                    hdlast::biop_statement::op::AND,
+                                    std::make_shared<hdlast::wire_statement>(enable),
+                                    std::make_shared<hdlast::wire_statement>(write_enable)
+                                ),
                                 std::make_shared<hdlast::index_statement>(
                                     std::make_shared<hdlast::wire_statement>(mask),
                                     mask_index

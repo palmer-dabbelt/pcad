@@ -70,6 +70,7 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     auto address_port_name = port_object->template get<std::string>("address port name");
                                     auto mask_port_name = port_object->template get<std::string>("mask port name");
                                     auto enable_port_name = port_object->template get<std::string>("enable port name");
+                                    auto write_enable_port_name = port_object->template get<std::string>("write enable port name");
 
                                     return std::make_shared<netlist::memory_macro_port>(
                                         direction.data(),
@@ -79,7 +80,8 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         util::to_option(input_port_name),
                                         address_port_name.data(),
                                         util::to_option(mask_port_name),
-                                        enable_port_name.data()
+                                        enable_port_name.data(),
+                                        util::to_option(write_enable_port_name)
                                     );
                                 }
                             );

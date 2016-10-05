@@ -37,6 +37,7 @@ namespace pcad {
             std::string _address_port_name;
             util::option<std::string> _mask_port_name;
             std::string _enable_port_name;
+            util::option<std::string> _write_enable_port_name;
 
         public:
             memory_macro_port(
@@ -47,7 +48,8 @@ namespace pcad {
                 const decltype(_input_port_name)& input_port_name,
                 const decltype(_address_port_name)& address_port_name,
                 const decltype(_mask_port_name)& mask_port_name,
-                const decltype(_enable_port_name)& enable_port_name
+                const decltype(_enable_port_name)& enable_port_name,
+                const decltype(_write_enable_port_name)& write_enable_port_name
             )
             : _direction(direction),
               _clock_name(clock_name),
@@ -56,7 +58,8 @@ namespace pcad {
               _input_port_name(input_port_name),
               _address_port_name(address_port_name),
               _mask_port_name(mask_port_name),
-              _enable_port_name(enable_port_name)
+              _enable_port_name(enable_port_name),
+              _write_enable_port_name(write_enable_port_name)
             {}
 
         public:
@@ -67,6 +70,7 @@ namespace pcad {
             const decltype(_address_port_name)& address_port_name(void) const { return _address_port_name; }
             const decltype(_mask_port_name)& mask_port_name(void) const { return _mask_port_name; }
             const decltype(_enable_port_name)& enable_port_name(void) const { return _enable_port_name; }
+            const decltype(_write_enable_port_name)& write_enable_port_name(void) const { return _write_enable_port_name; }
         };
 
         class memory_macro: public macro {

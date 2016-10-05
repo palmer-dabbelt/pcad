@@ -41,11 +41,14 @@ module name_of_sram_module(
 );
   wire [7:0] mem [2047:0];
   wire [7:0] input_0;
+  wire write_enable_0;
   wire [7:0] mask_0;
   wire [7:0] read_data_0;
   wire [7:0] output_1;
+  wire write_enable_1;
   wire [7:0] mask_1;
   wire [7:0] read_data_1;
+  assign write_enable_0 = ~(0);
   assign mask_0 = ~(0);
   always @(posedge clock)
   begin
@@ -54,56 +57,56 @@ module name_of_sram_module(
   end
   always @(posedge clock)
   begin
-    if ((R0E & mask_0[0]))
+    if (((R0E & write_enable_0) & mask_0[0]))
     begin
       mem[R0A][0] <= input_0[0];
     end
     else
     begin
     end
-    if ((R0E & mask_0[1]))
+    if (((R0E & write_enable_0) & mask_0[1]))
     begin
       mem[R0A][1] <= input_0[1];
     end
     else
     begin
     end
-    if ((R0E & mask_0[2]))
+    if (((R0E & write_enable_0) & mask_0[2]))
     begin
       mem[R0A][2] <= input_0[2];
     end
     else
     begin
     end
-    if ((R0E & mask_0[3]))
+    if (((R0E & write_enable_0) & mask_0[3]))
     begin
       mem[R0A][3] <= input_0[3];
     end
     else
     begin
     end
-    if ((R0E & mask_0[4]))
+    if (((R0E & write_enable_0) & mask_0[4]))
     begin
       mem[R0A][4] <= input_0[4];
     end
     else
     begin
     end
-    if ((R0E & mask_0[5]))
+    if (((R0E & write_enable_0) & mask_0[5]))
     begin
       mem[R0A][5] <= input_0[5];
     end
     else
     begin
     end
-    if ((R0E & mask_0[6]))
+    if (((R0E & write_enable_0) & mask_0[6]))
     begin
       mem[R0A][6] <= input_0[6];
     end
     else
     begin
     end
-    if ((R0E & mask_0[7]))
+    if (((R0E & write_enable_0) & mask_0[7]))
     begin
       mem[R0A][7] <= input_0[7];
     end
@@ -111,6 +114,7 @@ module name_of_sram_module(
     begin
     end
   end
+  assign write_enable_1 = ~(0);
   assign mask_1 = ~(0);
   always @(posedge clock)
   begin
@@ -119,56 +123,56 @@ module name_of_sram_module(
   end
   always @(posedge clock)
   begin
-    if ((W1E & mask_1[0]))
+    if (((W1E & write_enable_1) & mask_1[0]))
     begin
       mem[W1A][0] <= W1I[0];
     end
     else
     begin
     end
-    if ((W1E & mask_1[1]))
+    if (((W1E & write_enable_1) & mask_1[1]))
     begin
       mem[W1A][1] <= W1I[1];
     end
     else
     begin
     end
-    if ((W1E & mask_1[2]))
+    if (((W1E & write_enable_1) & mask_1[2]))
     begin
       mem[W1A][2] <= W1I[2];
     end
     else
     begin
     end
-    if ((W1E & mask_1[3]))
+    if (((W1E & write_enable_1) & mask_1[3]))
     begin
       mem[W1A][3] <= W1I[3];
     end
     else
     begin
     end
-    if ((W1E & mask_1[4]))
+    if (((W1E & write_enable_1) & mask_1[4]))
     begin
       mem[W1A][4] <= W1I[4];
     end
     else
     begin
     end
-    if ((W1E & mask_1[5]))
+    if (((W1E & write_enable_1) & mask_1[5]))
     begin
       mem[W1A][5] <= W1I[5];
     end
     else
     begin
     end
-    if ((W1E & mask_1[6]))
+    if (((W1E & write_enable_1) & mask_1[6]))
     begin
       mem[W1A][6] <= W1I[6];
     end
     else
     begin
     end
-    if ((W1E & mask_1[7]))
+    if (((W1E & write_enable_1) & mask_1[7]))
     begin
       mem[W1A][7] <= W1I[7];
     end
