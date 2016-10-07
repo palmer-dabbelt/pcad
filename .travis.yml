@@ -43,7 +43,8 @@ before_install:
   - cd "${HOME}/dependencies"
   - wget "https://github.com/palmer-dabbelt/pson/archive/v${PSON_VERSION}.tar.gz" -O "${PSON_VERSION}.tar.gz"
   - tar -xvzpf "${PSON_VERSION}.tar.gz"
-  - pconfigure --verbose
+  - pconfigure --verbose "PREFIX = ${HOME}/dependencies/install"
+  - cd "pson-${PSON_VERSION}"
   - make
   - make install
   - cd "${S}"
