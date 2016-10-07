@@ -48,6 +48,20 @@ namespace putil {
                     o.push_back(e);
             return o;
         }
+
+        /* Finds only objects of the given type, returning a filtered vector.
+         * */
+        template<typename T, typename V>
+        static inline auto filter(const V& v)
+        {
+            auto out = std::vector<std::shared_ptr<T>>();
+            for (const auto& e: v) {
+                auto cast = std::dynamic_pointer_cast<T>(e);
+                if (cast != nullptr)
+                    out.push_back(cast);
+            }
+            return out;
+        }
     }
 }
 

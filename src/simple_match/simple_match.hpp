@@ -397,7 +397,7 @@ namespace simple_match {
 
 
 #include "implementation/some_none.hpp"
-
+#include "implementation/someptr.hpp"
 
 
 #endif

@@ -14,7 +14,15 @@ namespace pcad {
          * (called "compile_to"), yielding another set of macros. */
         std::vector<rtlir::circuit::ptr> compile(
             const std::vector<netlist::macro::ptr>& to_compile,
-            const std::vector<netlist::macro::ptr>& compile_to);
+            const std::vector<netlist::macro::ptr>& compile_to
+        );
+
+        /* If you know your macro sets consist of then one of these functions
+         * can be a bit easier to deal with here. */
+        rtlir::circuit::ptr compile(
+            const netlist::memory_macro::ptr& to_compile,
+            const std::vector<netlist::memory_macro::ptr>& compile_to
+        );
     }
 }
 
