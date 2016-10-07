@@ -41,7 +41,7 @@ before_install:
   - ./bootstrap.sh --prefix "${HOME}/dependencies/install"
   - make install
   - cd "${HOME}/dependencies"
-  - wget "https://github.com/palmer-dabbelt/pconfigure/archive/v${PSON_VERSION}.tar.gz" -O "${PSON_VERSION}.tar.gz"
+  - wget "https://github.com/palmer-dabbelt/pson/archive/v${PSON_VERSION}.tar.gz" -O "${PSON_VERSION}.tar.gz"
   - tar -xvzpf "${PSON_VERSION}.tar.gz"
   - pconfigure --verbose
   - make
