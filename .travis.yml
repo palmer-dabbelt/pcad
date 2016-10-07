@@ -30,6 +30,7 @@ before_install:
   - export CC=$TRAVIS_CC
   - export CXX=$TRAVIS_CXX
   - PCONFIGURE_VERSION=0.11.10
+  - PSON_VERSION=0.0.3
   - export MAKEFLAGS="-j3"
   - export S="$(pwd)"
   - mkdir -p "${HOME}/dependencies"
@@ -39,10 +40,16 @@ before_install:
   - cd "pconfigure-${PCONFIGURE_VERSION}"
   - ./bootstrap.sh --prefix "${HOME}/dependencies/install"
   - make install
+  - cd "${HOME}/dependencies"
+  - wget "https://github.com/palmer-dabbelt/pconfigure/archive/v${PSON_VERSION}.tar.gz" -O "${PSON_VERSION}.tar.gz"
+  - tar -xvzpf "${PSON_VERSION}.tar.gz"
+  - pconfigure --verbose
+  - make
+  - make install
   - cd "${S}"
 
 script:
-  - pconfigure
+  - pconfigure --verbose
   - make
   - make check
   - ptest --verbose
