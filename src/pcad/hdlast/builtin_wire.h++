@@ -22,6 +22,14 @@ namespace pcad {
             : wire("*", 0)
             {}
         };
+
+        /* A single-bit x */
+        class x: public wire {
+            public:
+            x(void)
+            : wire("1'bX", 1)
+            {}
+        };
     }
 }
 
