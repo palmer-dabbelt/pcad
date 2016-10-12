@@ -29,7 +29,7 @@ module name_of_sram_module(
   output [15:0] RW0O,
   input [15:0] RW0I,
   input RW0W,
-  input [7:0] RW0M,
+  input [1:0] RW0M,
   input [10:0] RW0A,
   input RW0E
 );

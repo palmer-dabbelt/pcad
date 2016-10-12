@@ -119,7 +119,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     if (p->mask_gran().valid() == true) {
                         auto mp = std::make_shared<hdlast::port>(
                             p->mask_port_name().data(),
-                            mask_gran,
+                            m.width() / mask_gran,
                             hdlast::port_direction::INPUT
                         );
                         ports.push_back(mp);
@@ -127,7 +127,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     } else {
                         auto mp = std::make_shared<hdlast::wire>(
                             "mask_" + std::to_string(i),
-                             m.width()
+                             m.width() / mask_gran
                         );
                         wires.push_back(mp);
                         logic.push_back(
