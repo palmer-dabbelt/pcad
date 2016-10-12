@@ -159,7 +159,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
                 ports.push_back(enable);
 
-                auto read_data = std::make_shared<hdlast::wire>(
+                auto read_data = std::make_shared<hdlast::reg>(
                     "read_data_" + std::to_string(i),
                     m.width()
                 );

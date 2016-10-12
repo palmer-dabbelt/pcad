@@ -50,7 +50,7 @@ module name_of_sram_module(
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;
-  wire [7:0] read_data_0;
+  reg [7:0] read_data_0;
   assign mask_0 = ~(0);
   always @(posedge clock)
   begin
@@ -127,7 +127,7 @@ module another_sram_module(
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;
-  wire [7:0] read_data_0;
+  reg [7:0] read_data_0;
   assign mask_0 = ~(0);
   always @(posedge clock)
   begin
