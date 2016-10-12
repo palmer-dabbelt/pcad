@@ -165,6 +165,12 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
                 wires.push_back(read_data);
 
+                auto read_buffer = std::make_shared<hdlast::reg>(
+                    "read_buffer_" + std::to_string(i),
+                    m.width()
+                );
+                wires.push_back(read_buffer);
+
                 auto read_block = std::vector<hdlast::statement::ptr>();
                 read_block.push_back(
                     std::make_shared<hdlast::assign_statement>(
@@ -177,7 +183,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
                 read_block.push_back(
                     std::make_shared<hdlast::assign_statement>(
-                        std::make_shared<hdlast::wire_statement>(output),
+                        std::make_shared<hdlast::wire_statement>(read_buffer),
                         std::make_shared<hdlast::wire_statement>(read_data)
                     )
                 );
@@ -186,6 +192,12 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     std::make_shared<hdlast::always_statement>(
                         std::make_shared<hdlast::posedge_statement>(clock),
                         read_block
+                    )
+                );
+                logic.push_back(
+                    std::make_shared<hdlast::assign_statement>(
+                        std::make_shared<hdlast::wire_statement>(output),
+                        std::make_shared<hdlast::wire_statement>(read_buffer)
                     )
                 );
 
