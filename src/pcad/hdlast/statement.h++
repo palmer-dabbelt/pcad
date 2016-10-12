@@ -94,6 +94,7 @@ namespace pcad {
                 OROR,
                 DIV,
                 ANDAND,
+                EQEQEQ
             };
 
         private:

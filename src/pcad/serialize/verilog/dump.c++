@@ -52,6 +52,7 @@ static inline std::string v_string(const enum biop_statement::op& opcode)
     case biop_statement::op::OROR:   return "||";
     case biop_statement::op::DIV:    return "/";
     case biop_statement::op::ANDAND: return "&&";
+    case biop_statement::op::EQEQEQ: return "===";
     }
     abort();
     return "";
