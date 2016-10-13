@@ -1,6 +1,7 @@
 // See LICENSE for details
 
 #include "to_hdlast.h++"
+#include "randomize_x_assign.h++"
 #include <pcad/hdlast/reg.h++>
 #include <pcad/netlist/macro.h++>
 #include <pcad/util/collection.h++>
@@ -194,12 +195,8 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                         read_block
                     )
                 );
-                logic.push_back(
-                    std::make_shared<hdlast::assign_statement>(
-                        std::make_shared<hdlast::wire_statement>(output),
-                        std::make_shared<hdlast::wire_statement>(read_data)
-                    )
-                );
+                for (const auto& ra: randomize_x_assign(output, read_data))
+                    logic.push_back(ra);
 
                 auto write_block = std::vector<hdlast::statement::ptr>();
                 for (auto i = 0; i < m.width(); ++i) {

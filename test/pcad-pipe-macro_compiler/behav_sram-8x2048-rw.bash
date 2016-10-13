@@ -41,7 +41,14 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= RW0A;
   end
-  assign RW0O = read_data_0;
+  assign RW0O[0] = (read_data_0[0] === 1'bX) ? $random : read_data_0[0];
+  assign RW0O[1] = (read_data_0[1] === 1'bX) ? $random : read_data_0[1];
+  assign RW0O[2] = (read_data_0[2] === 1'bX) ? $random : read_data_0[2];
+  assign RW0O[3] = (read_data_0[3] === 1'bX) ? $random : read_data_0[3];
+  assign RW0O[4] = (read_data_0[4] === 1'bX) ? $random : read_data_0[4];
+  assign RW0O[5] = (read_data_0[5] === 1'bX) ? $random : read_data_0[5];
+  assign RW0O[6] = (read_data_0[6] === 1'bX) ? $random : read_data_0[6];
+  assign RW0O[7] = (read_data_0[7] === 1'bX) ? $random : read_data_0[7];
   always @(posedge clock)
   begin
     if (((RW0E && RW0W) && mask_0[0]))

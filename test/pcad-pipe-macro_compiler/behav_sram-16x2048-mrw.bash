@@ -41,7 +41,22 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= RW0A;
   end
-  assign RW0O = read_data_0;
+  assign RW0O[0] = (read_data_0[0] === 1'bX) ? $random : read_data_0[0];
+  assign RW0O[1] = (read_data_0[1] === 1'bX) ? $random : read_data_0[1];
+  assign RW0O[2] = (read_data_0[2] === 1'bX) ? $random : read_data_0[2];
+  assign RW0O[3] = (read_data_0[3] === 1'bX) ? $random : read_data_0[3];
+  assign RW0O[4] = (read_data_0[4] === 1'bX) ? $random : read_data_0[4];
+  assign RW0O[5] = (read_data_0[5] === 1'bX) ? $random : read_data_0[5];
+  assign RW0O[6] = (read_data_0[6] === 1'bX) ? $random : read_data_0[6];
+  assign RW0O[7] = (read_data_0[7] === 1'bX) ? $random : read_data_0[7];
+  assign RW0O[8] = (read_data_0[8] === 1'bX) ? $random : read_data_0[8];
+  assign RW0O[9] = (read_data_0[9] === 1'bX) ? $random : read_data_0[9];
+  assign RW0O[10] = (read_data_0[10] === 1'bX) ? $random : read_data_0[10];
+  assign RW0O[11] = (read_data_0[11] === 1'bX) ? $random : read_data_0[11];
+  assign RW0O[12] = (read_data_0[12] === 1'bX) ? $random : read_data_0[12];
+  assign RW0O[13] = (read_data_0[13] === 1'bX) ? $random : read_data_0[13];
+  assign RW0O[14] = (read_data_0[14] === 1'bX) ? $random : read_data_0[14];
+  assign RW0O[15] = (read_data_0[15] === 1'bX) ? $random : read_data_0[15];
   always @(posedge clock)
   begin
     if (((RW0E && RW0W) && RW0M[0]))

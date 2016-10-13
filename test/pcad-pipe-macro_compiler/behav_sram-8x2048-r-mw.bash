@@ -57,7 +57,14 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= R0A;
   end
-  assign R0O = read_data_0;
+  assign R0O[0] = (read_data_0[0] === 1'bX) ? $random : read_data_0[0];
+  assign R0O[1] = (read_data_0[1] === 1'bX) ? $random : read_data_0[1];
+  assign R0O[2] = (read_data_0[2] === 1'bX) ? $random : read_data_0[2];
+  assign R0O[3] = (read_data_0[3] === 1'bX) ? $random : read_data_0[3];
+  assign R0O[4] = (read_data_0[4] === 1'bX) ? $random : read_data_0[4];
+  assign R0O[5] = (read_data_0[5] === 1'bX) ? $random : read_data_0[5];
+  assign R0O[6] = (read_data_0[6] === 1'bX) ? $random : read_data_0[6];
+  assign R0O[7] = (read_data_0[7] === 1'bX) ? $random : read_data_0[7];
   assign write_enable_1 = ~(0);
   assign mask_1 = ~(0);
   assign read_data_1 = mem[address_buffer_1];
@@ -65,7 +72,14 @@ module name_of_sram_module(
   begin
     address_buffer_1 <= W1A;
   end
-  assign output_1 = read_data_1;
+  assign output_1[0] = (read_data_1[0] === 1'bX) ? $random : read_data_1[0];
+  assign output_1[1] = (read_data_1[1] === 1'bX) ? $random : read_data_1[1];
+  assign output_1[2] = (read_data_1[2] === 1'bX) ? $random : read_data_1[2];
+  assign output_1[3] = (read_data_1[3] === 1'bX) ? $random : read_data_1[3];
+  assign output_1[4] = (read_data_1[4] === 1'bX) ? $random : read_data_1[4];
+  assign output_1[5] = (read_data_1[5] === 1'bX) ? $random : read_data_1[5];
+  assign output_1[6] = (read_data_1[6] === 1'bX) ? $random : read_data_1[6];
+  assign output_1[7] = (read_data_1[7] === 1'bX) ? $random : read_data_1[7];
   always @(posedge clock)
   begin
     if (((W1E && write_enable_1) && mask_1[0]))
