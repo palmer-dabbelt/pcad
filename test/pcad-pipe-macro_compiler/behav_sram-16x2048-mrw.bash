@@ -44,112 +44,112 @@ module name_of_sram_module(
   assign RW0O = read_buffer_0;
   always @(posedge clock)
   begin
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][0] <= RW0I[0];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][1] <= RW0I[1];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][2] <= RW0I[2];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][3] <= RW0I[3];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][4] <= RW0I[4];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][5] <= RW0I[5];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][6] <= RW0I[6];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[0]))
     begin
       mem[RW0A][7] <= RW0I[7];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][8] <= RW0I[8];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][9] <= RW0I[9];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][10] <= RW0I[10];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][11] <= RW0I[11];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][12] <= RW0I[12];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][13] <= RW0I[13];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][14] <= RW0I[14];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[1]))
     begin
       mem[RW0A][15] <= RW0I[15];
     end

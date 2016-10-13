@@ -68,56 +68,56 @@ module name_of_sram_module(
   assign output_1 = read_buffer_1;
   always @(posedge clock)
   begin
-    if (((W1E & write_enable_1) & mask_1[0]))
+    if (((W1E && write_enable_1) && mask_1[0]))
     begin
       mem[W1A][0] <= W1I[0];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[1]))
+    if (((W1E && write_enable_1) && mask_1[1]))
     begin
       mem[W1A][1] <= W1I[1];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[2]))
+    if (((W1E && write_enable_1) && mask_1[2]))
     begin
       mem[W1A][2] <= W1I[2];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[3]))
+    if (((W1E && write_enable_1) && mask_1[3]))
     begin
       mem[W1A][3] <= W1I[3];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[4]))
+    if (((W1E && write_enable_1) && mask_1[4]))
     begin
       mem[W1A][4] <= W1I[4];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[5]))
+    if (((W1E && write_enable_1) && mask_1[5]))
     begin
       mem[W1A][5] <= W1I[5];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[6]))
+    if (((W1E && write_enable_1) && mask_1[6]))
     begin
       mem[W1A][6] <= W1I[6];
     end
     else
     begin
     end
-    if (((W1E & write_enable_1) & mask_1[7]))
+    if (((W1E && write_enable_1) && mask_1[7]))
     begin
       mem[W1A][7] <= W1I[7];
     end

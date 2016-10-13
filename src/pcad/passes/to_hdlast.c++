@@ -220,9 +220,9 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     write_block.push_back(
                         std::make_shared<hdlast::if_statement>(
                             std::make_shared<hdlast::biop_statement>(
-                                hdlast::biop_statement::op::AND,
+                                hdlast::biop_statement::op::ANDAND,
                                 std::make_shared<hdlast::biop_statement>(
-                                    hdlast::biop_statement::op::AND,
+                                    hdlast::biop_statement::op::ANDAND,
                                     std::make_shared<hdlast::wire_statement>(enable),
                                     std::make_shared<hdlast::wire_statement>(write_enable)
                                 ),

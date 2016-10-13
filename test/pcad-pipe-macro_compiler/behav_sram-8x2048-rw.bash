@@ -44,56 +44,56 @@ module name_of_sram_module(
   assign RW0O = read_buffer_0;
   always @(posedge clock)
   begin
-    if (((RW0E & RW0W) & mask_0[0]))
+    if (((RW0E && RW0W) && mask_0[0]))
     begin
       mem[RW0A][0] <= RW0I[0];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[1]))
+    if (((RW0E && RW0W) && mask_0[1]))
     begin
       mem[RW0A][1] <= RW0I[1];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[2]))
+    if (((RW0E && RW0W) && mask_0[2]))
     begin
       mem[RW0A][2] <= RW0I[2];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[3]))
+    if (((RW0E && RW0W) && mask_0[3]))
     begin
       mem[RW0A][3] <= RW0I[3];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[4]))
+    if (((RW0E && RW0W) && mask_0[4]))
     begin
       mem[RW0A][4] <= RW0I[4];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[5]))
+    if (((RW0E && RW0W) && mask_0[5]))
     begin
       mem[RW0A][5] <= RW0I[5];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[6]))
+    if (((RW0E && RW0W) && mask_0[6]))
     begin
       mem[RW0A][6] <= RW0I[6];
     end
     else
     begin
     end
-    if (((RW0E & RW0W) & mask_0[7]))
+    if (((RW0E && RW0W) && mask_0[7]))
     begin
       mem[RW0A][7] <= RW0I[7];
     end
