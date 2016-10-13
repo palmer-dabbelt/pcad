@@ -57,7 +57,7 @@ std::vector<hdlast::statement::ptr> passes::randomize_x_assign(
 
         out.push_back(
             std::make_shared<hdlast::assign_statement>(
-                buffer_value,
+                dest_value,
                 std::make_shared<hdlast::trop_statement>(
                     buffer_value_is_x,
                     std::make_shared<hdlast::wire_statement>(
