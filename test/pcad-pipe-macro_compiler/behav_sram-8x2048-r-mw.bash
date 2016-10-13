@@ -44,28 +44,28 @@ module name_of_sram_module(
   wire write_enable_0;
   wire [7:0] mask_0;
   reg [7:0] read_data_0;
-  reg [7:0] read_buffer_0;
+  reg [10:0] address_buffer_0;
   wire [7:0] output_1;
   wire write_enable_1;
   wire [7:0] mask_1;
   reg [7:0] read_data_1;
-  reg [7:0] read_buffer_1;
+  reg [10:0] address_buffer_1;
   assign write_enable_0 = ~(0);
   assign mask_0 = ~(0);
+  assign read_data_0 = mem[address_buffer_0];
   always @(posedge clock)
   begin
-    read_data_0 <= mem[R0A];
-    read_buffer_0 <= read_data_0;
+    address_buffer_0 <= R0A;
   end
-  assign R0O = read_buffer_0;
+  assign R0O = read_data_0;
   assign write_enable_1 = ~(0);
   assign mask_1 = ~(0);
+  assign read_data_1 = mem[address_buffer_1];
   always @(posedge clock)
   begin
-    read_data_1 <= mem[W1A];
-    read_buffer_1 <= read_data_1;
+    address_buffer_1 <= W1A;
   end
-  assign output_1 = read_buffer_1;
+  assign output_1 = read_data_1;
   always @(posedge clock)
   begin
     if (((W1E && write_enable_1) && mask_1[0]))

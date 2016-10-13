@@ -165,26 +165,26 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 );
                 wires.push_back(read_data);
 
-                auto read_buffer = std::make_shared<hdlast::reg>(
-                    "read_buffer_" + std::to_string(i),
-                    m.width()
+                auto address_buffer = std::make_shared<hdlast::reg>(
+                    "address_buffer_" + std::to_string(i),
+                    std::ceil(std::log2(m.depth()))
                 );
-                wires.push_back(read_buffer);
+                wires.push_back(address_buffer);
 
                 auto read_block = std::vector<hdlast::statement::ptr>();
-                read_block.push_back(
+                logic.push_back(
                     std::make_shared<hdlast::assign_statement>(
                         std::make_shared<hdlast::wire_statement>(read_data),
                         std::make_shared<hdlast::index_statement>(
                             std::make_shared<hdlast::wire_statement>(memory),
-                            std::make_shared<hdlast::wire_statement>(address)
+                            std::make_shared<hdlast::wire_statement>(address_buffer)
                         )
                     )
                 );
                 read_block.push_back(
                     std::make_shared<hdlast::assign_statement>(
-                        std::make_shared<hdlast::wire_statement>(read_buffer),
-                        std::make_shared<hdlast::wire_statement>(read_data)
+                        std::make_shared<hdlast::wire_statement>(address_buffer),
+                        std::make_shared<hdlast::wire_statement>(address)
                     )
                 );
 
@@ -197,7 +197,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 logic.push_back(
                     std::make_shared<hdlast::assign_statement>(
                         std::make_shared<hdlast::wire_statement>(output),
-                        std::make_shared<hdlast::wire_statement>(read_buffer)
+                        std::make_shared<hdlast::wire_statement>(read_data)
                     )
                 );
 
