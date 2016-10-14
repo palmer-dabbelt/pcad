@@ -28,18 +28,18 @@ hdlast::circuit::ptr passes::to_hdlast(const rtlir::circuit::ptr& circuit)
 hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
 {
     auto out = match(module,
-        some<netlist::memory_macro>(), [](auto m) {
+        someptr<netlist::memory_macro>(), [](auto m) {
             /* The whole point of a memory is to store stuff.  Here's where all
              * the bits live. */
-            auto memory = std::make_shared<hdlast::reg>("mem", m.width(), m.depth());
+            auto memory = std::make_shared<hdlast::reg>("mem", m->width(), m->depth());
             auto wires = std::vector<hdlast::wire::ptr>{memory};
 
             /* Generates all the ports (and the logic associated with each
              * port) for the memory. */
             auto logic = std::vector<hdlast::statement::ptr>();
             auto ports = std::vector<hdlast::port::ptr>();
-            for (size_t i = 0; i < m.ports().size(); ++i) {
-                auto p = m.ports()[i];
+            for (size_t i = 0; i < m->ports().size(); ++i) {
+                auto p = m->ports()[i];
                 auto clock = std::make_shared<hdlast::port>(
                     p->clock_name(),
                     1,
@@ -51,7 +51,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     if (p->output_port_name().valid() == true) {
                         auto op = std::make_shared<hdlast::port>(
                             p->output_port_name().data(),
-                            m.width(),
+                            m->width(),
                             hdlast::port_direction::OUTPUT
                         );
                         ports.push_back(op);
@@ -59,7 +59,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     } else {
                         auto op = std::make_shared<hdlast::wire>(
                             "output_" + std::to_string(i),
-                            m.width()
+                            m->width()
                         );
                         wires.push_back(op);
                         return op;
@@ -70,7 +70,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     if (p->input_port_name().valid() == true) {
                         auto ip = std::make_shared<hdlast::port>(
                             p->input_port_name().data(),
-                            m.width(),
+                            m->width(),
                             hdlast::port_direction::INPUT
                         );
                         ports.push_back(ip);
@@ -78,7 +78,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     } else {
                         auto ip = std::make_shared<hdlast::wire>(
                             "input_" + std::to_string(i),
-                            m.width()
+                            m->width()
                         );
                         wires.push_back(ip);
                         return ip;
@@ -120,7 +120,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     if (p->mask_gran().valid() == true) {
                         auto mp = std::make_shared<hdlast::port>(
                             p->mask_port_name().data(),
-                            m.width() / mask_gran,
+                            m->width() / mask_gran,
                             hdlast::port_direction::INPUT
                         );
                         ports.push_back(mp);
@@ -128,7 +128,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     } else {
                         auto mp = std::make_shared<hdlast::wire>(
                             "mask_" + std::to_string(i),
-                             m.width() / mask_gran
+                             m->width() / mask_gran
                         );
                         wires.push_back(mp);
                         logic.push_back(
@@ -137,7 +137,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                                 std::make_shared<hdlast::unop_statement>(
                                     hdlast::unop_statement::op::NOT,
                                     std::make_shared<hdlast::wire_statement>(
-                                        std::make_shared<hdlast::literal>(0, m.width())
+                                        std::make_shared<hdlast::literal>(0, m->width())
                                     )
                                 )
                             )
@@ -148,7 +148,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
 
                 auto address = std::make_shared<hdlast::port>(
                     p->address_port_name(),
-                    std::ceil(std::log2(m.depth())),
+                    std::ceil(std::log2(m->depth())),
                     hdlast::port_direction::INPUT
                 );
                 ports.push_back(address);
@@ -162,13 +162,13 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
 
                 auto read_data = std::make_shared<hdlast::reg>(
                     "read_data_" + std::to_string(i),
-                    m.width()
+                    m->width()
                 );
                 wires.push_back(read_data);
 
                 auto address_buffer = std::make_shared<hdlast::reg>(
                     "address_buffer_" + std::to_string(i),
-                    std::ceil(std::log2(m.depth()))
+                    std::ceil(std::log2(m->depth()))
                 );
                 wires.push_back(address_buffer);
 
@@ -199,18 +199,18 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                     logic.push_back(ra);
 
                 auto write_block = std::vector<hdlast::statement::ptr>();
-                for (auto i = 0; i < m.width(); ++i) {
+                for (auto i = 0; i < m->width(); ++i) {
                     auto mask_index = std::make_shared<hdlast::wire_statement>(
                         std::make_shared<hdlast::literal>(
                             i / mask_gran,
-                            std::ceil(std::log2(m.width()))
+                            std::ceil(std::log2(m->width()))
                         )
                     );
 
                     auto mem_index = std::make_shared<hdlast::wire_statement>(
                         std::make_shared<hdlast::literal>(
                             i,
-                            std::ceil(std::log2(m.width()))
+                            std::ceil(std::log2(m->width()))
                         )
                     );
 
@@ -263,7 +263,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
             );
 
             return std::make_shared<hdlast::module>(
-                m.name(),
+                m->name(),
                 ports,
                 body,
                 logic,
