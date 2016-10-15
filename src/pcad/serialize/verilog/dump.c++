@@ -2,6 +2,7 @@
 
 #include "dump.h++"
 #include <pcad/passes/to_hdlast.h++>
+#include <pcad/hdlast/blackbox.h++>
 #include <pcad/hdlast/reg.h++>
 #include <simple_match/simple_match.hpp>
 #include <iostream>
@@ -85,6 +86,9 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const std::vector<rtlir::
 
 void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module)
 {
+    if (std::dynamic_pointer_cast<hdlast::blackbox>(module) != nullptr)
+        return;
+
     os << "module " << module->name() << "(\n";
     for (size_t i = 0; i < module->ports().size(); ++i) {
         auto port = module->ports()[i];

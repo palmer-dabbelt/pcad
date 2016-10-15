@@ -24,7 +24,7 @@ namespace pcad {
         public:
             typedef std::shared_ptr<module> ptr;
 
-        public:
+        protected:
             const std::string _name;
             const std::vector<port::ptr> _ports;
             const scope::ptr _body;
@@ -45,11 +45,11 @@ namespace pcad {
             {}
 
         public:
-            const decltype(_name)& name(void) const { return _name; }
-            const decltype(_ports)& ports(void) const { return _ports; }
-            const decltype(_body)& body(void) const { return _body; }
-            const decltype(_statements)& statements(void) const { return _statements; }
-            const decltype(_instances)& instances(void) const { return _instances; }
+            virtual const decltype(_name)& name(void) const { return _name; }
+            virtual const decltype(_ports)& ports(void) const { return _ports; }
+            virtual const decltype(_body)& body(void) const { return _body; }
+            virtual const decltype(_statements)& statements(void) const { return _statements; }
+            virtual const decltype(_instances)& instances(void) const { return _instances; }
         };
     }
 }
