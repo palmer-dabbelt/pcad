@@ -108,7 +108,7 @@ namespace pcad {
         public:
             const decltype(_depth)& depth(void) const { return _depth; }
             const decltype(_width)& width(void) const { return _width; }
-            const decltype(_ports)& ports(void) const { return _ports; }
+            const decltype(_ports)& mem_ports(void) const { return _ports; }
         };
 
         class memory_blackbox: public memory_macro {
@@ -121,7 +121,7 @@ namespace pcad {
                 parent->name(),
                 parent->depth(),
                 parent->width(),
-                parent->ports()
+                parent->mem_ports()
             )
             {}
         };

@@ -39,8 +39,8 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
              * port) for the memory. */
             auto logic = std::vector<hdlast::statement::ptr>();
             auto ports = std::vector<hdlast::port::ptr>();
-            for (size_t i = 0; i < m->ports().size(); ++i) {
-                auto p = m->ports()[i];
+            for (size_t i = 0; i < m->mem_ports().size(); ++i) {
+                auto p = m->mem_ports()[i];
                 auto clock = std::make_shared<hdlast::port>(
                     p->clock_name(),
                     1,
