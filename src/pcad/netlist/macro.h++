@@ -23,6 +23,16 @@ namespace pcad {
             {}
         };
 
+        class blackbox: public macro {
+        public:
+            typedef std::shared_ptr<blackbox> ptr;
+
+        public:
+            blackbox(const std::string& name)
+            : macro(name)
+            {}
+        };
+
         /* Memory macros map to things like SRAMs. */
         class memory_macro_port {
         public:
@@ -99,6 +109,21 @@ namespace pcad {
             const decltype(_depth)& depth(void) const { return _depth; }
             const decltype(_width)& width(void) const { return _width; }
             const decltype(_ports)& ports(void) const { return _ports; }
+        };
+
+        class memory_blackbox: public memory_macro {
+        public:
+            typedef std::shared_ptr<memory_blackbox> ptr;
+
+        public:
+            memory_blackbox(const memory_macro::ptr& parent)
+            : memory_macro(
+                parent->name(),
+                parent->depth(),
+                parent->width(),
+                parent->ports()
+            )
+            {}
         };
     }
 }

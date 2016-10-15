@@ -23,6 +23,11 @@ namespace pcad {
             const netlist::memory_macro::ptr& to_compile,
             const std::vector<netlist::memory_macro::ptr>& compile_to
         );
+
+        rtlir::circuit::ptr compile(
+            const netlist::memory_macro::ptr& to_compile,
+            const netlist::memory_macro::ptr& compile_to
+        );
     }
 }
 

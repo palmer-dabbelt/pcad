@@ -25,6 +25,11 @@ namespace pcad {
               _top(top)
             {}
 
+            circuit(const module::ptr& top, const std::vector<module::ptr>& modules)
+            : _modules(modules),
+              _top(top)
+            {}
+
         public:
             const decltype(_modules)& modules(void) const { return _modules; }
             const decltype(_top)& top(void) const { return _top; }

@@ -2,6 +2,7 @@
 
 #include "to_hdlast.h++"
 #include "randomize_x_assign.h++"
+#include <pcad/hdlast/blackbox.h++>
 #include <pcad/hdlast/reg.h++>
 #include <pcad/netlist/macro.h++>
 #include <pcad/util/collection.h++>
@@ -262,18 +263,38 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 wires
             );
 
-            return std::make_shared<hdlast::module>(
+            auto hm = std::make_shared<hdlast::module>(
                 m->name(),
                 ports,
                 body,
                 logic,
                 std::vector<hdlast::instance::ptr>{}
             );
+
+            return match(m,
+                someptr<netlist::memory_blackbox>(), [&](const auto& m) -> hdlast::module::ptr {
+                    return std::make_shared<hdlast::blackbox>(hm);
+                },
+                someptr<netlist::memory_macro>(), [&](const auto& m) {
+                    return hm;
+                }
+            );
         },
-        none(), [&]() {
-            std::cerr << "Unknown rtlir type: " << module << "\n";
-            abort();
-            return hdlast::module::ptr(nullptr);
+        someptr<rtlir::module>(), [&](const auto& m) {
+            auto ports = std::vector<hdlast::port::ptr>{};
+            auto wires = std::vector<hdlast::wire::ptr>{};
+            auto logic = std::vector<hdlast::statement::ptr>{};
+            auto instances = std::vector<hdlast::instance::ptr>{};
+
+            auto body = std::make_shared<hdlast::scope>(ports);
+
+            return std::make_shared<hdlast::module>(
+                m->name(),
+                ports,
+                body,
+                logic,
+                instances
+            );
         }
     );
 
