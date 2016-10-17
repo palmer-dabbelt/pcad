@@ -42,7 +42,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
             for (size_t i = 0; i < m->mem_ports().size(); ++i) {
                 auto p = m->mem_ports()[i];
                 auto clock = std::make_shared<hdlast::port>(
-                    p->clock_name(),
+                    p->clock_port_name().data(),
                     1,
                     hdlast::port_direction::INPUT
                 );
@@ -148,14 +148,14 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 }();
 
                 auto address = std::make_shared<hdlast::port>(
-                    p->address_port_name(),
+                    p->address_port_name().data(),
                     std::ceil(std::log2(m->depth())),
                     hdlast::port_direction::INPUT
                 );
                 ports.push_back(address);
 
                 auto enable = std::make_shared<hdlast::port>(
-                    p->enable_port_name(),
+                    p->chip_enable_port_name().data(),
                     1,
                     hdlast::port_direction::INPUT
                 );

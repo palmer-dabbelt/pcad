@@ -39,47 +39,44 @@ namespace pcad {
             typedef std::shared_ptr<memory_macro_port> ptr;
 
         private:
-            std::string _direction;
-            std::string _clock_name;
+            util::option<std::string> _clock_port_name;
             util::option<int> _mask_gran;
             util::option<std::string> _output_port_name;
             util::option<std::string> _input_port_name;
-            std::string _address_port_name;
+            util::option<std::string> _address_port_name;
             util::option<std::string> _mask_port_name;
-            std::string _enable_port_name;
+            util::option<std::string> _chip_enable_port_name;
             util::option<std::string> _write_enable_port_name;
 
         public:
             memory_macro_port(
-                const decltype(_direction)& direction,
-                const decltype(_clock_name)& clock_name,
+                const decltype(_clock_port_name)& clock_port_name,
                 const decltype(_mask_gran)& mask_gran,
                 const decltype(_output_port_name)& output_port_name,
                 const decltype(_input_port_name)& input_port_name,
                 const decltype(_address_port_name)& address_port_name,
                 const decltype(_mask_port_name)& mask_port_name,
-                const decltype(_enable_port_name)& enable_port_name,
+                const decltype(_chip_enable_port_name)& chip_enable_port_name,
                 const decltype(_write_enable_port_name)& write_enable_port_name
             )
-            : _direction(direction),
-              _clock_name(clock_name),
+            : _clock_port_name(clock_port_name),
               _mask_gran(mask_gran),
               _output_port_name(output_port_name),
               _input_port_name(input_port_name),
               _address_port_name(address_port_name),
               _mask_port_name(mask_port_name),
-              _enable_port_name(enable_port_name),
+              _chip_enable_port_name(chip_enable_port_name),
               _write_enable_port_name(write_enable_port_name)
             {}
 
         public:
-            const decltype(_clock_name)& clock_name(void) const { return _clock_name; }
+            const decltype(_clock_port_name)& clock_port_name(void) const { return _clock_port_name; }
             const decltype(_mask_gran)& mask_gran(void) const { return _mask_gran; }
             const decltype(_output_port_name)& output_port_name(void) const { return _output_port_name; }
             const decltype(_input_port_name)& input_port_name(void) const { return _input_port_name; }
             const decltype(_address_port_name)& address_port_name(void) const { return _address_port_name; }
             const decltype(_mask_port_name)& mask_port_name(void) const { return _mask_port_name; }
-            const decltype(_enable_port_name)& enable_port_name(void) const { return _enable_port_name; }
+            const decltype(_chip_enable_port_name)& chip_enable_port_name(void) const { return _chip_enable_port_name; }
             const decltype(_write_enable_port_name)& write_enable_port_name(void) const { return _write_enable_port_name; }
         };
 

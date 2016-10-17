@@ -9,13 +9,16 @@ cat >"$INPUT" <<"EOF"
     "ports": [
       {
         "direction": "read+write",
-        "clock name": "clock",
+        "clock port name": "clock",
         "output port name": "RW0O",
         "input port name": "RW0I",
         "address port name": "RW0A",
         "mask port name": "RW0M",
-        "enable port name": "RW0E",
-	"write enable port name": "RW0W"
+        "chip enable port name": "RW0E",
+	"write enable port name": "RW0W",
+	"write enable port polarity": "active high",
+	"read enable port name": "RW0W",
+	"read enable port polarity": "active low"
       }
     ]
   }

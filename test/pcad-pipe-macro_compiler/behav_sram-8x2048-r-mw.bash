@@ -8,20 +8,18 @@ cat >"$INPUT" <<"EOF"
     "width": 8,
     "ports": [
       {
-        "direction": "read",
-        "clock name": "clock",
+        "clock port name": "clock",
         "output port name": "R0O",
         "address port name": "R0A",
-        "enable port name": "R0E"
+        "chip enable port name": "R0E"
       },
       {
-        "direction": "write",
-        "clock name": "clock",
+        "clock port name": "clock",
 	"mask width": 2,
         "input port name": "W1I",
         "address port name": "W1A",
         "mask port name": "W1M",
-        "enable port name": "W1E"
+        "chip enable port name": "W1E"
       }
     ]
   }

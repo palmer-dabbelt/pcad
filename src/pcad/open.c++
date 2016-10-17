@@ -62,25 +62,24 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                             auto ports = macro_json.template map<netlist::memory_macro_port::ptr, pson::tree_object>(
                                 "ports",
                                 [](const auto& port_object) {
-                                    auto direction = port_object->template get<std::string>("direction");
-                                    auto clock_name = port_object->template get<std::string>("clock name");
+                                    auto clock_port_name = port_object->template get<std::string>("clock port name");
                                     auto mask_gran = port_object->template get<int>("mask granularity");
                                     auto output_port_name = port_object->template get<std::string>("output port name");
                                     auto input_port_name = port_object->template get<std::string>("input port name");
                                     auto address_port_name = port_object->template get<std::string>("address port name");
                                     auto mask_port_name = port_object->template get<std::string>("mask port name");
-                                    auto enable_port_name = port_object->template get<std::string>("enable port name");
+                                    auto chip_enable_port_name = port_object->template get<std::string>("chip enable port name");
+                                    auto read_enable_port_name = port_object->template get<std::string>("chip enable port name");
                                     auto write_enable_port_name = port_object->template get<std::string>("write enable port name");
 
                                     return std::make_shared<netlist::memory_macro_port>(
-                                        direction.data(),
-                                        clock_name.data(),
+                                        util::to_option(clock_port_name),
                                         util::to_option(mask_gran),
                                         util::to_option(output_port_name),
                                         util::to_option(input_port_name),
-                                        address_port_name.data(),
+                                        util::to_option(address_port_name),
                                         util::to_option(mask_port_name),
-                                        enable_port_name.data(),
+                                        util::to_option(chip_enable_port_name),
                                         util::to_option(write_enable_port_name)
                                     );
                                 }
