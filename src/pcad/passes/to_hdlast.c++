@@ -281,12 +281,18 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
             );
         },
         someptr<rtlir::module>(), [&](const auto& m) {
-            auto ports = std::vector<hdlast::port::ptr>{};
+            auto ports = putil::collection::map(
+                m->ports(),
+                [](const auto& p){ return to_hdlast(p); }
+            );
             auto wires = std::vector<hdlast::wire::ptr>{};
             auto logic = std::vector<hdlast::statement::ptr>{};
             auto instances = std::vector<hdlast::instance::ptr>{};
 
-            auto body = std::make_shared<hdlast::scope>(ports);
+            auto body = std::make_shared<hdlast::scope>(
+                std::make_shared<hdlast::scope>(ports),
+                wires
+            );
 
             return std::make_shared<hdlast::module>(
                 m->name(),
@@ -304,4 +310,13 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
     }
 
     return out;
+}
+
+hdlast::port::ptr passes::to_hdlast(const rtlir::port::ptr& p)
+{
+    return std::make_shared<hdlast::port>(
+        p->name(),
+        p->width(),
+        p->hdlast_direction()
+    );
 }

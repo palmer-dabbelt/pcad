@@ -94,6 +94,16 @@ rtlir::circuit::ptr passes::compile(
 
     auto black_box = std::make_shared<netlist::memory_blackbox>(compile_to);
 
+    auto ports = std::vector<rtlir::port::ptr>();
+    for (const auto mem_port: to_compile->mem_ports()) {
+        auto clock = std::make_shared<rtlir::port>(
+            mem_port->clock_port_name().data(),
+            1,
+            rtlir::port_direction::INPUT
+        );
+        ports.push_back(clock);
+    }
+
     auto instances = std::vector<rtlir::instance::ptr>();
     for (auto parallel = 0; parallel < to_compile->width(); parallel += compile_to->width()) {
         instances.push_back(
@@ -106,6 +116,7 @@ rtlir::circuit::ptr passes::compile(
 
     auto compiled = std::make_shared<rtlir::module>(
         to_compile->name(),
+        ports,
         instances
     );
 
