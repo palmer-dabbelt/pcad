@@ -18,6 +18,7 @@ static inline std::string v_string(const port_direction& dir)
     case port_direction::INPUT:  return "input";
     case port_direction::OUTPUT: return "output";
     }
+    std::cerr << "unknown direction\n";
     abort();
     return "";
 }
@@ -28,6 +29,7 @@ static inline std::string v_string(const enum unop_statement::op& opcode)
     case unop_statement::op::NOT:  return "~";
     case unop_statement::op::BANG: return "!";
     }
+    std::cerr << "unknown unary opcode\n";
     abort();
     return "";
 }
@@ -55,6 +57,7 @@ static inline std::string v_string(const enum biop_statement::op& opcode)
     case biop_statement::op::ANDAND: return "&&";
     case biop_statement::op::EQEQEQ: return "===";
     }
+    std::cerr << "unknown binary opcode\n";
     abort();
     return "";
 }
@@ -265,6 +268,9 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const statement::ptr& sta
             std::cerr << "Unknown statement of type " << typeid(statement).name() << std::endl;
             abort();
         },
-        none(), [&](){ abort(); }
+        none(), [&](){
+            std::cerr << "nullptr statement\n";
+            abort();
+        }
     );
 }
