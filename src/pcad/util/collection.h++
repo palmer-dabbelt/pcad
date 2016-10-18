@@ -62,6 +62,17 @@ namespace putil {
             }
             return out;
         }
+
+        /* Converts a bunch of shared pointers into weak pointers. */
+        template<typename T>
+        static inline std::vector<std::weak_ptr<T>> to_weak(
+            const std::vector<std::shared_ptr<T>>& v)
+        {
+            auto out = std::vector<std::weak_ptr<T>>();
+            for (const auto& e: v)
+                out.push_back(e);
+            return out;
+        }
     }
 }
 

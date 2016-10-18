@@ -49,6 +49,7 @@ namespace pcad {
         public:
             virtual const decltype(_name)& name(void) const { return _name; }
             virtual const decltype(_ports)& ports(void) const { return _ports; }
+            virtual const decltype(_instances)& instances(void) const { return _instances; }
         };
     }
 }

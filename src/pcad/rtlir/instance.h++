@@ -10,7 +10,10 @@ namespace pcad {
 }
 
 #include "module.h++"
+#include <pcad/rtlir/statement.h++>
+#include <pcad/util/collection.h++>
 #include <memory>
+#include <vector>
 
 namespace pcad {
     namespace rtlir {
@@ -21,13 +24,24 @@ namespace pcad {
 
         private:
             const std::string _name;
-            const std::weak_ptr<module> _module;
+            const std::weak_ptr<rtlir::module> _module;
+            const std::vector<rtlir::connect_statement::ptr> _connects;
 
         public:
-            instance(const std::string& name, const std::shared_ptr<module> module)
+            instance(
+                const std::string& name,
+                const std::shared_ptr<module>& module,
+                const std::vector<connect_statement::ptr>& connects)
             : _name(name),
-              _module(module)
+              _module(module),
+              _connects(connects)
             {}
+
+        public:
+            const decltype(_name)& name(void) const { return _name; }
+            const std::shared_ptr<rtlir::module> module(void) const { return _module.lock(); }
+            const std::vector<connect_statement::ptr> port_connections(void) const
+            { return _connects; }
         };
     }
 }

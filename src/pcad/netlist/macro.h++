@@ -47,6 +47,8 @@ namespace pcad {
             util::option<std::string> _mask_port_name;
             util::option<std::string> _chip_enable_port_name;
             util::option<std::string> _write_enable_port_name;
+            util::option<int> _bit_width;
+            util::option<int> _word_depth;
 
         public:
             memory_macro_port(
@@ -57,7 +59,9 @@ namespace pcad {
                 const decltype(_address_port_name)& address_port_name,
                 const decltype(_mask_port_name)& mask_port_name,
                 const decltype(_chip_enable_port_name)& chip_enable_port_name,
-                const decltype(_write_enable_port_name)& write_enable_port_name
+                const decltype(_write_enable_port_name)& write_enable_port_name,
+                const decltype(_bit_width)& bit_width,
+                const decltype(_word_depth)& word_depth
             )
             : _clock_port_name(clock_port_name),
               _mask_gran(mask_gran),
@@ -66,7 +70,9 @@ namespace pcad {
               _address_port_name(address_port_name),
               _mask_port_name(mask_port_name),
               _chip_enable_port_name(chip_enable_port_name),
-              _write_enable_port_name(write_enable_port_name)
+              _write_enable_port_name(write_enable_port_name),
+              _bit_width(bit_width),
+              _word_depth(word_depth)
             {}
 
         public:
@@ -78,6 +84,28 @@ namespace pcad {
             const decltype(_mask_port_name)& mask_port_name(void) const { return _mask_port_name; }
             const decltype(_chip_enable_port_name)& chip_enable_port_name(void) const { return _chip_enable_port_name; }
             const decltype(_write_enable_port_name)& write_enable_port_name(void) const { return _write_enable_port_name; }
+            const decltype(_bit_width)& bit_width(void) const { return _bit_width; }
+            const decltype(_word_depth)& word_depth(void) const { return _word_depth; }
+
+        public:
+            const rtlir::port::ptr clock_port(void) const {
+                return std::make_shared<rtlir::port>(
+                    clock_port_name().data(),
+                    1,
+                    rtlir::port_direction::INPUT
+                );
+            }
+
+            const rtlir::port::ptr output_port(void) const {
+                if (output_port_name().valid())
+                    return std::make_shared<rtlir::port>(
+                        output_port_name().data(),
+                        bit_width().data(),
+                        rtlir::port_direction::OUTPUT
+                    );
+                else
+                    return nullptr;
+            }
         };
 
         class memory_macro: public macro {

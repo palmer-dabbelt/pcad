@@ -32,6 +32,10 @@ namespace pcad {
             const std::vector<std::shared_ptr<instance>> _instances;
 
         public:
+            module(const decltype(_name)& name)
+            : _name(name)
+            {}
+
             module(const decltype(_name)& name,
                    const decltype(_ports)& ports,
                    const decltype(_body)& body,

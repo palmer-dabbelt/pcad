@@ -287,7 +287,10 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
             );
             auto wires = std::vector<hdlast::wire::ptr>{};
             auto logic = std::vector<hdlast::statement::ptr>{};
-            auto instances = std::vector<hdlast::instance::ptr>{};
+            auto instances = putil::collection::map(
+                m->instances(),
+                [](const auto& i){ return to_hdlast(i); }
+            );
 
             auto body = std::make_shared<hdlast::scope>(
                 std::make_shared<hdlast::scope>(ports),
@@ -318,5 +321,65 @@ hdlast::port::ptr passes::to_hdlast(const rtlir::port::ptr& p)
         p->name(),
         p->width(),
         p->hdlast_direction()
+    );
+}
+
+hdlast::instance::ptr passes::to_hdlast(const rtlir::instance::ptr& i)
+{
+    /* FIXME: This is actually broken: I'm making a largely empty macro and I
+     * think this is the only place where I'm losing pointer equality for the
+     * HDL AST.  I don't really care right now, since I really need to go redo
+     * the whole type system. */
+    return std::make_shared<hdlast::instance>(
+        i->name(),
+        std::make_shared<hdlast::module>(
+            i->module()->name()
+        ),
+        putil::collection::map(
+            i->module()->ports(),
+            [](const auto& p){ return to_hdlast(p); }
+        ),
+        putil::collection::map(
+            i->port_connections(),
+            [](const auto& a) {
+                return std::make_shared<hdlast::assign_statement>(
+                    to_hdlast(a->target()),
+                    to_hdlast(a->source())
+                );
+            }
+        )
+    );
+}
+
+hdlast::wire::ptr passes::to_hdlast(const rtlir::wire::ptr& w)
+{
+    return std::make_shared<hdlast::wire>(
+        w->name(),
+        w->width()
+    );
+}
+
+hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
+{
+    return match(s,
+        someptr<rtlir::wire_statement>(), [](const auto& ws) {
+            return to_hdlast(ws);
+        },
+        someptr<rtlir::connect_statement>(), [](const auto& cs) {
+            return to_hdlast(cs);
+        }
+    );
+}
+
+hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::wire_statement::ptr& ws)
+{
+    return std::make_shared<hdlast::wire_statement>(to_hdlast(ws->wire()));
+}
+
+hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::connect_statement::ptr& cs)
+{
+    return std::make_shared<hdlast::assign_statement>(
+        to_hdlast(cs->target()),
+        to_hdlast(cs->source())
     );
 }

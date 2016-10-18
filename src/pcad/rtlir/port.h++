@@ -3,6 +3,7 @@
 #ifndef PCAD__RTLIR__PORT_HXX
 #define PCAD__RTLIR__PORT_HXX
 
+#include "wire.h++"
 #include <pcad/hdlast/port.h++>
 #include <memory>
 
@@ -13,14 +14,11 @@ namespace pcad {
             OUTPUT
         };
 
-        class port {
-
+        class port: public wire {
         public:
             typedef std::shared_ptr<port> ptr;
 
         private:
-            const std::string _name;
-            const size_t _width;
             const enum port_direction _direction;
 
         public:
@@ -28,14 +26,11 @@ namespace pcad {
                 const std::string& name,
                 const size_t& width,
                 const enum port_direction& direction
-            ): _name(name),
-               _width(width),
+            ): wire(name, width),
                _direction(direction)
             {}
 
         public:
-            const decltype(_name)& name(void) const { return _name; }
-            const decltype(_width)& width(void) const { return _width; }
             const decltype(_direction)& direction(void) const { return _direction; }
 
         public:

@@ -61,7 +61,7 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
 
                             auto ports = macro_json.template map<netlist::memory_macro_port::ptr, pson::tree_object>(
                                 "ports",
-                                [](const auto& port_object) {
+                                [&](const auto& port_object) {
                                     auto clock_port_name = port_object->template get<std::string>("clock port name");
                                     auto mask_gran = port_object->template get<int>("mask granularity");
                                     auto output_port_name = port_object->template get<std::string>("output port name");
@@ -80,7 +80,9 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         util::to_option(address_port_name),
                                         util::to_option(mask_port_name),
                                         util::to_option(chip_enable_port_name),
-                                        util::to_option(write_enable_port_name)
+                                        util::to_option(write_enable_port_name),
+                                        util::to_option(width),
+                                        util::to_option(depth)
                                     );
                                 }
                             );

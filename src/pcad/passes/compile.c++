@@ -6,6 +6,8 @@
 #include <pcad/rtlir/instance.h++>
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
+#include <pcad/util/assert.h++>
+#include <unordered_map>
 using namespace pcad;
 using namespace simple_match;
 using namespace simple_match::placeholders;
@@ -92,26 +94,74 @@ rtlir::circuit::ptr passes::compile(
     if (to_compile->width() % compile_to->width() != 0 || to_compile->depth() % compile_to->depth() != 0)
         return std::make_shared<rtlir::circuit>(to_compile);
 
+    /* FIXME: I should support mapping to more complicated SRAM port
+     * arrangements. */
+    if (to_compile->mem_ports().size() != 1 || compile_to->mem_ports().size() != 1)
+        return std::make_shared<rtlir::circuit>(to_compile);
+
     auto black_box = std::make_shared<netlist::memory_blackbox>(compile_to);
 
+    auto name2port = std::unordered_map<std::string, rtlir::port::ptr>();
     auto ports = std::vector<rtlir::port::ptr>();
-    for (const auto mem_port: to_compile->mem_ports()) {
-        auto clock = std::make_shared<rtlir::port>(
-            mem_port->clock_port_name().data(),
-            1,
-            rtlir::port_direction::INPUT
-        );
-        ports.push_back(clock);
-    }
+    auto portify = [&](const rtlir::port::ptr& mmp) {
+        auto l = name2port.find(mmp->name());
+        if (l != name2port.end())
+            return l->second;
+
+        name2port[mmp->name()] = mmp;
+        ports.push_back(mmp);
+        return mmp;
+    };
+
+    auto paired_memory_ports = putil::collection::map(
+        to_compile->mem_ports(),
+        [&](const auto& tcp) {
+            return std::make_pair(tcp, compile_to->mem_ports()[0]);
+        }
+    );
+
+    auto logic = std::vector<rtlir::statement::ptr>();
 
     auto instances = std::vector<rtlir::instance::ptr>();
     for (auto parallel = 0; parallel < to_compile->width(); parallel += compile_to->width()) {
-        instances.push_back(
-            std::make_shared<rtlir::instance>(
-                "sram_0_" + std::to_string(parallel / compile_to->width()),
-                black_box
-            )
-        );
+        for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
+            util::assert(serial == 0, "I don't support memory depth splitting yet");
+
+            auto pi = parallel / compile_to->width();
+            auto si = serial / compile_to->depth();
+            auto connects = std::vector<rtlir::connect_statement::ptr>();
+
+            auto assign_always = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                auto as = std::make_shared<rtlir::connect_statement>(target, source);
+                connects.push_back(as);
+                return as;
+            };
+
+            auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                return assign_always(target, source);
+            };
+ 
+            for (const auto& pp: paired_memory_ports) {
+                auto outer = pp.first;
+                auto inner = pp.second;
+                
+                auto o_clock = portify(outer->clock_port());
+                auto i_clock = portify(inner->clock_port());
+                assign_always(i_clock, o_clock);
+
+                auto o_output = portify(outer->output_port());
+                auto i_output = portify(inner->output_port());
+                assign_slice(i_output, o_output);
+            }
+
+            auto instance = std::make_shared<rtlir::instance>(
+                "mem_" + std::to_string(si) + "_" + std::to_string(pi),
+                black_box,
+                connects
+            );
+            instances.push_back(instance);
+
+        }
     }
 
     auto compiled = std::make_shared<rtlir::module>(
