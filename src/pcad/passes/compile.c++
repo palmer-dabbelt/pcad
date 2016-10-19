@@ -151,15 +151,15 @@ rtlir::circuit::ptr passes::compile(
                 return assign_always(source, w);
             };
 
-            auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+            auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower) {
                 auto w = std::make_shared<rtlir::wire>(
                     target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
-                    compile_to->width()
+                    upper - lower + 1
                 );
                 auto ss = std::make_shared<rtlir::slice_statement>(
                     source,
-                    parallel + compile_to->width() - 1,
-                    parallel
+                    upper,
+                    lower
                 );
                 auto ass = std::make_shared<rtlir::connect_statement>(
                     w,
@@ -170,22 +170,56 @@ rtlir::circuit::ptr passes::compile(
                 wires.push_back(w);
                 return assign_always(source, w);
             };
+
+            auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                return slice_helper(
+                    target,
+                    source,
+                    (pi + 1) * source->width() - 1,
+                    (pi + 0) * source->width() - 0
+                );
+            };
+
+            auto assign_lower = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                return slice_helper(
+                    target,
+                    source,
+                    std::ceil(std::log2(compile_to->depth())) - 1,
+                    0
+                );
+            };
  
             for (const auto& pp: paired_memory_ports) {
                 auto outer = pp.first;
                 auto inner = pp.second;
                 
                 auto o_clock = portify(outer->clock_port());
-                auto i_clock = portify(inner->clock_port());
+                auto i_clock = inner->clock_port();
                 assign_always(o_clock, i_clock);
 
                 auto o_output = portify(outer->output_port());
-                auto i_output = portify(inner->output_port());
+                auto i_output = inner->output_port();
                 assign_cat(o_output, i_output);
 
                 auto o_input = portify(outer->input_port());
-                auto i_input = portify(inner->input_port());
+                auto i_input = inner->input_port();
                 assign_slice(o_input, i_input);
+
+                auto o_address = portify(outer->address_port());
+                auto i_address = inner->address_port();
+                assign_lower(o_address, i_address);
+
+                auto o_mask = portify(outer->mask_port());
+                auto i_mask = inner->mask_port();
+                assign_slice(o_mask, i_mask);
+
+                auto o_chip_enable = portify(outer->chip_enable_port());
+                auto i_chip_enable = inner->chip_enable_port();
+                assign_always(o_chip_enable, i_chip_enable);
+
+                auto o_write_enable = portify(outer->write_enable_port());
+                auto i_write_enable = inner->write_enable_port();
+                assign_always(o_write_enable, i_write_enable);
             }
 
             auto instance = std::make_shared<rtlir::instance>(

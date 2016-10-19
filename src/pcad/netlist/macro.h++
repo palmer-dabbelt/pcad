@@ -117,6 +117,46 @@ namespace pcad {
                 else
                     return nullptr;
             }
+
+            const rtlir::port::ptr address_port(void) const {
+                if (address_port_name().valid())
+                    return std::make_shared<rtlir::port>(
+                        address_port_name().data(),
+                        std::ceil(std::log2(word_depth().data())),
+                        rtlir::port_direction::INPUT
+                    );
+                else
+                    return nullptr;
+            }
+
+            const rtlir::port::ptr mask_port(void) const {
+                util::assert(bit_width().data() % mask_gran().data() == 0,
+                             "The width of memory macros must be an exact multiple of the mask granularity");
+                if (mask_port_name().valid())
+                    return std::make_shared<rtlir::port>(
+                        mask_port_name().data(),
+                        bit_width().data() / mask_gran().data(),
+                        rtlir::port_direction::INPUT
+                    );
+                else
+                    return nullptr;
+            }
+            
+            const rtlir::port::ptr chip_enable_port(void) const {
+                return std::make_shared<rtlir::port>(
+                    chip_enable_port_name().data(),
+                    1,
+                    rtlir::port_direction::INPUT
+                );
+            }
+            
+            const rtlir::port::ptr write_enable_port(void) const {
+                return std::make_shared<rtlir::port>(
+                    write_enable_port_name().data(),
+                    1,
+                    rtlir::port_direction::INPUT
+                );
+            }
         };
 
         class memory_macro: public macro {
