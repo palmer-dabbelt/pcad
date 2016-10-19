@@ -5,6 +5,7 @@
 #include <pcad/hdlast/blackbox.h++>
 #include <pcad/hdlast/reg.h++>
 #include <pcad/netlist/macro.h++>
+#include <pcad/util/assert.h++>
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
 #include <cmath>
@@ -285,8 +286,14 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                 m->ports(),
                 [](const auto& p){ return to_hdlast(p); }
             );
-            auto wires = std::vector<hdlast::wire::ptr>{};
-            auto logic = std::vector<hdlast::statement::ptr>{};
+            auto wires = putil::collection::map(
+                m->wires(),
+                [](const auto& w){ return to_hdlast(w); }
+            );
+            auto logic = putil::collection::map(
+                m->statements(),
+                [](const auto& s){ return to_hdlast(s); }
+            );
             auto instances = putil::collection::map(
                 m->instances(),
                 [](const auto& i){ return to_hdlast(i); }
@@ -361,14 +368,37 @@ hdlast::wire::ptr passes::to_hdlast(const rtlir::wire::ptr& w)
 
 hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
 {
-    return match(s,
+    auto out = match(s,
         someptr<rtlir::wire_statement>(), [](const auto& ws) {
             return to_hdlast(ws);
         },
         someptr<rtlir::connect_statement>(), [](const auto& cs) {
             return to_hdlast(cs);
+        },
+        someptr<rtlir::cat_statement>(), [](const auto& cs) {
+            return to_hdlast(cs);
+        },
+        someptr<rtlir::slice_statement>(), [](const auto& ss) {
+            return to_hdlast(ss);
+        },
+        someptr<rtlir::literal_statement>(), [](const auto& ls) {
+            return to_hdlast(ls);
+        },
+        otherwise, [&]() -> hdlast::statement::ptr {
+            std::cerr << "Unable to convert rtlir::statement to hdlast::statement\n";
+            std::cerr << "  " << typeid(*s).name() << "\n";
+            abort();
+            return nullptr;
         }
     );
+
+    if (out == nullptr) {
+        std::cerr << "Some sort of hdlast->rtlir conversion failed\n";
+        std::cerr << "  " << typeid(*s).name() << "\n";
+        abort();
+    }
+
+    return out;
 }
 
 hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::wire_statement::ptr& ws)
@@ -381,5 +411,36 @@ hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::connect_statement::
     return std::make_shared<hdlast::assign_statement>(
         to_hdlast(cs->target()),
         to_hdlast(cs->source())
+    );
+}
+
+hdlast::cat_statement::ptr passes::to_hdlast(const rtlir::cat_statement::ptr& cs)
+{
+    return std::make_shared<hdlast::cat_statement>(
+        putil::collection::reverse(
+            putil::collection::map(
+                cs->sources(),
+                [](const auto& s) { return to_hdlast(s); }
+            )
+        )
+    );
+}
+
+hdlast::slice_statement::ptr passes::to_hdlast(const rtlir::slice_statement::ptr& ss)
+{
+    return std::make_shared<hdlast::slice_statement>(
+        to_hdlast(ss->source()),
+        to_hdlast(ss->hi()),
+        to_hdlast(ss->lo())
+    );
+}
+
+hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::literal_statement::ptr& ls)
+{
+    return std::make_shared<hdlast::wire_statement>(
+        std::make_shared<hdlast::literal>(
+            ls->data()->as_string(),
+            32 /* FIXME: 32 bits is enough for anyone */
+        )
     );
 }

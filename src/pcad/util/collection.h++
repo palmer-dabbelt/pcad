@@ -21,9 +21,10 @@
 #ifndef PUTIL__COLLECTION_HXX
 #define PUTIL__COLLECTION_HXX
 
-#include <vector>
 #include <algorithm>
 #include <functional>
+#include <map>
+#include <vector>
 
 namespace putil {
     namespace collection {
@@ -73,6 +74,52 @@ namespace putil {
                 out.push_back(e);
             return out;
         }
+
+        /* Multimaps aren't useful, this fixes them. */
+        template<typename K, typename V, typename F>
+        static inline void myfmmw(
+            const std::multimap<K, V>& map,
+            const F& func)
+        {
+            if (map.size() == 0)
+                return;
+
+            auto last_key = map.begin()->first;
+            auto cur = std::vector<V>{ map.begin()->second };
+            for (auto it = ++(map.begin()); it != map.end(); ++it) {
+                if (it->first != last_key) {
+                    func(last_key, cur);
+                    last_key = it->first;
+                    cur = std::vector<V>{ it->second };
+                }
+
+                cur.push_back(it->second);
+            }
+
+            func(last_key, cur);
+        }
+
+        /* A functional fold. */
+        template<typename V, typename F, typename B>
+        static inline auto fold(const V& v, const B& b, const F& f)
+          -> decltype(f(b, std::declval<typename V::value_type>()))
+        {
+            decltype(f(b, std::declval<typename V::value_type>())) prev = b;
+            for (const auto& next: v)
+                prev = f(prev, next);
+            return prev;
+        }
+
+        /* Reverses a collection. */
+        template<typename V>
+        static inline V reverse(const V& in)
+        {
+            auto out = V();
+            for (const auto& e: in)
+                out.push_back(e);
+            std::reverse(out.begin(), out.end());
+            return out;
+        };
     }
 }
 

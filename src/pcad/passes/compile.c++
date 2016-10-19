@@ -7,6 +7,7 @@
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
 #include <pcad/util/assert.h++>
+#include <map>
 #include <unordered_map>
 using namespace pcad;
 using namespace simple_match;
@@ -123,6 +124,9 @@ rtlir::circuit::ptr passes::compile(
     auto logic = std::vector<rtlir::statement::ptr>();
 
     auto instances = std::vector<rtlir::instance::ptr>();
+    auto cats = std::multimap<rtlir::port::ptr, rtlir::wire::ptr>();
+    auto wires = std::vector<rtlir::wire::ptr>();
+    auto statements = std::vector<rtlir::statement::ptr>();
     for (auto parallel = 0; parallel < to_compile->width(); parallel += compile_to->width()) {
         for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
             util::assert(serial == 0, "I don't support memory depth splitting yet");
@@ -131,14 +135,40 @@ rtlir::circuit::ptr passes::compile(
             auto si = serial / compile_to->depth();
             auto connects = std::vector<rtlir::connect_statement::ptr>();
 
-            auto assign_always = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+            auto assign_always = [&](const rtlir::wire::ptr& target, const rtlir::wire::ptr& source) {
                 auto as = std::make_shared<rtlir::connect_statement>(target, source);
                 connects.push_back(as);
                 return as;
             };
 
+            auto assign_cat = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                auto w = std::make_shared<rtlir::wire>(
+                    target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
+                    compile_to->width()
+                );
+                wires.push_back(w);
+                cats.insert(std::make_pair(target, w));
+                return assign_always(source, w);
+            };
+
             auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
-                return assign_always(target, source);
+                auto w = std::make_shared<rtlir::wire>(
+                    target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
+                    compile_to->width()
+                );
+                auto ss = std::make_shared<rtlir::slice_statement>(
+                    source,
+                    parallel + compile_to->width() - 1,
+                    parallel
+                );
+                auto ass = std::make_shared<rtlir::connect_statement>(
+                    w,
+                    ss
+                );
+                statements.push_back(ass);
+
+                wires.push_back(w);
+                return assign_always(source, w);
             };
  
             for (const auto& pp: paired_memory_ports) {
@@ -147,11 +177,15 @@ rtlir::circuit::ptr passes::compile(
                 
                 auto o_clock = portify(outer->clock_port());
                 auto i_clock = portify(inner->clock_port());
-                assign_always(i_clock, o_clock);
+                assign_always(o_clock, i_clock);
 
                 auto o_output = portify(outer->output_port());
                 auto i_output = portify(inner->output_port());
-                assign_slice(i_output, o_output);
+                assign_cat(o_output, i_output);
+
+                auto o_input = portify(outer->input_port());
+                auto i_input = portify(inner->input_port());
+                assign_slice(o_input, i_input);
             }
 
             auto instance = std::make_shared<rtlir::instance>(
@@ -160,13 +194,23 @@ rtlir::circuit::ptr passes::compile(
                 connects
             );
             instances.push_back(instance);
-
         }
     }
 
+    putil::collection::myfmmw(
+        cats,
+        [&](const rtlir::port::ptr& port, const std::vector<rtlir::wire::ptr>& elements) -> void {
+            auto cat = std::make_shared<rtlir::cat_statement>(elements);
+            auto a = std::make_shared<rtlir::connect_statement>(port, cat);
+            statements.push_back(a);
+        }
+    );
+
     auto compiled = std::make_shared<rtlir::module>(
         to_compile->name(),
+        wires,
         ports,
+        statements,
         instances
     );
 

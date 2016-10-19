@@ -23,6 +23,12 @@ namespace pcad {
               _value(value)
             {}
 
+            literal(const std::string& value,
+                    long width)
+            : wire(value, width),
+              _value(std::stoi(value))
+            {}
+
         public:
             std::string as_string(void) const {
                 std::stringstream ss;

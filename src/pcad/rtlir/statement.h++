@@ -3,9 +3,11 @@
 #ifndef PCAD__RTLIR__STATEMENT_HXX
 #define PCAD__RTLIR__STATEMENT_HXX
 
+#include "literal.h++"
 #include "wire.h++"
 #include <memory>
 #include <pcad/util/assert.h++>
+#include <pcad/util/collection.h++>
 
 namespace pcad {
     namespace rtlir {
@@ -38,6 +40,26 @@ namespace pcad {
             const decltype(_wire)& wire(void) const { return _wire; }
         };
 
+        /* A statement that represents a literal, which is a direct constant
+         * (ie, a number). */
+        class literal_statement: public statement {
+        public:
+            typedef std::shared_ptr<literal_statement> ptr;
+
+        private:
+            const rtlir::literal::ptr _data;
+
+        public:
+            literal_statement(const int& data)
+            : _data( std::make_shared<literal>(data) )
+            {
+                util::assert(_data != nullptr);
+            }
+
+        public:
+            const decltype(_data)& data(void) const { return _data; }
+        };
+
         /* Connects two wires together, possibly unnamed ones. */
         class connect_statement: public statement {
         public:
@@ -53,18 +75,107 @@ namespace pcad {
                 const decltype(_source)& source
             ): _target(target),
                _source(source)
-            {}
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
+
+            connect_statement(
+                const wire::ptr& target,
+                const decltype(_source)& source
+            ): _target( std::make_shared<wire_statement>(target) ),
+               _source( source )
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
 
             connect_statement(
                 const wire::ptr& target,
                 const wire::ptr& source
             ): _target( std::make_shared<wire_statement>(target) ),
                _source( std::make_shared<wire_statement>(source) )
-            {}
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
 
         public:
             const decltype(_target)& target(void) const { return _target; }
             const decltype(_source)& source(void) const { return _source; }
+        };
+
+        /* Extracts a bit field from a wire. */
+        class slice_statement: public statement {
+        public:
+            typedef std::shared_ptr<slice_statement> ptr;
+
+        private:
+            const statement::ptr _source;
+            const statement::ptr _hi;
+            const statement::ptr _lo;
+
+        public:
+            slice_statement(
+                const wire::ptr& source,
+                const int& hi,
+                const int& lo)
+             : _source(std::make_shared<wire_statement>(source)),
+               _hi(std::make_shared<literal_statement>(hi)),
+               _lo(std::make_shared<literal_statement>(lo))
+            {
+                util::assert(_source != nullptr);
+                util::assert(_hi != nullptr);
+                util::assert(_lo != nullptr);
+            }
+
+        public:
+            const decltype(_source)& source(void) const { return _source; }
+            const decltype(_hi)& hi(void) const { return _hi; }
+            const decltype(_lo)& lo(void) const { return _lo; }
+        };
+
+        /* Concatonates multiple wires together. */
+        class cat_statement: public statement {
+        public:
+            typedef std::shared_ptr<cat_statement> ptr;
+
+        private:
+            const std::vector<statement::ptr> _sources;
+
+        public:
+            cat_statement(const std::vector<wire::ptr> sources)
+            : _sources(
+                putil::collection::map(
+                    sources,
+                    [](const auto& s) -> statement::ptr {
+                        return std::make_shared<wire_statement>(s);
+                    }
+                ))
+            {
+                for (const auto& s: _sources)
+                    util::assert(s != nullptr);
+            }
+
+            cat_statement(const wire::ptr& l, const wire::ptr& r)
+            : _sources{
+                std::make_shared<wire_statement>(l),
+                std::make_shared<wire_statement>(r)
+              }
+            {
+                for (const auto& s: _sources)
+                    util::assert(s != nullptr);
+            }
+
+            cat_statement(const statement::ptr& l, const statement::ptr& r)
+            : _sources{l, r}
+            {
+                for (const auto& s: _sources)
+                    util::assert(s != nullptr);
+            }
+
+        public:
+            const decltype(_sources)& sources(void) const { return _sources; }
         };
     }
 }
