@@ -183,19 +183,27 @@ namespace pcad {
 
         class cat_statement: public statement {
         private:
-            const statement::ptr _hi;
-            const statement::ptr _lo;
+            const std::vector<statement::ptr> _hi2lo;
 
         public:
             cat_statement(const statement::ptr& hi,
                           const statement::ptr& lo)
-            : _hi(hi),
-              _lo(lo)
-            {}
+            : _hi2lo{hi, lo}
+            {
+                util::assert(hi != nullptr);
+                util::assert(lo != nullptr);
+            }
+
+            cat_statement(const std::vector<statement::ptr>& hi2lo)
+            : _hi2lo(hi2lo)
+            {
+                for (const auto& e: hi2lo)
+                    util::assert(e != nullptr);
+            }
 
         public:
-            const decltype(_hi)& hi(void) const { return _hi; }
-            const decltype(_lo)& lo(void) const { return _lo; }
+            const decltype(_hi2lo)& hi2lo(void) const { return _hi2lo; }
+            const statement::ptr& hi2lo(size_t i) const { return _hi2lo[i]; }
         };
 
         class trop_statement: public statement {
