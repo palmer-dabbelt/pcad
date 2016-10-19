@@ -106,6 +106,17 @@ namespace pcad {
                 else
                     return nullptr;
             }
+
+            const rtlir::port::ptr input_port(void) const {
+                if (input_port_name().valid())
+                    return std::make_shared<rtlir::port>(
+                        input_port_name().data(),
+                        bit_width().data(),
+                        rtlir::port_direction::INPUT
+                    );
+                else
+                    return nullptr;
+            }
         };
 
         class memory_macro: public macro {

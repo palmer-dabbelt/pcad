@@ -5,6 +5,7 @@
 
 #include "wire.h++"
 #include <memory>
+#include <pcad/util/assert.h++>
 
 namespace pcad {
     namespace rtlir {
@@ -29,7 +30,9 @@ namespace pcad {
         public:
             wire_statement(const decltype(_wire)& wire)
             : _wire(wire)
-            {}
+            {
+                util::assert(_wire != nullptr);
+            }
 
         public:
             const decltype(_wire)& wire(void) const { return _wire; }

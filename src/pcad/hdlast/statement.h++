@@ -6,6 +6,7 @@
 #include "scope.h++"
 #include "literal.h++"
 #include <memory>
+#include <pcad/util/assert.h++>
 
 namespace pcad {
     namespace hdlast {
@@ -31,7 +32,10 @@ namespace pcad {
                              const statement::ptr& source)
             : _dest(dest),
               _source(source)
-            {}
+            {
+                util::assert(_dest != nullptr);
+                util::assert(_source != nullptr);
+            }
 
         public:
             const decltype(_dest)& dest(void) const { return _dest; }
@@ -45,7 +49,9 @@ namespace pcad {
         public:
             wire_statement(const hdlast::wire::ptr& wire)
             : _wire(wire)
-            {}
+            {
+                util::assert(_wire != nullptr);
+            }
 
         public:
             const decltype(_wire)& wire(void) const { return _wire; }
@@ -67,7 +73,9 @@ namespace pcad {
                            const statement::ptr& statement)
             : _op(operation),
               _statement(statement)
-            {}
+            {
+                util::assert(_statement != nullptr);
+            }
 
             const decltype(_op)& opcode(void) const { return _op; }
             const decltype(_statement)& statement(void) const { return _statement; }
@@ -109,7 +117,10 @@ namespace pcad {
             : _op(operation),
               _a(a),
               _b(b)
-            {}
+            {
+                util::assert(_a != nullptr);
+                util::assert(_b != nullptr);
+            }
 
         public:
             const decltype(_op)& opcode(void) const { return _op; }
@@ -138,7 +149,11 @@ namespace pcad {
             : _source(source),
               _hi(hi),
               _lo(lo)
-            {}
+            {
+                util::assert(_source != nullptr);
+                util::assert(_hi != nullptr);
+                util::assert(_lo != nullptr);
+            }
 
         public:
             const decltype(_source)& source(void) const { return _source; }
@@ -156,7 +171,10 @@ namespace pcad {
                             const statement::ptr index)
             : _source(source),
               _index(index)
-            {}
+            {
+                util::assert(_source != nullptr);
+                util::assert(_index != nullptr);
+            }
 
         public:
             const decltype(_source) source(void) const { return _source; }
@@ -193,7 +211,11 @@ namespace pcad {
             : _sel(sel),
               _ont(ont),
               _onf(onf)
-            {}
+            {
+                util::assert(_sel != nullptr);
+                util::assert(_ont != nullptr);
+                util::assert(_onf != nullptr);
+            }
 
         public:
             const decltype(_sel) sel(void) const { return _sel; }
@@ -211,7 +233,10 @@ namespace pcad {
                           const statement::ptr& value)
             : _width(width),
               _value(value)
-            {}
+            {
+                util::assert(_width != nullptr);
+                util::assert(_value != nullptr);
+            }
 
         public:
             const decltype(_width)& width(void) const { return _width; }
@@ -228,7 +253,9 @@ namespace pcad {
                               const statement::ptr& usv)
             : _function(function),
               _arg(usv)
-            {}
+            {
+                util::assert(_arg != nullptr);
+            }
 
         public:
             const decltype(_function) function(void) const { return _function; }
@@ -245,7 +272,11 @@ namespace pcad {
                              const std::vector<statement::ptr>& body)
             : _trigger(trigger),
               _body(body)
-            {}
+            {
+                util::assert(_trigger != nullptr);
+                for (const auto& e: _body)
+                    util::assert(e != nullptr);
+            }
 
         public:
             const decltype(_trigger)& trigger(void) const { return _trigger; }
@@ -259,7 +290,9 @@ namespace pcad {
         public:
             posedge_statement(const wire::ptr& clock)
             : _clock(clock)
-            {}
+            {
+                util::assert(_clock != nullptr);
+            }
 
         public:
             const decltype(_clock)& clock(void) const { return _clock; }
@@ -278,7 +311,13 @@ namespace pcad {
             : _cond(cond),
               _on_true(on_true),
               _on_false(on_false)
-            {}
+            {
+                util::assert(_cond != nullptr);
+                for (const auto& e: _on_true)
+                    util::assert(e != nullptr);
+                for (const auto& e: _on_false)
+                    util::assert(e != nullptr);
+            }
 
         public:
             const decltype(_cond)& cond(void) const { return _cond; }
