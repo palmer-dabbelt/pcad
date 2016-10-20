@@ -41,12 +41,12 @@ module name_of_sram_module(
   wire [7:0] input_0;
   wire write_enable_0;
   wire [7:0] mask_0;
-  reg [7:0] read_data_0;
+  wire [7:0] read_data_0;
   reg [10:0] address_buffer_0;
   wire [7:0] output_1;
   wire write_enable_1;
   wire [7:0] mask_1;
-  reg [7:0] read_data_1;
+  wire [7:0] read_data_1;
   reg [10:0] address_buffer_1;
   assign write_enable_0 = ~(0);
   assign mask_0 = ~(0);

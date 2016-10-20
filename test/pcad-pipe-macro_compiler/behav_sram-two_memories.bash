@@ -54,7 +54,7 @@ module name_of_sram_module(
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;
-  reg [7:0] read_data_0;
+  wire [7:0] read_data_0;
   reg [10:0] address_buffer_0;
   assign mask_0 = ~(0);
   assign read_data_0 = mem[address_buffer_0];
@@ -140,7 +140,7 @@ module another_sram_module(
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;
-  reg [7:0] read_data_0;
+  wire [7:0] read_data_0;
   reg [10:0] address_buffer_0;
   assign mask_0 = ~(0);
   assign read_data_0 = mem[address_buffer_0];
