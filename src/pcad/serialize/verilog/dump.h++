@@ -24,6 +24,7 @@ namespace pcad {
             void dump(std::ofstream& out, const hdlast::instance::ptr& instance);
 
             void dump(std::ofstream& out, const std::vector<rtlir::module::ptr>& modules);
+            void dump(std::ofstream& out, const std::vector<hdlast::module::ptr>& modules);
         }
     }
 }

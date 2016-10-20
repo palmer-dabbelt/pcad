@@ -14,12 +14,12 @@ using namespace pcad;
 using namespace simple_match;
 using namespace simple_match::placeholders;
 
-hdlast::circuit::ptr passes::to_hdlast(const rtlir::circuit::ptr& circuit)
+hdlast::circuit::ptr passes::to_hdlast(const rtlir::circuit::ptr& circuit, bool syn_flops)
 {
     std::vector<hdlast::module::ptr> compiled_modules;
 
     for (const auto& m: circuit->modules())
-        compiled_modules.push_back(to_hdlast(m));
+        compiled_modules.push_back(to_hdlast(m, syn_flops));
 
     return std::make_shared<hdlast::circuit>(
         compiled_modules,
@@ -27,10 +27,10 @@ hdlast::circuit::ptr passes::to_hdlast(const rtlir::circuit::ptr& circuit)
     );
 }
 
-hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
+hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module, bool syn_flops)
 {
     auto out = match(module,
-        someptr<netlist::memory_macro>(), [](auto m) {
+        someptr<netlist::memory_macro>(), [&](auto m) {
             /* The whole point of a memory is to store stuff.  Here's where all
              * the bits live. */
             auto memory = std::make_shared<hdlast::reg>("mem", m->width(), m->depth());
@@ -197,8 +197,17 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
                         read_block
                     )
                 );
-                for (const auto& ra: randomize_x_assign(output, read_data))
-                    logic.push_back(ra);
+                if (syn_flops == false) {
+                    for (const auto& ra: randomize_x_assign(output, read_data))
+                        logic.push_back(ra);
+                } else {
+                    logic.push_back(
+                        std::make_shared<hdlast::assign_statement>(
+                            std::make_shared<hdlast::wire_statement>(output),
+                            std::make_shared<hdlast::wire_statement>(read_data)
+                        )
+                    );
+                }
 
                 auto write_block = std::vector<hdlast::statement::ptr>();
                 for (auto i = 0; i < m->width(); ++i) {
@@ -320,6 +329,11 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module)
     }
 
     return out;
+}
+
+std::vector<hdlast::module::ptr> passes::to_hdlast(const std::vector<rtlir::module::ptr>& modules, bool syn_flops)
+{
+    return putil::collection::map(modules, [&](const auto& m){ return to_hdlast(m, syn_flops); });
 }
 
 hdlast::port::ptr passes::to_hdlast(const rtlir::port::ptr& p)

@@ -10,8 +10,9 @@
 
 namespace pcad {
     namespace passes {
-        hdlast::circuit::ptr to_hdlast(const rtlir::circuit::ptr& c);
-        hdlast::module::ptr to_hdlast(const rtlir::module::ptr& c);
+        hdlast::circuit::ptr to_hdlast(const rtlir::circuit::ptr& c, bool syn_flops);
+        hdlast::module::ptr to_hdlast(const rtlir::module::ptr& c, bool syn_flops);
+        std::vector<hdlast::module::ptr> to_hdlast(const std::vector<rtlir::module::ptr>& c, bool syn_flops);
         std::vector<hdlast::port::ptr> to_hdlast(const netlist::memory_macro_port::ptr& p);
         hdlast::port::ptr to_hdlast(const rtlir::port::ptr& p);
         hdlast::instance::ptr to_hdlast(const rtlir::instance::ptr& p);

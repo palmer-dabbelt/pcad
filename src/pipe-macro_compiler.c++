@@ -3,6 +3,7 @@
 #include <pcad/open.h++>
 #include <pcad/passes/compile.h++>
 #include <pcad/passes/link.h++>
+#include <pcad/passes/to_hdlast.h++>
 #include <pcad/serialize/verilog/dump.h++>
 #include <pcad/util/collection.h++>
 #include <tclap/CmdLine.h>
@@ -38,6 +39,9 @@ int main(int argc, const char **argv)
                                              "Top.macros.v");
         cmd.add(verilog);
 
+        TCLAP::SwitchArg syn_flops("", "syn-flops", "Produces synthesizable flop-based memories");
+        cmd.add(syn_flops);
+
         cmd.parse(argc, argv);
 
         auto to_compile = pcad::open_macros(list.getValue());
@@ -49,9 +53,10 @@ int main(int argc, const char **argv)
         );
         auto compiled = pcad::passes::compile(to_compile, {compile_to});
         auto flattened = pcad::passes::link(compiled);
+        auto hdl = pcad::passes::to_hdlast(flattened, syn_flops.getValue());
 
         std::ofstream os(verilog.getValue());
-        pcad::serialize::verilog::dump(os, flattened);
+        pcad::serialize::verilog::dump(os, hdl);
 
         return 0;
     } catch (TCLAP::ArgException &e) {

@@ -78,13 +78,19 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const circuit::ptr& circu
 
 void pcad::serialize::verilog::dump(std::ofstream& os, const rtlir::circuit::ptr& circuit)
 {
-    dump(os, passes::to_hdlast(circuit));
+    dump(os, passes::to_hdlast(circuit, false));
 }
 
 void pcad::serialize::verilog::dump(std::ofstream& os, const std::vector<rtlir::module::ptr>& modules)
 {
     for (const auto& module: modules)
-        dump(os, passes::to_hdlast(module));
+        dump(os, passes::to_hdlast(module, false));
+}
+
+void pcad::serialize::verilog::dump(std::ofstream& os, const std::vector<hdlast::module::ptr>& modules)
+{
+    for (const auto& module: modules)
+        dump(os, module);
 }
 
 void pcad::serialize::verilog::dump(std::ofstream& os, const module::ptr& module)

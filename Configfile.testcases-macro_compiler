@@ -4,3 +4,4 @@ TESTSRC     += behav_sram-8x2048-r-mw.bash
 TESTSRC     += behav_sram-8x2048-r-mw.bash
 TESTSRC     += behav_sram-two_memories.bash
 TESTSRC     += split_width-16x2048-mrw.bash
+TESTSRC	    += behav_sram-16x2048-mrw-syn_flops.bash
