@@ -7,6 +7,7 @@
 #include <pcad/util/collection.h++>
 #include <simple_match/simple_match.hpp>
 #include <pcad/util/assert.h++>
+#include <cmath>
 #include <map>
 #include <unordered_map>
 using namespace pcad;

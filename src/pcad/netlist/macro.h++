@@ -5,6 +5,7 @@
 
 #include "module.h++"
 #include <pcad/util/option.h++>
+#include <cmath>
 #include <memory>
 
 namespace pcad {
