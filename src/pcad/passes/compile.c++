@@ -106,6 +106,9 @@ rtlir::circuit::ptr passes::compile(
     auto name2port = std::unordered_map<std::string, rtlir::port::ptr>();
     auto ports = std::vector<rtlir::port::ptr>();
     auto portify = [&](const rtlir::port::ptr& mmp) {
+        if (mmp == nullptr)
+            return mmp;
+
         auto l = name2port.find(mmp->name());
         if (l != name2port.end())
             return l->second;
@@ -196,31 +199,52 @@ rtlir::circuit::ptr passes::compile(
                 
                 auto o_clock = portify(outer->clock_port());
                 auto i_clock = inner->clock_port();
-                assign_always(o_clock, i_clock);
+                if (o_clock != nullptr && i_clock != nullptr)
+                    assign_always(o_clock, i_clock);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_output = portify(outer->output_port());
                 auto i_output = inner->output_port();
-                assign_cat(o_output, i_output);
+                if (o_output != nullptr && i_output != nullptr)
+                    assign_cat(o_output, i_output);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_input = portify(outer->input_port());
                 auto i_input = inner->input_port();
-                assign_slice(o_input, i_input);
+                if (o_input != nullptr && i_input != nullptr)
+                    assign_slice(o_input, i_input);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_address = portify(outer->address_port());
                 auto i_address = inner->address_port();
-                assign_lower(o_address, i_address);
+                if (o_address != nullptr && i_address != nullptr)
+                    assign_lower(o_address, i_address);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_mask = portify(outer->mask_port());
                 auto i_mask = inner->mask_port();
-                assign_slice(o_mask, i_mask);
+                if (o_mask != nullptr && i_mask != nullptr)
+                    assign_slice(o_mask, i_mask);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_chip_enable = portify(outer->chip_enable_port());
                 auto i_chip_enable = inner->chip_enable_port();
-                assign_always(o_chip_enable, i_chip_enable);
+                if (o_chip_enable != nullptr && i_chip_enable != nullptr)
+                    assign_always(o_chip_enable, i_chip_enable);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 auto o_write_enable = portify(outer->write_enable_port());
                 auto i_write_enable = inner->write_enable_port();
-                assign_always(o_write_enable, i_write_enable);
+                if (o_write_enable != nullptr && i_write_enable != nullptr)
+                    assign_always(o_write_enable, i_write_enable);
+                else
+                    return std::make_shared<rtlir::circuit>(to_compile);
             }
 
             auto instance = std::make_shared<rtlir::instance>(
