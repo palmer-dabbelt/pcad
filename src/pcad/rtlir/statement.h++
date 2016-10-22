@@ -241,6 +241,49 @@ namespace pcad {
         public:
             const decltype(_sources)& sources(void) const { return _sources; }
         };
+
+        /* Logical operators. */
+        enum class binary_op {
+            OR,
+            AND,
+        };
+
+        class binop_statement: public statement {
+        public:
+            typedef std::shared_ptr<binop_statement> ptr;
+
+        private:
+            const binary_op _op;
+            const statement::ptr _l;
+            const statement::ptr _r;
+
+        public:
+            binop_statement(const decltype(_op)& op, const decltype(_l)& l, const decltype(_r)& r)
+            : _op(op),
+              _l(l),
+              _r(r)
+            {}
+
+        public:
+            const decltype(_op)& op(void) const { return _op; }
+            const decltype(_l)& left(void) const { return _l; }
+            const decltype(_r)& right(void) const { return _r; }
+        };
+
+        template <enum binary_op OP>
+        class binop_statement_t: public binop_statement {
+        public:
+            binop_statement_t(const statement::ptr& l, const statement::ptr& r)
+            : binop_statement(OP, l, r)
+            {}
+
+            binop_statement_t(const statement::ptr& l, const wire::ptr& r)
+            : binop_statement(OP, l, std::make_shared<wire_statement>(r))
+            {}
+        };
+
+        using or_statement = binop_statement_t<binary_op::OR>;
+        using and_statement = binop_statement_t<binary_op::AND>;
     }
 }
 

@@ -2,3 +2,4 @@ Convert everything to someptr<>
 Don't use none, use otherwise
 Convert ptil::collection to pcad::util::collection
 typeid in GCC only works with the "*" operator
+rtlir::binop_statement::op() should be virtual=0

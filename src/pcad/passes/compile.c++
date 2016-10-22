@@ -214,6 +214,36 @@ rtlir::circuit::ptr passes::compile(
                 );
             };
 
+            auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
+                auto upper = (pi + 1) * target->width() - 1;
+                auto lower = (pi + 0) * target->width() - 0;
+                util::assert(upper == lower, "only single-bit mask/and is supported");
+                util::assert(bit->width() == 1, "only single-bit mask/and is supported");
+
+                auto w = std::make_shared<rtlir::wire>(
+                    mask->name() + "_" + std::to_string(si) + "_" + std::to_string(pi) + "_AND_" + bit->name(),
+                    upper - lower + 1
+                );
+                wires.push_back(w);
+
+                auto ss = std::make_shared<rtlir::slice_statement>(
+                    mask,
+                    upper,
+                    lower
+                );
+                auto ans = std::make_shared<rtlir::and_statement>(
+                    ss,
+                    bit
+                );
+                auto asans = std::make_shared<rtlir::connect_statement>(
+                    w,
+                    ans
+                );
+                statements.push_back(asans);
+
+                assign_port(target, w);
+            };
+
             auto assign_lower = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
                 return slice_helper(
                     target,
@@ -288,7 +318,7 @@ rtlir::circuit::ptr passes::compile(
                     /* When the outer macro has a chip enable and a mask, we
                      * can still implement it with the chip enable it's just
                      * that we need to AND together the inputs. */
-                    assign_port(i_mask, o_chip_enable);
+                    assign_slice_and(i_chip_enable, o_mask, o_chip_enable);
                 } else if (o_mask == nullptr && i_mask == nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
                     assign_port(i_chip_enable, o_chip_enable);
                 } else {

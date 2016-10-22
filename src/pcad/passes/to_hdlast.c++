@@ -396,6 +396,9 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
         someptr<rtlir::literal_statement>(), [](const auto& ls) {
             return to_hdlast(ls);
         },
+        someptr<rtlir::binop_statement>(), [](const auto& bs) {
+            return to_hdlast(bs);
+        },
         otherwise, [&]() -> hdlast::statement::ptr {
             std::cerr << "Unable to convert rtlir::statement to hdlast::statement\n";
 #ifndef __clang__
@@ -483,4 +486,24 @@ hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::literal_statement::pt
             32 /* FIXME: 32 bits is enough for anyone */
         )
     );
+}
+
+hdlast::biop_statement::ptr passes::to_hdlast(const rtlir::binop_statement::ptr& p)
+{
+    switch (p->op()) {
+    case rtlir::binary_op::AND:
+        return std::make_shared<hdlast::biop_statement>(
+            hdlast::biop_statement::op::ANDAND,
+            to_hdlast(p->left()),
+            to_hdlast(p->right())
+        );
+    case rtlir::binary_op::OR:
+        return std::make_shared<hdlast::biop_statement>(
+            hdlast::biop_statement::op::OR,
+            to_hdlast(p->left()),
+            to_hdlast(p->right())
+        );
+    }
+
+    return nullptr;
 }
