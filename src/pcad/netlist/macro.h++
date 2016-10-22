@@ -4,6 +4,7 @@
 #define PCAD__NETLIST__MACRO_HXX
 
 #include "module.h++"
+#include <pcad/util/assert.h++>
 #include <pcad/util/option.h++>
 #include <cmath>
 #include <memory>
@@ -74,7 +75,10 @@ namespace pcad {
               _write_enable_port_name(write_enable_port_name),
               _bit_width(bit_width),
               _word_depth(word_depth)
-            {}
+            {
+                util::assert(_bit_width.valid(), "memory macro ports must have a width");
+                util::assert(_word_depth.valid(), "memory macro ports must have a depth");
+            }
 
         public:
             const decltype(_clock_port_name)& clock_port_name(void) const { return _clock_port_name; }
