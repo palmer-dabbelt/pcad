@@ -398,7 +398,9 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
         },
         otherwise, [&]() -> hdlast::statement::ptr {
             std::cerr << "Unable to convert rtlir::statement to hdlast::statement\n";
+#ifndef __clang__
             std::cerr << "  " << typeid(*s).name() << "\n";
+#endif
             abort();
             return nullptr;
         }
@@ -406,7 +408,9 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
 
     if (out == nullptr) {
         std::cerr << "Some sort of hdlast->rtlir conversion failed\n";
+#ifndef __clang__
         std::cerr << "  " << typeid(*s).name() << "\n";
+#endif
         abort();
     }
 
