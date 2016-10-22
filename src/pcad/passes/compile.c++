@@ -174,7 +174,8 @@ rtlir::circuit::ptr passes::compile(
                     mask_or_macro_width
                 );
                 wires.push_back(w);
-                assign_port(target, w);
+
+                assign_port(source, w);
                 cats.insert(std::make_pair(target, w));
 
                 auto as = std::make_shared<rtlir::connect_statement>(w, source);
@@ -183,9 +184,11 @@ rtlir::circuit::ptr passes::compile(
 
             auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower) {
                 auto w = std::make_shared<rtlir::wire>(
-                    target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
+                    source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
                     upper - lower + 1
                 );
+                wires.push_back(w);
+
                 auto ss = std::make_shared<rtlir::slice_statement>(
                     source,
                     upper,
@@ -197,7 +200,6 @@ rtlir::circuit::ptr passes::compile(
                 );
                 statements.push_back(ass);
 
-                wires.push_back(w);
                 assign_port(target, w);
 
                 return ass;
@@ -207,8 +209,8 @@ rtlir::circuit::ptr passes::compile(
                 return slice_helper(
                     target,
                     source,
-                    (pi + 1) * source->width() - 1,
-                    (pi + 0) * source->width() - 0
+                    (pi + 1) * target->width() - 1,
+                    (pi + 0) * target->width() - 0
                 );
             };
 
@@ -228,7 +230,7 @@ rtlir::circuit::ptr passes::compile(
                 auto o_clock = portify(outer->clock_port());
                 auto i_clock = inner->clock_port();
                 if (o_clock != nullptr && i_clock != nullptr)
-                    assign_port(o_clock, i_clock);
+                    assign_port(i_clock, o_clock);
                 else {
                     std::cerr << "SRAM macro without clock\n";
                     abort();
@@ -250,7 +252,7 @@ rtlir::circuit::ptr passes::compile(
                 auto o_input = portify(outer->input_port());
                 auto i_input = inner->input_port();
                 if (o_input != nullptr && i_input != nullptr)
-                    assign_slice(o_input, i_input);
+                    assign_slice(i_input, o_input);
                 else if (o_input == nullptr && i_input != nullptr) {
                 } else if (o_input == nullptr && i_input == nullptr) {
                 } else {
@@ -262,7 +264,7 @@ rtlir::circuit::ptr passes::compile(
                 auto o_address = portify(outer->address_port());
                 auto i_address = inner->address_port();
                 if (o_address != nullptr && i_address != nullptr)
-                    assign_lower(o_address, i_address);
+                    assign_lower(i_address, o_address);
                 else {
                     std::cerr << "SRAM macro without address\n";
                     abort();
@@ -276,19 +278,19 @@ rtlir::circuit::ptr passes::compile(
                 if (o_mask != nullptr && i_mask != nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
                     /* This is the simple case: everyone has enables and masks,
                      * so just emit the connections. */
-                    assign_slice(o_mask, i_mask);
-                    assign_port(o_chip_enable, i_chip_enable);
+                    assign_slice(i_mask, o_mask);
+                    assign_port(i_chip_enable, o_chip_enable);
                 } else if (o_mask != nullptr && i_mask == nullptr && o_chip_enable == nullptr && i_chip_enable != nullptr) {
                     /* It's possible to implement a mask port using the enable
                      * port, but we only get one bit. */
-                    assign_port(o_mask, i_chip_enable);
+                    assign_port(i_mask, o_chip_enable);
                 } else if (o_mask != nullptr && i_mask == nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
                     /* When the outer macro has a chip enable and a mask, we
                      * can still implement it with the chip enable it's just
                      * that we need to AND together the inputs. */
-                    assign_port(o_mask, i_chip_enable);
+                    assign_port(i_mask, o_chip_enable);
                 } else if (o_mask == nullptr && i_mask == nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
-                    assign_port(o_chip_enable, i_chip_enable);
+                    assign_port(i_chip_enable, o_chip_enable);
                 } else {
                     std::cerr << "SRAM macro without mask/chip enable: " << to_compile->name() << "\n";
                     std::cerr << "  " << to_compile->name() << ".chip_enable: " << o_chip_enable << "\n";
@@ -302,7 +304,7 @@ rtlir::circuit::ptr passes::compile(
                 auto o_write_enable = portify(outer->write_enable_port());
                 auto i_write_enable = inner->write_enable_port();
                 if (o_write_enable != nullptr && i_write_enable != nullptr) {
-                    assign_port(o_write_enable, i_write_enable);
+                    assign_port(i_write_enable, o_write_enable);
                 } else if (o_write_enable == nullptr && i_write_enable != nullptr) {
                 } else {
                     std::cerr << "SRAM macro without write enable\n";
@@ -324,7 +326,7 @@ rtlir::circuit::ptr passes::compile(
         cats,
         [&](const rtlir::port::ptr& port, const std::vector<rtlir::wire::ptr>& elements) -> void {
             auto cat = std::make_shared<rtlir::cat_statement>(elements);
-            auto a = std::make_shared<rtlir::port_connect_statement>(port, cat);
+            auto a = std::make_shared<rtlir::connect_statement>(port, cat);
             statements.push_back(a);
         }
     );
