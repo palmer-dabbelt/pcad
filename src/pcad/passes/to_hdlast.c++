@@ -358,16 +358,11 @@ hdlast::instance::ptr passes::to_hdlast(const rtlir::instance::ptr& i)
         ),
         putil::collection::map(
             i->module()->ports(),
-            [](const auto& p){ return to_hdlast(p); }
+            [](const auto& p) { return to_hdlast(p); }
         ),
         putil::collection::map(
             i->port_connections(),
-            [](const auto& a) {
-                return std::make_shared<hdlast::assign_statement>(
-                    to_hdlast(a->target()),
-                    to_hdlast(a->source())
-                );
-            }
+            [](const auto& pc) { return to_hdlast(pc); }
         )
     );
 }
@@ -386,7 +381,10 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
         someptr<rtlir::wire_statement>(), [](const auto& ws) {
             return to_hdlast(ws);
         },
-        someptr<rtlir::connect_statement>(), [](const auto& cs) {
+        someptr<rtlir::connect_statement>(), [](const auto& cs) -> hdlast::statement::ptr {
+            return to_hdlast(cs);
+        },
+        someptr<rtlir::port_connect_statement>(), [](const auto& cs) -> hdlast::statement::ptr {
             return to_hdlast(cs);
         },
         someptr<rtlir::cat_statement>(), [](const auto& cs) {
@@ -420,12 +418,36 @@ hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::wire_statement::ptr& 
     return std::make_shared<hdlast::wire_statement>(to_hdlast(ws->wire()));
 }
 
+hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::port_statement::ptr& ws)
+{
+    return std::make_shared<hdlast::wire_statement>(to_hdlast(ws->wire()));
+}
+
 hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::connect_statement::ptr& cs)
 {
     return std::make_shared<hdlast::assign_statement>(
         to_hdlast(cs->target()),
         to_hdlast(cs->source())
     );
+}
+
+hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::port_connect_statement::ptr& a)
+{
+    switch (a->target()->direction()) {
+    case rtlir::port_direction::INPUT:
+        return std::make_shared<hdlast::assign_statement>(
+            to_hdlast(a->target()),
+            to_hdlast(a->source())
+        );
+    case rtlir::port_direction::OUTPUT:
+        return std::make_shared<hdlast::assign_statement>(
+            to_hdlast(a->target()),
+            to_hdlast(a->source())
+        );
+    }
+
+    std::cerr << "unknown port direction\n";
+    abort();
 }
 
 hdlast::cat_statement::ptr passes::to_hdlast(const rtlir::cat_statement::ptr& cs)

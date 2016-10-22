@@ -23,6 +23,9 @@ namespace pcad {
 
         /* There's a few differente types of statements. */
         class assign_statement: public statement {
+        public:
+            typedef std::shared_ptr<assign_statement> ptr;
+
         private:
             const statement::ptr _dest;
             const statement::ptr _source;

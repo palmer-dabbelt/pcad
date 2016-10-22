@@ -25,13 +25,13 @@ namespace pcad {
         private:
             const std::string _name;
             const std::shared_ptr<rtlir::module> _module;
-            const std::vector<rtlir::connect_statement::ptr> _connects;
+            const std::vector<rtlir::port_connect_statement::ptr> _connects;
 
         public:
             instance(
                 const std::string& name,
                 const std::shared_ptr<module>& module,
-                const std::vector<connect_statement::ptr>& connects)
+                const std::vector<port_connect_statement::ptr>& connects)
             : _name(name),
               _module(module),
               _connects(connects)
@@ -40,7 +40,7 @@ namespace pcad {
         public:
             const decltype(_name)& name(void) const { return _name; }
             const std::shared_ptr<rtlir::module> module(void) const { return _module; }
-            const std::vector<connect_statement::ptr> port_connections(void) const
+            const std::vector<port_connect_statement::ptr>& port_connections(void) const
             { return _connects; }
         };
     }

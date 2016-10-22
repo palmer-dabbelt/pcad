@@ -4,6 +4,7 @@
 #define PCAD__RTLIR__STATEMENT_HXX
 
 #include "literal.h++"
+#include "port.h++"
 #include "wire.h++"
 #include <memory>
 #include <pcad/util/assert.h++>
@@ -38,6 +39,24 @@ namespace pcad {
 
         public:
             const decltype(_wire)& wire(void) const { return _wire; }
+        };
+
+        class port_statement: public wire_statement {
+        public:
+            typedef std::shared_ptr<port_statement> ptr;
+
+        private:
+            const rtlir::port::ptr _port;
+
+        public:
+            port_statement(const decltype(_port)& port)
+            : wire_statement(port),
+              _port(port)
+            {}
+
+        public:
+            const decltype(_port)& port(void) const { return _port; }
+            const auto& direction(void) const { return _port->direction(); }
         };
 
         /* A statement that represents a literal, which is a direct constant
@@ -94,6 +113,51 @@ namespace pcad {
                 const wire::ptr& target,
                 const wire::ptr& source
             ): _target( std::make_shared<wire_statement>(target) ),
+               _source( std::make_shared<wire_statement>(source) )
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
+
+        public:
+            const decltype(_target)& target(void) const { return _target; }
+            const decltype(_source)& source(void) const { return _source; }
+        };
+
+        /* Connects a statement to a port. */
+        class port_connect_statement: public statement {
+        public:
+            typedef std::shared_ptr<port_connect_statement> ptr;
+
+        private:
+            const port_statement::ptr _target;
+            const statement::ptr _source;
+
+        public:
+            port_connect_statement(
+                const decltype(_target)& target,
+                const decltype(_source)& source
+            ): _target(target),
+               _source(source)
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
+
+            port_connect_statement(
+                const port::ptr& target,
+                const decltype(_source)& source
+            ): _target( std::make_shared<port_statement>(target) ),
+               _source( source )
+            {
+                util::assert(_target != nullptr);
+                util::assert(_source != nullptr);
+            }
+
+            port_connect_statement(
+                const port::ptr& target,
+                const wire::ptr& source
+            ): _target( std::make_shared<port_statement>(target) ),
                _source( std::make_shared<wire_statement>(source) )
             {
                 util::assert(_target != nullptr);

@@ -19,7 +19,10 @@ namespace pcad {
         hdlast::wire::ptr to_hdlast(const rtlir::wire::ptr& p);
         hdlast::statement::ptr to_hdlast(const rtlir::statement::ptr& p);
         hdlast::wire_statement::ptr to_hdlast(const rtlir::wire_statement::ptr& p);
+        hdlast::wire_statement::ptr to_hdlast(const rtlir::port_statement::ptr& p);
         hdlast::assign_statement::ptr to_hdlast(const rtlir::connect_statement::ptr& p);
+        hdlast::assign_statement::ptr to_hdlast(const rtlir::port_connect_statement::ptr& p);
+        std::vector<hdlast::assign_statement::ptr> to_hdlast(const std::vector<rtlir::port_connect_statement::ptr>& p);
         hdlast::cat_statement::ptr to_hdlast(const rtlir::cat_statement::ptr& p);
         hdlast::slice_statement::ptr to_hdlast(const rtlir::slice_statement::ptr& p);
         hdlast::wire_statement::ptr to_hdlast(const rtlir::literal_statement::ptr& p);
