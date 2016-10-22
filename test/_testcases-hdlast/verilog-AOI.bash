@@ -58,11 +58,11 @@ EOF
 
 cat >"${TOP}".canonical.v.gold <<EOF
 module AOI(
-  input A,
-  input B,
-  input C,
-  input D,
-  output F
+  input [0:0] A,
+  input [0:0] B,
+  input [0:0] C,
+  input [0:0] D,
+  output [0:0] F
 );
   assign F = ~(((A & B) | (C & D)));
 endmodule

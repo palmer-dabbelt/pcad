@@ -47,22 +47,22 @@ EOF
 
 cat >"$OUTPUT".gold <<"EOF"
 module name_of_sram_module(
-  input clock,
+  input [0:0] clock,
   output [15:0] RW0O,
   input [15:0] RW0I,
   input [10:0] RW0A,
   input [1:0] RW0M,
-  input RW0E,
-  input RW0W
+  input [0:0] RW0E,
+  input [0:0] RW0W
 );
   wire [7:0] RW0O_0_0;
   wire [7:0] RW0I_0_0;
   wire [10:0] RW0A_0_0;
-  wire RW0M_0_0;
+  wire [0:0] RW0M_0_0;
   wire [7:0] RW0O_0_1;
   wire [7:0] RW0I_0_1;
   wire [10:0] RW0A_0_1;
-  wire RW0M_0_1;
+  wire [0:0] RW0M_0_1;
   vendor_sram mem_0_0(
     .vendor_clock(clock),
     .vendor_RW0O(RW0O_0_0),

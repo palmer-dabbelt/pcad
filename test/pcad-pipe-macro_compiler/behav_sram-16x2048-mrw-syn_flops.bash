@@ -33,13 +33,13 @@ EOF
 
 cat >"$OUTPUT".gold <<"EOF"
 module name_of_sram_module(
-  input clock,
+  input [0:0] clock,
   output [15:0] RW0O,
   input [15:0] RW0I,
-  input RW0W,
+  input [0:0] RW0W,
   input [1:0] RW0M,
   input [10:0] RW0A,
-  input RW0E
+  input [0:0] RW0E
 );
   reg [15:0] mem [2047:0];
   wire [15:0] read_data_0;

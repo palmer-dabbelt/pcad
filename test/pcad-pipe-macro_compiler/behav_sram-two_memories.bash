@@ -45,12 +45,12 @@ EOF
 
 cat >"$OUTPUT".gold <<"EOF"
 module name_of_sram_module(
-  input clock,
+  input [0:0] clock,
   output [7:0] RW0O,
   input [7:0] RW0I,
-  input RW0W,
+  input [0:0] RW0W,
   input [10:0] RW0A,
-  input RW0E
+  input [0:0] RW0E
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;
@@ -131,12 +131,12 @@ module name_of_sram_module(
   end
 endmodule
 module another_sram_module(
-  input clock,
+  input [0:0] clock,
   output [7:0] RW0O,
   input [7:0] RW0I,
-  input RW0W,
+  input [0:0] RW0W,
   input [10:0] RW0A,
-  input RW0E
+  input [0:0] RW0E
 );
   reg [7:0] mem [2047:0];
   wire [7:0] mask_0;

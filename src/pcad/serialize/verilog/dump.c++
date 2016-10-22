@@ -65,7 +65,7 @@ static inline std::string v_string(const enum biop_statement::op& opcode)
 static inline std::string width_string(long width)
 {
     if (width == 1)
-        return "";
+        return " [0:0]";
 
     return std::string("[") + std::to_string(width - 1) + ":0]";
 }
