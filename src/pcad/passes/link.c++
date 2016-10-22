@@ -16,13 +16,20 @@ std::vector<rtlir::module::ptr> passes::link(const std::vector<rtlir::circuit::p
 
     for (const auto& circuit: circuits) {
         for (const auto& module: circuit->modules()) {
-            auto l = used_names.find(module->name());
-            if (l != used_names.end()) {
-                std::cerr << "internal error: Duplicate name in circuit for linking: " << module->name() << "\n";
-                abort();
-            }
+            match(module,
+                someptr<netlist::memory_blackbox>(), [&](const auto& mb) {
+                },
+                someptr<rtlir::module>(), [&](const auto& module) {
+                    auto l = used_names.find(module->name());
+                    if (l != used_names.end()) {
+                        std::cerr << "internal error: Duplicate name in circuit for linking: " << module->name() << "\n";
+                        abort();
+                    }
 
-            used_names.insert(module->name());
+                    used_names.insert(module->name());
+                }
+            );
+
             out.push_back(module);
         }
     }
