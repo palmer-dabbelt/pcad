@@ -1,9 +1,13 @@
 // See LICENSE for details
 
 #include "link.h++"
+#include <pcad/netlist/macro.h++>
+#include <simple_match/simple_match.hpp>
 #include <iostream>
 #include <unordered_set>
 using namespace pcad;
+using namespace simple_match;
+using namespace simple_match::placeholders;
 
 std::vector<rtlir::module::ptr> passes::link(const std::vector<rtlir::circuit::ptr>& circuits)
 {
