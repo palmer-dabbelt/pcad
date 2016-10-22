@@ -1,4 +1,4 @@
-gdb --ex r --ex bt --batch --args $PTEST_BINARY --macro-list "${INPUT}" --verilog "${OUTPUT}" ${LIBS[@]}
+$PTEST_BINARY --macro-list "${INPUT}" --verilog "${OUTPUT}" ${LIBS[@]}
 
 cat "${OUTPUT}"
 
