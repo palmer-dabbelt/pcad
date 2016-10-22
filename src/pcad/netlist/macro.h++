@@ -135,15 +135,15 @@ namespace pcad {
             }
 
             const rtlir::port::ptr mask_port(void) const {
-                util::assert(bit_width().data() % mask_gran().data() == 0,
-                             "The width of memory macros must be an exact multiple of the mask granularity");
-                if (mask_port_name().valid())
+                if (mask_port_name().valid()) {
+                    util::assert(bit_width().data() % mask_gran().data() == 0,
+                                 "The width of memory macros must be an exact multiple of the mask granularity");
                     return std::make_shared<rtlir::port>(
                         mask_port_name().data(),
                         bit_width().data() / mask_gran().data(),
                         rtlir::port_direction::INPUT
                     );
-                else
+                } else
                     return nullptr;
             }
             
