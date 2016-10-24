@@ -97,7 +97,8 @@ namespace pcad {
                 return std::make_shared<rtlir::port>(
                     clock_port_name().data(),
                     1,
-                    rtlir::port_direction::INPUT
+                    rtlir::port_direction::INPUT,
+                    rtlir::port_polarity::ACTIVE_HIGH
                 );
             }
 
@@ -106,7 +107,8 @@ namespace pcad {
                     return std::make_shared<rtlir::port>(
                         output_port_name().data(),
                         bit_width().data(),
-                        rtlir::port_direction::OUTPUT
+                        rtlir::port_direction::OUTPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
                     );
                 else
                     return nullptr;
@@ -117,7 +119,8 @@ namespace pcad {
                     return std::make_shared<rtlir::port>(
                         input_port_name().data(),
                         bit_width().data(),
-                        rtlir::port_direction::INPUT
+                        rtlir::port_direction::INPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
                     );
                 else
                     return nullptr;
@@ -128,7 +131,8 @@ namespace pcad {
                     return std::make_shared<rtlir::port>(
                         address_port_name().data(),
                         std::ceil(std::log2(word_depth().data())),
-                        rtlir::port_direction::INPUT
+                        rtlir::port_direction::INPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
                     );
                 else
                     return nullptr;
@@ -141,7 +145,8 @@ namespace pcad {
                     return std::make_shared<rtlir::port>(
                         mask_port_name().data(),
                         bit_width().data() / mask_gran().data(),
-                        rtlir::port_direction::INPUT
+                        rtlir::port_direction::INPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
                     );
                 } else
                     return nullptr;
@@ -151,7 +156,8 @@ namespace pcad {
                 return std::make_shared<rtlir::port>(
                     chip_enable_port_name().data(),
                     1,
-                    rtlir::port_direction::INPUT
+                    rtlir::port_direction::INPUT,
+                    rtlir::port_polarity::ACTIVE_HIGH
                 );
             }
             
@@ -160,7 +166,8 @@ namespace pcad {
                     return std::make_shared<rtlir::port>(
                         write_enable_port_name().data(),
                         1,
-                        rtlir::port_direction::INPUT
+                        rtlir::port_direction::INPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
                     );
                 } else
                     return nullptr;
