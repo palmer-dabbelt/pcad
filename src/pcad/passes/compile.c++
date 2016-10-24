@@ -86,13 +86,6 @@ rtlir::circuit::ptr passes::compile(
     if (compile_to == nullptr)
         return std::make_shared<rtlir::circuit>(to_compile);
 
-    /* FIXME: I should support mapping to more complicated SRAM port
-     * arrangements. */
-    if (to_compile->mem_ports().size() != 1 || compile_to->mem_ports().size() != 1) {
-        std::cerr << "INFO: unable to compile " << to_compile->name() << " using " << compile_to->name() << ": only single port memories are supported\n";
-        return std::make_shared<rtlir::circuit>(to_compile);
-    }
-
     auto black_box = std::make_shared<netlist::memory_blackbox>(compile_to);
 
     auto name2port = std::unordered_map<std::string, rtlir::port::ptr>();
@@ -110,11 +103,17 @@ rtlir::circuit::ptr passes::compile(
         return mmp;
     };
 
-    auto paired_memory_ports = putil::collection::map(
+    /* FIXME: This just assumes the Chisel and vendor ports are in the same
+     * order, but I'm starting with the  */
+    if (to_compile->mem_ports().size() != compile_to->mem_ports().size()) {
+        std::cerr << "INFO: unable to compile " << to_compile->name() << " using " << compile_to->name() << ": port count must match\n";
+        return std::make_shared<rtlir::circuit>(to_compile);
+    }
+    auto paired_memory_ports = putil::collection::map_zip(
         to_compile->mem_ports(),
-        [&](const auto& tcp) {
-            util::assert(compile_to->mem_ports().size() == 1, "only single-port memories supported");
-            return std::make_pair(tcp, compile_to->mem_ports()[0]);
+        compile_to->mem_ports(),
+        [&](const auto& tcp, const auto& ctp) {
+            return std::make_pair(tcp, ctp);
         }
     );
 

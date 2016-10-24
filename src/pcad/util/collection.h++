@@ -120,7 +120,23 @@ namespace putil {
             std::reverse(out.begin(), out.end());
             return out;
         };
-    }
+
+         /* Both a map and a zip */
+        template <class V1, class V2, typename F>
+        static inline auto map_zip(const V1& v1, const V2& v2, const F f)
+            -> std::vector<decltype(f(std::declval<typename V1::value_type>(), std::declval<typename V2::value_type>()))>
+        {
+            std::vector<decltype(f(std::declval<typename V1::value_type>(), std::declval<typename V2::value_type>()))> o;
+
+            auto size = v1.size();
+            if (v1.size() != v2.size())
+                abort();
+            for (size_t i = 0; i < size; ++i)
+                o.push_back(f(v1[i], v2[i]));
+
+            return o;
+        }
+   }
 }
 
 #endif
