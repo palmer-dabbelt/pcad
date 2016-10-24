@@ -156,11 +156,14 @@ namespace pcad {
             }
             
             const rtlir::port::ptr write_enable_port(void) const {
-                return std::make_shared<rtlir::port>(
-                    write_enable_port_name().data(),
-                    1,
-                    rtlir::port_direction::INPUT
-                );
+                if (write_enable_port_name().valid()) {
+                    return std::make_shared<rtlir::port>(
+                        write_enable_port_name().data(),
+                        1,
+                        rtlir::port_direction::INPUT
+                    );
+                } else
+                    return nullptr;
             }
         };
 
