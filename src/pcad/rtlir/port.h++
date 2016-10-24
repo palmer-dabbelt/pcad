@@ -15,8 +15,10 @@ namespace pcad {
         };
 
         enum class port_polarity {
-            ACTIVE_HIGH, /* For clocks, this also means posedge-triggered. */
-            ACTIVE_LOW,  /* For clocks, this also means negedge-triggered. */
+            ACTIVE_HIGH,
+            ACTIVE_LOW,
+            POSITIVE_EDGE,
+            NEGATIVE_EDGE
         };
 
         class port: public wire {
