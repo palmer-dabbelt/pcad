@@ -15,6 +15,7 @@ namespace pcad {
         };
 
         enum class port_polarity {
+            NONE,
             ACTIVE_HIGH,
             ACTIVE_LOW,
             POSITIVE_EDGE,

@@ -9,17 +9,26 @@ cat >"$INPUT" <<"EOF"
     "ports": [
       {
         "clock port name": "clock",
+	"clock port polarity": "positive edge",
         "output port name": "R0O",
+	"output port polarity": "active high",
         "address port name": "R0A",
-        "chip enable port name": "R0E"
+	"address port polarity": "active high",
+        "chip enable port name": "R0E",
+	"chip enable port polarity": "active high"
       },
       {
         "clock port name": "clock",
+	"clock port polarity": "positive edge",
 	"mask width": 2,
         "input port name": "W1I",
+	"input port polarity": "active high",
         "address port name": "W1A",
+	"address port polarity": "active high",
         "mask port name": "W1M",
-        "chip enable port name": "W1E"
+	"mask port polarity": "active high",
+        "chip enable port name": "W1E",
+	"chip enable port polarity": "active high"
       }
     ]
   }

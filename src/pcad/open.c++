@@ -50,7 +50,8 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
 {
     auto from_offset = [](const auto& str) {
         if (str.valid() == false)
-            return rtlir::port_polarity::ACTIVE_HIGH;
+            return rtlir::port_polarity::NONE;
+
         if (str.data() == "active high")
             return rtlir::port_polarity::ACTIVE_HIGH;
         if (str.data() == "active low")
