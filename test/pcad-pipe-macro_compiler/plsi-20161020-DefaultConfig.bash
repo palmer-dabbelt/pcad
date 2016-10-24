@@ -221,6 +221,46 @@ cat >"saed32.json" <<"EOF"
         "input port polarity": "active high"
       }
     ]
+  },
+  {
+    "type": "sram",
+    "name": "SRAM2RW64x32",
+    "width": 32,
+    "depth": 64,
+    "ports": [
+      {
+        "address port name": "A1",
+        "address port polarity": "active high",
+        "clock port name": "CE1",
+        "clock port polarity": "positive edge",
+        "write enable port name": "WEB1",
+        "write enable port polarity": "active low",
+        "read enable port name": "OEB1",
+        "read enable port polarity": "active low",
+        "chip enable port name": "CEB1",
+        "chip enable port polarity": "active low",
+        "output port name": "O1",
+        "output port polarity": "active high",
+        "input port name": "I1",
+        "input port polarity": "active high"
+      },
+      {
+        "address port name": "A2",
+        "address port polarity": "active high",
+        "clock port name": "CE2",
+        "clock port polarity": "positive edge",
+        "write enable port name": "WEB2",
+        "write enable port polarity": "active low",
+        "read enable port name": "OEB2",
+        "read enable port polarity": "active low",
+        "chip enable port name": "CEB2",
+        "chip enable port polarity": "active low",
+        "output port name": "O2",
+        "output port polarity": "active high",
+        "input port name": "I2",
+        "input port polarity": "active high"
+      }
+    ]
   }
 ]
 EOF
