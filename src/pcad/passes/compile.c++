@@ -142,6 +142,28 @@ rtlir::circuit::ptr passes::compile(
         }
     );
 
+    /* When splitting macros based on width, it's possible that we use multiple
+     * narrower memories to generate a single mask bit of a larger memory.
+     * This width should be used when calculating mask indicies. */
+    auto mask_width = putil::collection::fold(
+        paired_memory_ports,
+        std::max(compile_to->width(), to_compile->width()),
+        [](const auto& max, const auto& pair) {
+            auto outer = pair.first;
+            auto inner = pair.second;
+
+            if (outer->mask_gran().valid() && inner->mask_gran().valid()) {
+                auto match_gran = outer->mask_gran().data() % inner->mask_gran().data() ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
+                return std::min(max, match_gran);
+            }
+
+            if (outer->mask_gran().valid() && !inner->mask_gran().valid())
+                return std::min(max, outer->mask_gran().data());
+
+            return max;
+        }
+    );
+
     auto logic = std::vector<rtlir::statement::ptr>();
 
     auto instances = std::vector<rtlir::instance::ptr>();
@@ -159,6 +181,7 @@ rtlir::circuit::ptr passes::compile(
 
             auto pi = parallel / mask_or_macro_width;
             auto si = serial / compile_to->depth();
+            auto mi = parallel / mask_width;
             auto connects = std::vector<rtlir::port_connect_statement::ptr>();
 
             auto assign_port = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& source) {
@@ -214,8 +237,8 @@ rtlir::circuit::ptr passes::compile(
             };
 
             auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
-                auto upper = (pi + 1) * target->width() - 1;
-                auto lower = (pi + 0) * target->width() - 0;
+                auto upper = (mi + 1) * target->width() - 1;
+                auto lower = (mi + 0) * target->width() - 0;
                 util::assert(upper == lower, "only single-bit mask/and is supported");
                 util::assert(bit->width() == 1, "only single-bit mask/and is supported");
 
