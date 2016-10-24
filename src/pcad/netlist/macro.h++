@@ -4,6 +4,7 @@
 #define PCAD__NETLIST__MACRO_HXX
 
 #include "module.h++"
+#include <pcad/rtlir/port.h++>
 #include <pcad/util/assert.h++>
 #include <pcad/util/option.h++>
 #include <cmath>
@@ -41,38 +42,59 @@ namespace pcad {
             typedef std::shared_ptr<memory_macro_port> ptr;
 
         private:
-            util::option<std::string> _clock_port_name;
-            util::option<int> _mask_gran;
-            util::option<std::string> _output_port_name;
-            util::option<std::string> _input_port_name;
-            util::option<std::string> _address_port_name;
-            util::option<std::string> _mask_port_name;
-            util::option<std::string> _chip_enable_port_name;
-            util::option<std::string> _write_enable_port_name;
-            util::option<int> _bit_width;
-            util::option<int> _word_depth;
+            const util::option<std::string> _clock_port_name;
+            const enum rtlir::port_polarity _clock_port_polarity;
+            const util::option<int> _mask_gran;
+            const util::option<std::string> _output_port_name;
+            const enum rtlir::port_polarity _output_port_polarity;
+            const util::option<std::string> _input_port_name;
+            const enum rtlir::port_polarity _input_port_polarity;
+            const util::option<std::string> _address_port_name;
+            const enum rtlir::port_polarity _address_port_polarity;
+            const util::option<std::string> _mask_port_name;
+            const enum rtlir::port_polarity _mask_port_polarity;
+            const util::option<std::string> _chip_enable_port_name;
+            const enum rtlir::port_polarity _chip_enable_port_polarity;
+            const util::option<std::string> _write_enable_port_name;
+            const enum rtlir::port_polarity _write_enable_port_polarity;
+            const util::option<int> _bit_width;
+            const util::option<int> _word_depth;
 
         public:
             memory_macro_port(
                 const decltype(_clock_port_name)& clock_port_name,
+                const decltype(_clock_port_polarity)& clock_port_polarity,
                 const decltype(_mask_gran)& mask_gran,
                 const decltype(_output_port_name)& output_port_name,
+                const decltype(_output_port_polarity)& output_port_polarity,
                 const decltype(_input_port_name)& input_port_name,
+                const decltype(_input_port_polarity)& input_port_polarity,
                 const decltype(_address_port_name)& address_port_name,
+                const decltype(_address_port_polarity)& address_port_polarity,
                 const decltype(_mask_port_name)& mask_port_name,
+                const decltype(_mask_port_polarity)& mask_port_polarity,
                 const decltype(_chip_enable_port_name)& chip_enable_port_name,
+                const decltype(_chip_enable_port_polarity)& chip_enable_port_polarity,
                 const decltype(_write_enable_port_name)& write_enable_port_name,
+                const decltype(_write_enable_port_polarity)& write_enable_port_polarity,
                 const decltype(_bit_width)& bit_width,
                 const decltype(_word_depth)& word_depth
             )
             : _clock_port_name(clock_port_name),
+              _clock_port_polarity(clock_port_polarity),
               _mask_gran(mask_gran),
               _output_port_name(output_port_name),
+              _output_port_polarity(output_port_polarity),
               _input_port_name(input_port_name),
+              _input_port_polarity(input_port_polarity),
               _address_port_name(address_port_name),
+              _address_port_polarity(address_port_polarity),
               _mask_port_name(mask_port_name),
+              _mask_port_polarity(mask_port_polarity),
               _chip_enable_port_name(chip_enable_port_name),
+              _chip_enable_port_polarity(chip_enable_port_polarity),
               _write_enable_port_name(write_enable_port_name),
+              _write_enable_port_polarity(write_enable_port_polarity),
               _bit_width(bit_width),
               _word_depth(word_depth)
             {
@@ -98,7 +120,7 @@ namespace pcad {
                     clock_port_name().data(),
                     1,
                     rtlir::port_direction::INPUT,
-                    rtlir::port_polarity::ACTIVE_HIGH
+                    _clock_port_polarity
                 );
             }
 
@@ -108,7 +130,7 @@ namespace pcad {
                         output_port_name().data(),
                         bit_width().data(),
                         rtlir::port_direction::OUTPUT,
-                        rtlir::port_polarity::ACTIVE_HIGH
+                        _output_port_polarity
                     );
                 else
                     return nullptr;
@@ -120,7 +142,7 @@ namespace pcad {
                         input_port_name().data(),
                         bit_width().data(),
                         rtlir::port_direction::INPUT,
-                        rtlir::port_polarity::ACTIVE_HIGH
+                        _input_port_polarity
                     );
                 else
                     return nullptr;
@@ -132,7 +154,7 @@ namespace pcad {
                         address_port_name().data(),
                         std::ceil(std::log2(word_depth().data())),
                         rtlir::port_direction::INPUT,
-                        rtlir::port_polarity::ACTIVE_HIGH
+                        _address_port_polarity
                     );
                 else
                     return nullptr;
@@ -146,7 +168,7 @@ namespace pcad {
                         mask_port_name().data(),
                         bit_width().data() / mask_gran().data(),
                         rtlir::port_direction::INPUT,
-                        rtlir::port_polarity::ACTIVE_HIGH
+                        _mask_port_polarity
                     );
                 } else
                     return nullptr;
@@ -157,7 +179,7 @@ namespace pcad {
                     chip_enable_port_name().data(),
                     1,
                     rtlir::port_direction::INPUT,
-                    rtlir::port_polarity::ACTIVE_HIGH
+                    _chip_enable_port_polarity
                 );
             }
             
@@ -167,7 +189,7 @@ namespace pcad {
                         write_enable_port_name().data(),
                         1,
                         rtlir::port_direction::INPUT,
-                        rtlir::port_polarity::ACTIVE_HIGH
+                        _write_enable_port_polarity
                     );
                 } else
                     return nullptr;

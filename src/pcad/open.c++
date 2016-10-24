@@ -48,13 +48,29 @@ pcad::open_modules(const std::vector<std::string>& names)
 
 std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
 {
+    auto from_offset = [](const auto& str) {
+        if (str.valid() == false)
+            return rtlir::port_polarity::ACTIVE_HIGH;
+        if (str.data() == "active high")
+            return rtlir::port_polarity::ACTIVE_HIGH;
+        if (str.data() == "active low")
+            return rtlir::port_polarity::ACTIVE_LOW;
+        if (str.data() == "positive edge")
+            return rtlir::port_polarity::POSITIVE_EDGE;
+        if (str.data() == "negative edge")
+            return rtlir::port_polarity::NEGATIVE_EDGE;
+
+        std::cerr << "Unknown port polarity: " << str.data() << "\n";
+        abort();
+    };
+
     return match(pson::parse_json(path),
-        some<pson::tree_array>(), [](auto macro_jsons) {
+        some<pson::tree_array>(), [&](auto macro_jsons) {
             return putil::collection::map(
                 macro_jsons.children(),
-                [](auto macro_json) -> netlist::macro::ptr {
+                [&](auto macro_json) -> netlist::macro::ptr {
                     return match(macro_json,
-                        some<pson::tree_object>(), [](auto macro_json) -> netlist::macro::ptr {
+                        some<pson::tree_object>(), [&](auto macro_json) -> netlist::macro::ptr {
                             auto name = macro_json.template get<std::string>("name");
                             auto depth = macro_json.template get<int>("depth");
                             auto width = macro_json.template get<int>("width");
@@ -72,15 +88,31 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     auto read_enable_port_name = port_object->template get<std::string>("chip enable port name");
                                     auto write_enable_port_name = port_object->template get<std::string>("write enable port name");
 
+                                    auto clock_port_polarity = port_object->template get<std::string>("clock port polarity");
+                                    auto output_port_polarity = port_object->template get<std::string>("output port polarity");
+                                    auto input_port_polarity = port_object->template get<std::string>("input port polarity");
+                                    auto address_port_polarity = port_object->template get<std::string>("address port polarity");
+                                    auto mask_port_polarity = port_object->template get<std::string>("mask port polarity");
+                                    auto chip_enable_port_polarity = port_object->template get<std::string>("chip enable port polarity");
+                                    auto read_enable_port_polarity = port_object->template get<std::string>("chip enable port polarity");
+                                    auto write_enable_port_polarity = port_object->template get<std::string>("write enable port polarity");
+
                                     return std::make_shared<netlist::memory_macro_port>(
                                         util::to_option(clock_port_name),
+                                        from_offset(clock_port_polarity),
                                         util::to_option(mask_gran),
                                         util::to_option(output_port_name),
+                                        from_offset(output_port_polarity),
                                         util::to_option(input_port_name),
+                                        from_offset(input_port_polarity),
                                         util::to_option(address_port_name),
+                                        from_offset(address_port_polarity),
                                         util::to_option(mask_port_name),
+                                        from_offset(mask_port_polarity),
                                         util::to_option(chip_enable_port_name),
+                                        from_offset(chip_enable_port_polarity),
                                         util::to_option(write_enable_port_name),
+                                        from_offset(write_enable_port_polarity),
                                         util::to_option(width),
                                         util::to_option(depth)
                                     );
