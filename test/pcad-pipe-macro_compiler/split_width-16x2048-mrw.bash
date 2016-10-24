@@ -9,13 +9,20 @@ cat >"$INPUT" <<"EOF"
     "ports": [
       {
         "clock port name": "clock",
+	"clock port polarity": "positive edge",
         "mask granularity": 8,
         "output port name": "RW0O",
+	"output port polarity": "active high",
         "input port name": "RW0I",
+	"input port polarity": "active high",
         "address port name": "RW0A",
+	"address port polarity": "active high",
         "mask port name": "RW0M",
+	"mask port polarity": "active high",
         "chip enable port name": "RW0E",
-	"write enable port name": "RW0W"
+	"chip enable port polarity": "active high",
+	"write enable port name": "RW0W",
+	"write enable port polarity": "active high"
       }
     ]
   }
@@ -38,7 +45,14 @@ cat >"library.json" <<"EOF"
         "address port name": "RW0A",
         "mask port name": "RW0M",
         "chip enable port name": "RW0E",
-	"write enable port name": "RW0W"
+	"write enable port name": "RW0W",
+	"clock port polarity": "positive edge",
+	"output port polarity": "active high",
+	"input port polarity": "active high",
+	"address port polarity": "active high",
+	"mask port polarity": "active high",
+	"chip enable port polarity": "active high",
+	"write enable port polarity": "active high"
       }
     ]
   }

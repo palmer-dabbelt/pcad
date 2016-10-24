@@ -15,7 +15,14 @@ cat >"$INPUT" <<"EOF"
         "address port name": "RW0A",
         "mask port name": "RW0M",
         "chip enable port name": "RW0E",
-	"write enable port name": "RW0W"
+	"write enable port name": "RW0W",
+        "clock port polarity": "positive edge",
+        "output port polarity": "active high",
+        "input port polarity": "active high",
+        "address port polarity": "active high",
+        "mask port polarity": "active high",
+        "chip enable port polarity": "active high",
+        "write enable port polarity": "active high"
       }
     ]
   }
@@ -38,7 +45,14 @@ cat >"library.json" <<"EOF"
         "address port name": "vendor_RW0A",
         "mask port name": "vendor_RW0M",
         "chip enable port name": "vendor_RW0E",
-	"write enable port name": "vendor_RW0W"
+	"write enable port name": "vendor_RW0W",
+        "clock port polarity": "positive edge",
+        "output port polarity": "active high",
+        "input port polarity": "active high",
+        "address port polarity": "active high",
+        "mask port polarity": "active high",
+        "chip enable port polarity": "active high",
+        "write enable port polarity": "active high"
       }
     ]
   }

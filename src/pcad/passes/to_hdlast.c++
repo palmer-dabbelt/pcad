@@ -440,16 +440,37 @@ hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::connect_statement::
 
 hdlast::assign_statement::ptr passes::to_hdlast(const rtlir::port_connect_statement::ptr& a)
 {
+    auto flip_source = [&]() -> hdlast::statement::ptr {
+        switch (a->target()->polarity()) {
+        case rtlir::port_polarity::NONE:
+            std::cerr << "Connection to non-polar port " << a->target()->port()->name() << "\n";
+            abort();
+            break;
+
+        case rtlir::port_polarity::POSITIVE_EDGE:
+        case rtlir::port_polarity::ACTIVE_HIGH:
+            return to_hdlast(a->source());
+
+        case rtlir::port_polarity::NEGATIVE_EDGE:
+        case rtlir::port_polarity::ACTIVE_LOW:
+            return std::make_shared<hdlast::unop_statement>(hdlast::unop_statement::op::NOT, to_hdlast(a->source()));
+        }
+
+        std::cerr << "port_polarity enum overflow\n";
+        abort();
+        return nullptr;
+    }();
+
     switch (a->target()->direction()) {
     case rtlir::port_direction::INPUT:
         return std::make_shared<hdlast::assign_statement>(
             to_hdlast(a->target()),
-            to_hdlast(a->source())
+            flip_source
         );
     case rtlir::port_direction::OUTPUT:
         return std::make_shared<hdlast::assign_statement>(
             to_hdlast(a->target()),
-            to_hdlast(a->source())
+            flip_source
         );
     }
 

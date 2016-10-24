@@ -57,6 +57,7 @@ namespace pcad {
         public:
             const decltype(_port)& port(void) const { return _port; }
             const auto& direction(void) const { return _port->direction(); }
+            const auto& polarity(void) const { return _port->polarity(); }
         };
 
         /* A statement that represents a literal, which is a direct constant
