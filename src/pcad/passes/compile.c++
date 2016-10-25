@@ -231,6 +231,15 @@ rtlir::circuit::ptr passes::compile(
                 return ass;
             };
 
+            auto assign_mask_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
+                return slice_helper(
+                    target,
+                    source,
+                    (pi + 1) * mask_or_macro_width - 1,
+                    (pi + 0) * mask_or_macro_width - 0
+                );
+            };
+
             auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
                 return slice_helper(
                     target,
@@ -308,7 +317,7 @@ rtlir::circuit::ptr passes::compile(
                 auto o_input = portify(outer->input_port());
                 auto i_input = inner->input_port();
                 if (o_input != nullptr && i_input != nullptr)
-                    assign_slice(i_input, o_input);
+                    assign_mask_slice(i_input, o_input);
                 else if (o_input == nullptr && i_input != nullptr) {
                 } else if (o_input == nullptr && i_input == nullptr) {
                 } else {
