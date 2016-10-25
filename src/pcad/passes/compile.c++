@@ -172,12 +172,14 @@ rtlir::circuit::ptr passes::compile(
     auto statements = std::vector<rtlir::statement::ptr>();
     for (auto parallel = 0; parallel < to_compile->width(); parallel += mask_or_macro_width) {
         for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
+#ifndef SIMULATIONS_SHOULD_WORK
             if (serial > 0) {
                 std::cerr << "INFO: unable to compile " << to_compile->name() << " using " << compile_to->name() << ": depth splitting not supported\n";
                 std::cerr << "  " << to_compile->name() << ".depth = " << std::to_string(to_compile->depth()) << "\n";
                 std::cerr << "  " << compile_to->name() << ".depth = " << std::to_string(compile_to->depth()) << "\n";
                 return std::make_shared<rtlir::circuit>(to_compile);
             }
+#endif
 
             auto pi = parallel / mask_or_macro_width;
             auto si = serial / compile_to->depth();
