@@ -504,7 +504,7 @@ hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::literal_statement::pt
     return std::make_shared<hdlast::wire_statement>(
         std::make_shared<hdlast::literal>(
             ls->data()->as_string(),
-            32 /* FIXME: 32 bits is enough for anyone */
+            ls->data()->width()
         )
     );
 }
