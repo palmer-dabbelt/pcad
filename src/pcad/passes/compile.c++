@@ -231,7 +231,7 @@ rtlir::circuit::ptr passes::compile(
                 return slice_helper(
                     target,
                     source,
-                    (pi + 1) * target->width() - 1,
+                    std::min((pi + 1) * target->width(), to_compile->width()) - 1,
                     (pi + 0) * target->width() - 0
                 );
             };
