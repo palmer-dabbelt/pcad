@@ -213,7 +213,7 @@ rtlir::circuit::ptr passes::compile(
 
                 auto ss = std::make_shared<rtlir::slice_statement>(
                     source,
-                    upper,
+                    std::min(source->width() - 1, upper),
                     lower
                 );
                 auto ass = std::make_shared<rtlir::connect_statement>(
