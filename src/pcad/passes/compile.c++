@@ -207,6 +207,8 @@ rtlir::circuit::ptr passes::compile(
             };
 
             auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower) {
+                util::assert(upper >= lower, "backwards slice");
+
                 auto w = std::make_shared<rtlir::wire>(
                     source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
                     upper - lower + 1
