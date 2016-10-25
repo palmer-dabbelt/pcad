@@ -66,36 +66,36 @@ module name_of_sram_module(
   input [0:0] RW0E,
   input [0:0] RW0W
 );
-  wire [1:0] RW0O_0_0;
-  wire [1:0] RW0I_0_0;
+  wire [9:0] RW0O_0_0;
+  wire [9:0] RW0I_0_0;
   wire [10:0] RW0A_0_0;
   wire [0:0] RW0M_0_0_AND_RW0E;
-  wire [1:0] RW0O_0_1;
-  wire [1:0] RW0I_0_1;
+  wire [9:0] RW0O_0_1;
+  wire [9:0] RW0I_0_1;
   wire [10:0] RW0A_0_1;
   wire [0:0] RW0M_0_1_AND_RW0E;
-  wire [1:0] RW0O_0_2;
-  wire [1:0] RW0I_0_2;
+  wire [9:0] RW0O_0_2;
+  wire [9:0] RW0I_0_2;
   wire [10:0] RW0A_0_2;
   wire [0:0] RW0M_0_2_AND_RW0E;
-  wire [1:0] RW0O_0_3;
-  wire [1:0] RW0I_0_3;
+  wire [9:0] RW0O_0_3;
+  wire [9:0] RW0I_0_3;
   wire [10:0] RW0A_0_3;
   wire [0:0] RW0M_0_3_AND_RW0E;
-  wire [1:0] RW0O_0_4;
-  wire [1:0] RW0I_0_4;
+  wire [9:0] RW0O_0_4;
+  wire [9:0] RW0I_0_4;
   wire [10:0] RW0A_0_4;
   wire [0:0] RW0M_0_4_AND_RW0E;
-  wire [1:0] RW0O_0_5;
-  wire [1:0] RW0I_0_5;
+  wire [9:0] RW0O_0_5;
+  wire [9:0] RW0I_0_5;
   wire [10:0] RW0A_0_5;
   wire [0:0] RW0M_0_5_AND_RW0E;
-  wire [1:0] RW0O_0_6;
-  wire [1:0] RW0I_0_6;
+  wire [9:0] RW0O_0_6;
+  wire [9:0] RW0I_0_6;
   wire [10:0] RW0A_0_6;
   wire [0:0] RW0M_0_6_AND_RW0E;
-  wire [1:0] RW0O_0_7;
-  wire [1:0] RW0I_0_7;
+  wire [9:0] RW0O_0_7;
+  wire [9:0] RW0I_0_7;
   wire [10:0] RW0A_0_7;
   wire [0:0] RW0M_0_7_AND_RW0E;
   vendor_sram mem_0_0(
@@ -186,7 +186,7 @@ module name_of_sram_module(
   assign RW0I_0_7 = RW0I[15:14];
   assign RW0A_0_7 = RW0A[10:0];
   assign RW0M_0_7_AND_RW0E = (RW0M[7:7] && RW0E);
-  assign RW0O = {RW0O_0_7 ,RW0O_0_6 ,RW0O_0_5 ,RW0O_0_4 ,RW0O_0_3 ,RW0O_0_2 ,RW0O_0_1 ,RW0O_0_0};
+  assign RW0O = {RW0O_0_7[1:0] ,RW0O_0_6[1:0] ,RW0O_0_5[1:0] ,RW0O_0_4[1:0] ,RW0O_0_3[1:0] ,RW0O_0_2[1:0] ,RW0O_0_1[1:0] ,RW0O_0_0[1:0]};
 endmodule
 EOF
 

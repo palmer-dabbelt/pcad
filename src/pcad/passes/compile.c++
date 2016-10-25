@@ -195,7 +195,7 @@ rtlir::circuit::ptr passes::compile(
             auto assign_cat = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
                 auto w = std::make_shared<rtlir::wire>(
                     target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
-                    mask_or_macro_width
+                    source->width()
                 );
                 wires.push_back(w);
 
@@ -206,12 +206,12 @@ rtlir::circuit::ptr passes::compile(
                 return as;
             };
 
-            auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower) {
+            auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower, int width) {
                 util::assert(upper >= lower, "backwards slice");
 
                 auto w = std::make_shared<rtlir::wire>(
                     source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
-                    upper - lower + 1
+                    width
                 );
                 wires.push_back(w);
 
@@ -236,7 +236,8 @@ rtlir::circuit::ptr passes::compile(
                     target,
                     source,
                     (pi + 1) * mask_or_macro_width - 1,
-                    (pi + 0) * mask_or_macro_width - 0
+                    (pi + 0) * mask_or_macro_width - 0,
+                    target->width()
                 );
             };
 
@@ -245,7 +246,8 @@ rtlir::circuit::ptr passes::compile(
                     target,
                     source,
                     (pi + 1) * target->width() - 1,
-                    (pi + 0) * target->width() - 0
+                    (pi + 0) * target->width() - 0,
+                    target->width()
                 );
             };
 
@@ -284,7 +286,8 @@ rtlir::circuit::ptr passes::compile(
                     target,
                     source,
                     std::ceil(std::log2(compile_to->depth())) - 1,
-                    0
+                    0,
+                    std::ceil(std::log2(compile_to->depth()))
                 );
             };
  
@@ -390,7 +393,18 @@ rtlir::circuit::ptr passes::compile(
     putil::collection::myfmmw(
         cats,
         [&](const rtlir::port::ptr& port, const std::vector<rtlir::wire::ptr>& elements) -> void {
-            auto cat = std::make_shared<rtlir::cat_statement>(elements);
+            auto cat = std::make_shared<rtlir::cat_statement>(
+                putil::collection::map(
+                    elements,
+                    [&](const auto& element) -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::slice_statement>(
+                            element,
+                            mask_or_macro_width - 1,
+                            0
+                        );
+                    }
+                )
+            );
             auto a = std::make_shared<rtlir::connect_statement>(port, cat);
             statements.push_back(a);
         }

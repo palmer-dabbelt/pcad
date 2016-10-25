@@ -66,11 +66,11 @@ module name_of_sram_module(
   input [0:0] RW0E,
   input [0:0] RW0W
 );
-  wire [7:0] RW0O_0_0;
+  wire [9:0] RW0O_0_0;
   wire [9:0] RW0I_0_0;
   wire [10:0] RW0A_0_0;
   wire [0:0] RW0M_0_0_AND_RW0E;
-  wire [7:0] RW0O_0_1;
+  wire [9:0] RW0O_0_1;
   wire [9:0] RW0I_0_1;
   wire [10:0] RW0A_0_1;
   wire [0:0] RW0M_0_1_AND_RW0E;
@@ -90,13 +90,13 @@ module name_of_sram_module(
     .RW0E(RW0M_0_1_AND_RW0E),
     .RW0W(RW0W)
   );
-  assign RW0I_0_0 = RW0I[9:0];
+  assign RW0I_0_0 = RW0I[7:0];
   assign RW0A_0_0 = RW0A[10:0];
   assign RW0M_0_0_AND_RW0E = (RW0M[0:0] && RW0E);
-  assign RW0I_0_1 = RW0I[15:10];
+  assign RW0I_0_1 = RW0I[15:8];
   assign RW0A_0_1 = RW0A[10:0];
   assign RW0M_0_1_AND_RW0E = (RW0M[1:1] && RW0E);
-  assign RW0O = {RW0O_0_1 ,RW0O_0_0};
+  assign RW0O = {RW0O_0_1[7:0] ,RW0O_0_0[7:0]};
 endmodule
 EOF
 

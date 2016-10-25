@@ -239,6 +239,10 @@ namespace pcad {
                     util::assert(s != nullptr);
             }
 
+            cat_statement(const std::vector<statement::ptr>& sources)
+            : _sources(sources)
+            {}
+
         public:
             const decltype(_sources)& sources(void) const { return _sources; }
         };

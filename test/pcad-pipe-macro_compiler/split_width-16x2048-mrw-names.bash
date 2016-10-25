@@ -101,7 +101,7 @@ module name_of_sram_module(
   assign RW0I_0_1 = RW0I[15:8];
   assign RW0A_0_1 = RW0A[10:0];
   assign RW0M_0_1 = RW0M[1:1];
-  assign RW0O = {RW0O_0_1 ,RW0O_0_0};
+  assign RW0O = {RW0O_0_1[7:0] ,RW0O_0_0[7:0]};
 endmodule
 EOF
 
