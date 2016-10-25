@@ -172,15 +172,6 @@ rtlir::circuit::ptr passes::compile(
     auto statements = std::vector<rtlir::statement::ptr>();
     for (auto parallel = 0; parallel < to_compile->width(); parallel += mask_or_macro_width) {
         for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
-#ifndef SIMULATIONS_SHOULD_WORK
-            if (serial > 0) {
-                std::cerr << "INFO: unable to compile " << to_compile->name() << " using " << compile_to->name() << ": depth splitting not supported\n";
-                std::cerr << "  " << to_compile->name() << ".depth = " << std::to_string(to_compile->depth()) << "\n";
-                std::cerr << "  " << compile_to->name() << ".depth = " << std::to_string(compile_to->depth()) << "\n";
-                return std::make_shared<rtlir::circuit>(to_compile);
-            }
-#endif
-
             auto pi = parallel / mask_or_macro_width;
             auto si = serial / compile_to->depth();
             auto mi = parallel / mask_width;
@@ -241,14 +232,58 @@ rtlir::circuit::ptr passes::compile(
                 );
             };
 
-            auto assign_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
-                return slice_helper(
-                    target,
-                    source,
-                    (pi + 1) * target->width() - 1,
-                    (pi + 0) * target->width() - 0,
-                    target->width()
+            auto assign_pi_mask_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, const rtlir::wire::ptr& address) {
+                auto upper = (pi + 1) * target->width() - 1;
+                auto lower = (pi + 0) * target->width() - 0;
+                auto width = target->width();
+
+                auto address_upper = address->width() - 1;
+                auto address_lower = std::ceil(std::log2(compile_to->depth()));
+
+                auto w = std::make_shared<rtlir::wire>(
+                    source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
+                    width
                 );
+                wires.push_back(w);
+
+                auto ss = std::make_shared<rtlir::slice_statement>(
+                    source,
+                    std::min(source->width() - 1, upper),
+                    lower
+                );
+                auto as = std::make_shared<rtlir::and_statement>(
+                    ss,
+                    std::make_shared<rtlir::eqeq_statement>(
+                        std::make_shared<rtlir::slice_statement>(
+                            address,
+                            address_upper,
+                            address_lower
+                        ),
+                        std::make_shared<rtlir::literal>(
+                            si,
+                            address_upper - address_lower
+                        )
+                    )
+                );
+
+                auto ass = [&](){
+                    if (address_lower > address_upper) {
+                        return std::make_shared<rtlir::connect_statement>(
+                            w,
+                            ss
+                        );
+                    } else {
+                        return std::make_shared<rtlir::connect_statement>(
+                            w,
+                            as
+                        );
+                    }
+                }();
+                statements.push_back(ass);
+
+                assign_port(target, w);
+
+                return ass;
             };
 
             auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
@@ -346,7 +381,7 @@ rtlir::circuit::ptr passes::compile(
                 if (o_mask != nullptr && i_mask != nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
                     /* This is the simple case: everyone has enables and masks,
                      * so just emit the connections. */
-                    assign_slice(i_mask, o_mask);
+                    assign_pi_mask_slice(i_mask, o_mask, o_address);
                     assign_port(i_chip_enable, o_chip_enable);
                 } else if (o_mask != nullptr && i_mask == nullptr && o_chip_enable == nullptr && i_chip_enable != nullptr) {
                     /* It's possible to implement a mask port using the enable
