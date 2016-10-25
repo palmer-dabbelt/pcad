@@ -524,6 +524,12 @@ hdlast::biop_statement::ptr passes::to_hdlast(const rtlir::binop_statement::ptr&
             to_hdlast(p->left()),
             to_hdlast(p->right())
         );
+    case rtlir::binary_op::EQEQ:
+        return std::make_shared<hdlast::biop_statement>(
+            hdlast::biop_statement::op::EQEQ,
+            to_hdlast(p->left()),
+            to_hdlast(p->right())
+        );
     }
 
     return nullptr;

@@ -76,6 +76,12 @@ namespace pcad {
                 util::assert(_data != nullptr);
             }
 
+            literal_statement(const literal::ptr& data)
+            : _data(data)
+            {
+                util::assert(_data != nullptr);
+            }
+
         public:
             const decltype(_data)& data(void) const { return _data; }
         };
@@ -251,6 +257,7 @@ namespace pcad {
         enum class binary_op {
             OR,
             AND,
+            EQEQ,
         };
 
         class binop_statement: public statement {
@@ -285,10 +292,15 @@ namespace pcad {
             binop_statement_t(const statement::ptr& l, const wire::ptr& r)
             : binop_statement(OP, l, std::make_shared<wire_statement>(r))
             {}
+
+            binop_statement_t(const statement::ptr& l, const literal::ptr& r)
+            : binop_statement(OP, l, std::make_shared<literal_statement>(r))
+            {}
         };
 
         using or_statement = binop_statement_t<binary_op::OR>;
         using and_statement = binop_statement_t<binary_op::AND>;
+        using eqeq_statement = binop_statement_t<binary_op::EQEQ>;
     }
 }
 
