@@ -97,7 +97,7 @@ module name_of_sram_module(
     .RW0M(RW0M_0_1),
     .RW0E(RW0E),
     .RW0W(RW0W),
-    .RW0R(~(1))
+    .RW0R(~(~(RW0W)))
   );
   assign RW0I_0_0 = RW0I[7:0];
   assign RW0A_0_0 = RW0A[10:0];

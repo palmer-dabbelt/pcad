@@ -82,6 +82,12 @@ namespace pcad {
                 util::assert(_data != nullptr);
             }
 
+            literal_statement(const int& data, const int& width)
+            : _data( std::make_shared<literal>(data, width) )
+            {
+                util::assert(_data != nullptr);
+            }
+
         public:
             const decltype(_data)& data(void) const { return _data; }
         };
@@ -253,7 +259,7 @@ namespace pcad {
             const decltype(_sources)& sources(void) const { return _sources; }
         };
 
-        /* Logical operators. */
+        /* Binary operators. */
         enum class binary_op {
             OR,
             AND,
@@ -301,6 +307,40 @@ namespace pcad {
         using or_statement = binop_statement_t<binary_op::OR>;
         using and_statement = binop_statement_t<binary_op::AND>;
         using eqeq_statement = binop_statement_t<binary_op::EQEQ>;
+
+        /* Unary operators */
+        enum class unary_op {
+            BNOT,
+        };
+
+        class unop_statement: public statement {
+        public:
+            typedef std::shared_ptr<unop_statement> ptr;
+
+        private:
+            const unary_op _op;
+            const statement::ptr _s;
+
+        public:
+            unop_statement(const decltype(_op)& op, const decltype(_s) s)
+            : _op(op),
+              _s(s)
+            {}
+
+        public:
+            const decltype(_op)& op(void) const { return _op; }
+            const decltype(_s) s(void) const { return _s; }
+        };
+
+        template <enum unary_op OP>
+        class unop_statement_t: public unop_statement {
+        public:
+            unop_statement_t(const statement::ptr& s)
+            : unop_statement(OP, s)
+            {}
+        };
+
+        using bnot_statement = unop_statement_t<unary_op::BNOT>;
     }
 }
 

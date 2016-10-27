@@ -183,11 +183,8 @@ rtlir::circuit::ptr passes::compile(
                 return as;
             };
 
-            auto assign_port_literal = [&](const rtlir::port::ptr& target, int data) {
-                auto as = std::make_shared<rtlir::port_connect_statement>(
-                    target,
-                    std::make_shared<rtlir::literal_statement>(data)
-                );
+            auto assign_port_statement = [&](const rtlir::port::ptr& target, const rtlir::statement::ptr& source) {
+                auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
                 connects.push_back(as);
                 return as;
             };
@@ -415,9 +412,12 @@ rtlir::circuit::ptr passes::compile(
 
                 auto o_write_enable = portify(outer->write_enable_port());
                 auto i_write_enable = inner->write_enable_port();
+                auto a_write_enable = rtlir::statement::ptr(nullptr);
                 if (o_write_enable != nullptr && i_write_enable != nullptr) {
                     assign_port(i_write_enable, o_write_enable);
+                    a_write_enable = std::make_shared<rtlir::wire_statement>(o_write_enable);
                 } else if (o_write_enable == nullptr && i_write_enable != nullptr) {
+                    a_write_enable = std::make_shared<rtlir::literal_statement>(0);
                 } else {
                     std::cerr << "SRAM macro without write enable\n";
                     abort();
@@ -429,7 +429,10 @@ rtlir::circuit::ptr passes::compile(
                 if (o_read_enable != nullptr && i_read_enable != nullptr)
                     assign_port(i_read_enable, o_read_enable);
                 else if (o_read_enable == nullptr && i_read_enable != nullptr)
-                    assign_port_literal(i_read_enable, 1);
+                    assign_port_statement(
+                        i_read_enable,
+                        std::make_shared<rtlir::bnot_statement>(a_write_enable)
+                    );
                 else if (o_read_enable == nullptr && i_read_enable == nullptr) {
                 } else {
                     std::cerr << "SRAM macro without read enable\n";

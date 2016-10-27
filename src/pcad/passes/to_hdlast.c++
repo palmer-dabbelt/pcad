@@ -399,6 +399,9 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
         someptr<rtlir::binop_statement>(), [](const auto& bs) {
             return to_hdlast(bs);
         },
+        someptr<rtlir::unop_statement>(), [](const auto& bs) {
+            return to_hdlast(bs);
+        },
         otherwise, [&]() -> hdlast::statement::ptr {
             std::cerr << "Unable to convert rtlir::statement to hdlast::statement\n";
 #ifndef __clang__
@@ -529,6 +532,19 @@ hdlast::biop_statement::ptr passes::to_hdlast(const rtlir::binop_statement::ptr&
             hdlast::biop_statement::op::EQEQ,
             to_hdlast(p->left()),
             to_hdlast(p->right())
+        );
+    }
+
+    return nullptr;
+}
+
+hdlast::unop_statement::ptr passes::to_hdlast(const rtlir::unop_statement::ptr& p)
+{
+    switch (p->op()) {
+    case rtlir::unary_op::BNOT:
+        return std::make_shared<hdlast::unop_statement>(
+            hdlast::unop_statement::op::NOT,
+            to_hdlast(p->s())
         );
     }
 
