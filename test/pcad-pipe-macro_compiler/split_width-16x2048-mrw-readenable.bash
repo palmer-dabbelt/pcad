@@ -87,7 +87,7 @@ module name_of_sram_module(
     .RW0M(RW0M_0_0),
     .RW0E(RW0E),
     .RW0W(RW0W),
-    .RW0R(~(1))
+    .RW0R(~(~(RW0W)))
   );
   vendor_sram mem_0_1(
     .clock(clock),
