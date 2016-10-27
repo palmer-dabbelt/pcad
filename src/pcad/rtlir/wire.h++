@@ -25,6 +25,10 @@ namespace pcad {
         public:
             const decltype(_name)& name(void) const { return _name; }
             const decltype(_width)& width(void) const { return _width; }
+
+            virtual std::string as_string(void) const {
+                return _name;
+            }
         };
     }
 }

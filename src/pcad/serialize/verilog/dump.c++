@@ -184,7 +184,7 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const statement::ptr& sta
             os << ";\n";
         },
         some<hdlast::wire_statement>(), [&](auto s) {
-            os << s.wire()->name();
+            os << s.wire()->as_string();
         },
         some<hdlast::unop_statement>(), [&](auto s) {
             os << indent << v_string(s.opcode()) << "(";

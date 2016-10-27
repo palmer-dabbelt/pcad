@@ -30,11 +30,14 @@ namespace pcad {
             {}
 
         public:
-            std::string as_string(void) const {
+            virtual std::string as_string(void) const {
                 std::stringstream ss;
-                ss << width() << "'" << std::hex << "h" << _value;
+                ss << width() << "'" << "d" << _value;
                 return ss.str();
             }
+
+            auto value(void) const { return _value; }
+
         };
     }
 }

@@ -162,31 +162,31 @@ module name_of_sram_module(
     .RW0E(RW0M_0_7_AND_RW0E),
     .RW0W(RW0W)
   );
-  assign RW0I_0_0 = RW0I[1:0];
-  assign RW0A_0_0 = RW0A[10:0];
-  assign RW0M_0_0_AND_RW0E = (RW0M[0:0] && RW0E);
-  assign RW0I_0_1 = RW0I[3:2];
-  assign RW0A_0_1 = RW0A[10:0];
-  assign RW0M_0_1_AND_RW0E = (RW0M[1:1] && RW0E);
-  assign RW0I_0_2 = RW0I[5:4];
-  assign RW0A_0_2 = RW0A[10:0];
-  assign RW0M_0_2_AND_RW0E = (RW0M[2:2] && RW0E);
-  assign RW0I_0_3 = RW0I[7:6];
-  assign RW0A_0_3 = RW0A[10:0];
-  assign RW0M_0_3_AND_RW0E = (RW0M[3:3] && RW0E);
-  assign RW0I_0_4 = RW0I[9:8];
-  assign RW0A_0_4 = RW0A[10:0];
-  assign RW0M_0_4_AND_RW0E = (RW0M[4:4] && RW0E);
-  assign RW0I_0_5 = RW0I[11:10];
-  assign RW0A_0_5 = RW0A[10:0];
-  assign RW0M_0_5_AND_RW0E = (RW0M[5:5] && RW0E);
-  assign RW0I_0_6 = RW0I[13:12];
-  assign RW0A_0_6 = RW0A[10:0];
-  assign RW0M_0_6_AND_RW0E = (RW0M[6:6] && RW0E);
-  assign RW0I_0_7 = RW0I[15:14];
-  assign RW0A_0_7 = RW0A[10:0];
-  assign RW0M_0_7_AND_RW0E = (RW0M[7:7] && RW0E);
-  assign RW0O = {RW0O_0_7[1:0] ,RW0O_0_6[1:0] ,RW0O_0_5[1:0] ,RW0O_0_4[1:0] ,RW0O_0_3[1:0] ,RW0O_0_2[1:0] ,RW0O_0_1[1:0] ,RW0O_0_0[1:0]};
+  assign RW0I_0_0 = RW0I[32'd1:32'd0];
+  assign RW0A_0_0 = RW0A[32'd10:32'd0];
+  assign RW0M_0_0_AND_RW0E = (RW0M[32'd0:32'd0] && RW0E);
+  assign RW0I_0_1 = RW0I[32'd3:32'd2];
+  assign RW0A_0_1 = RW0A[32'd10:32'd0];
+  assign RW0M_0_1_AND_RW0E = (RW0M[32'd1:32'd1] && RW0E);
+  assign RW0I_0_2 = RW0I[32'd5:32'd4];
+  assign RW0A_0_2 = RW0A[32'd10:32'd0];
+  assign RW0M_0_2_AND_RW0E = (RW0M[32'd2:32'd2] && RW0E);
+  assign RW0I_0_3 = RW0I[32'd7:32'd6];
+  assign RW0A_0_3 = RW0A[32'd10:32'd0];
+  assign RW0M_0_3_AND_RW0E = (RW0M[32'd3:32'd3] && RW0E);
+  assign RW0I_0_4 = RW0I[32'd9:32'd8];
+  assign RW0A_0_4 = RW0A[32'd10:32'd0];
+  assign RW0M_0_4_AND_RW0E = (RW0M[32'd4:32'd4] && RW0E);
+  assign RW0I_0_5 = RW0I[32'd11:32'd10];
+  assign RW0A_0_5 = RW0A[32'd10:32'd0];
+  assign RW0M_0_5_AND_RW0E = (RW0M[32'd5:32'd5] && RW0E);
+  assign RW0I_0_6 = RW0I[32'd13:32'd12];
+  assign RW0A_0_6 = RW0A[32'd10:32'd0];
+  assign RW0M_0_6_AND_RW0E = (RW0M[32'd6:32'd6] && RW0E);
+  assign RW0I_0_7 = RW0I[32'd15:32'd14];
+  assign RW0A_0_7 = RW0A[32'd10:32'd0];
+  assign RW0M_0_7_AND_RW0E = (RW0M[32'd7:32'd7] && RW0E);
+  assign RW0O = {RW0O_0_7[32'd1:32'd0] ,RW0O_0_6[32'd1:32'd0] ,RW0O_0_5[32'd1:32'd0] ,RW0O_0_4[32'd1:32'd0] ,RW0O_0_3[32'd1:32'd0] ,RW0O_0_2[32'd1:32'd0] ,RW0O_0_1[32'd1:32'd0] ,RW0O_0_0[32'd1:32'd0]};
 endmodule
 EOF
 

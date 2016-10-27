@@ -189,7 +189,7 @@ namespace pcad {
                     _chip_enable_port_polarity
                 );
             }
-            
+
             const rtlir::port::ptr write_enable_port(void) const {
                 if (write_enable_port_name().valid()) {
                     return std::make_shared<rtlir::port>(

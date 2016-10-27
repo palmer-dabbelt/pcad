@@ -47,132 +47,132 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= RW0A;
   end
-  assign RW0O[0] = (read_data_0[0] === 1'bX) ? $random : read_data_0[0];
-  assign RW0O[1] = (read_data_0[1] === 1'bX) ? $random : read_data_0[1];
-  assign RW0O[2] = (read_data_0[2] === 1'bX) ? $random : read_data_0[2];
-  assign RW0O[3] = (read_data_0[3] === 1'bX) ? $random : read_data_0[3];
-  assign RW0O[4] = (read_data_0[4] === 1'bX) ? $random : read_data_0[4];
-  assign RW0O[5] = (read_data_0[5] === 1'bX) ? $random : read_data_0[5];
-  assign RW0O[6] = (read_data_0[6] === 1'bX) ? $random : read_data_0[6];
-  assign RW0O[7] = (read_data_0[7] === 1'bX) ? $random : read_data_0[7];
-  assign RW0O[8] = (read_data_0[8] === 1'bX) ? $random : read_data_0[8];
-  assign RW0O[9] = (read_data_0[9] === 1'bX) ? $random : read_data_0[9];
-  assign RW0O[10] = (read_data_0[10] === 1'bX) ? $random : read_data_0[10];
-  assign RW0O[11] = (read_data_0[11] === 1'bX) ? $random : read_data_0[11];
-  assign RW0O[12] = (read_data_0[12] === 1'bX) ? $random : read_data_0[12];
-  assign RW0O[13] = (read_data_0[13] === 1'bX) ? $random : read_data_0[13];
-  assign RW0O[14] = (read_data_0[14] === 1'bX) ? $random : read_data_0[14];
-  assign RW0O[15] = (read_data_0[15] === 1'bX) ? $random : read_data_0[15];
+  assign RW0O[16'd0] = (read_data_0[16'd0] === 1'bX) ? $random : read_data_0[16'd0];
+  assign RW0O[16'd1] = (read_data_0[16'd1] === 1'bX) ? $random : read_data_0[16'd1];
+  assign RW0O[16'd2] = (read_data_0[16'd2] === 1'bX) ? $random : read_data_0[16'd2];
+  assign RW0O[16'd3] = (read_data_0[16'd3] === 1'bX) ? $random : read_data_0[16'd3];
+  assign RW0O[16'd4] = (read_data_0[16'd4] === 1'bX) ? $random : read_data_0[16'd4];
+  assign RW0O[16'd5] = (read_data_0[16'd5] === 1'bX) ? $random : read_data_0[16'd5];
+  assign RW0O[16'd6] = (read_data_0[16'd6] === 1'bX) ? $random : read_data_0[16'd6];
+  assign RW0O[16'd7] = (read_data_0[16'd7] === 1'bX) ? $random : read_data_0[16'd7];
+  assign RW0O[16'd8] = (read_data_0[16'd8] === 1'bX) ? $random : read_data_0[16'd8];
+  assign RW0O[16'd9] = (read_data_0[16'd9] === 1'bX) ? $random : read_data_0[16'd9];
+  assign RW0O[16'd10] = (read_data_0[16'd10] === 1'bX) ? $random : read_data_0[16'd10];
+  assign RW0O[16'd11] = (read_data_0[16'd11] === 1'bX) ? $random : read_data_0[16'd11];
+  assign RW0O[16'd12] = (read_data_0[16'd12] === 1'bX) ? $random : read_data_0[16'd12];
+  assign RW0O[16'd13] = (read_data_0[16'd13] === 1'bX) ? $random : read_data_0[16'd13];
+  assign RW0O[16'd14] = (read_data_0[16'd14] === 1'bX) ? $random : read_data_0[16'd14];
+  assign RW0O[16'd15] = (read_data_0[16'd15] === 1'bX) ? $random : read_data_0[16'd15];
   always @(posedge clock)
   begin
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][0] <= RW0I[0];
+      mem[RW0A][4'd0] <= RW0I[4'd0];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][1] <= RW0I[1];
+      mem[RW0A][4'd1] <= RW0I[4'd1];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][2] <= RW0I[2];
+      mem[RW0A][4'd2] <= RW0I[4'd2];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][3] <= RW0I[3];
+      mem[RW0A][4'd3] <= RW0I[4'd3];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][4] <= RW0I[4];
+      mem[RW0A][4'd4] <= RW0I[4'd4];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][5] <= RW0I[5];
+      mem[RW0A][4'd5] <= RW0I[4'd5];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][6] <= RW0I[6];
+      mem[RW0A][4'd6] <= RW0I[4'd6];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][7] <= RW0I[7];
+      mem[RW0A][4'd7] <= RW0I[4'd7];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][8] <= RW0I[8];
+      mem[RW0A][4'd8] <= RW0I[4'd8];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][9] <= RW0I[9];
+      mem[RW0A][4'd9] <= RW0I[4'd9];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][10] <= RW0I[10];
+      mem[RW0A][4'd10] <= RW0I[4'd10];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][11] <= RW0I[11];
+      mem[RW0A][4'd11] <= RW0I[4'd11];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][12] <= RW0I[12];
+      mem[RW0A][4'd12] <= RW0I[4'd12];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][13] <= RW0I[13];
+      mem[RW0A][4'd13] <= RW0I[4'd13];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][14] <= RW0I[14];
+      mem[RW0A][4'd14] <= RW0I[4'd14];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][15] <= RW0I[15];
+      mem[RW0A][4'd15] <= RW0I[4'd15];
     end
     else
     begin

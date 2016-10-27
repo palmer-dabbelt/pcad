@@ -95,13 +95,13 @@ module name_of_sram_module(
     .RW0E(RW0E),
     .RW0W(RW0W)
   );
-  assign RW0I_0_0 = RW0I[7:0];
-  assign RW0A_0_0 = RW0A[10:0];
-  assign RW0M_0_0 = RW0M[0:0];
-  assign RW0I_0_1 = RW0I[15:8];
-  assign RW0A_0_1 = RW0A[10:0];
-  assign RW0M_0_1 = RW0M[1:1];
-  assign RW0O = {RW0O_0_1[7:0] ,RW0O_0_0[7:0]};
+  assign RW0I_0_0 = RW0I[32'd7:32'd0];
+  assign RW0A_0_0 = RW0A[32'd10:32'd0];
+  assign RW0M_0_0 = RW0M[32'd0:32'd0];
+  assign RW0I_0_1 = RW0I[32'd15:32'd8];
+  assign RW0A_0_1 = RW0A[32'd10:32'd0];
+  assign RW0M_0_1 = RW0M[32'd1:32'd1];
+  assign RW0O = {RW0O_0_1[32'd7:32'd0] ,RW0O_0_0[32'd7:32'd0]};
 endmodule
 EOF
 

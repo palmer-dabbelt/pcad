@@ -52,114 +52,114 @@ module name_of_sram_module(
   assign RW0O = read_data_0;
   always @(posedge clock)
   begin
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][0] <= RW0I[0];
+      mem[RW0A][4'd0] <= RW0I[4'd0];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][1] <= RW0I[1];
+      mem[RW0A][4'd1] <= RW0I[4'd1];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][2] <= RW0I[2];
+      mem[RW0A][4'd2] <= RW0I[4'd2];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][3] <= RW0I[3];
+      mem[RW0A][4'd3] <= RW0I[4'd3];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][4] <= RW0I[4];
+      mem[RW0A][4'd4] <= RW0I[4'd4];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][5] <= RW0I[5];
+      mem[RW0A][4'd5] <= RW0I[4'd5];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][6] <= RW0I[6];
+      mem[RW0A][4'd6] <= RW0I[4'd6];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[0]))
+    if (((RW0E && RW0W) && RW0M[4'd0]))
     begin
-      mem[RW0A][7] <= RW0I[7];
+      mem[RW0A][4'd7] <= RW0I[4'd7];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][8] <= RW0I[8];
+      mem[RW0A][4'd8] <= RW0I[4'd8];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][9] <= RW0I[9];
+      mem[RW0A][4'd9] <= RW0I[4'd9];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][10] <= RW0I[10];
+      mem[RW0A][4'd10] <= RW0I[4'd10];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][11] <= RW0I[11];
+      mem[RW0A][4'd11] <= RW0I[4'd11];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][12] <= RW0I[12];
+      mem[RW0A][4'd12] <= RW0I[4'd12];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][13] <= RW0I[13];
+      mem[RW0A][4'd13] <= RW0I[4'd13];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][14] <= RW0I[14];
+      mem[RW0A][4'd14] <= RW0I[4'd14];
     end
     else
     begin
     end
-    if (((RW0E && RW0W) && RW0M[1]))
+    if (((RW0E && RW0W) && RW0M[4'd1]))
     begin
-      mem[RW0A][15] <= RW0I[15];
+      mem[RW0A][4'd15] <= RW0I[4'd15];
     end
     else
     begin

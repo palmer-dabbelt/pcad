@@ -57,90 +57,90 @@ module name_of_sram_module(
   wire [7:0] mask_1;
   wire [7:0] read_data_1;
   reg [10:0] address_buffer_1;
-  assign write_enable_0 = ~(0);
-  assign mask_0 = ~(0);
+  assign write_enable_0 = ~(1'd0);
+  assign mask_0 = ~(8'd0);
   assign read_data_0 = mem[address_buffer_0];
   always @(posedge clock)
   begin
     address_buffer_0 <= R0A;
   end
-  assign R0O[0] = (read_data_0[0] === 1'bX) ? $random : read_data_0[0];
-  assign R0O[1] = (read_data_0[1] === 1'bX) ? $random : read_data_0[1];
-  assign R0O[2] = (read_data_0[2] === 1'bX) ? $random : read_data_0[2];
-  assign R0O[3] = (read_data_0[3] === 1'bX) ? $random : read_data_0[3];
-  assign R0O[4] = (read_data_0[4] === 1'bX) ? $random : read_data_0[4];
-  assign R0O[5] = (read_data_0[5] === 1'bX) ? $random : read_data_0[5];
-  assign R0O[6] = (read_data_0[6] === 1'bX) ? $random : read_data_0[6];
-  assign R0O[7] = (read_data_0[7] === 1'bX) ? $random : read_data_0[7];
-  assign write_enable_1 = ~(0);
-  assign mask_1 = ~(0);
+  assign R0O[8'd0] = (read_data_0[8'd0] === 1'bX) ? $random : read_data_0[8'd0];
+  assign R0O[8'd1] = (read_data_0[8'd1] === 1'bX) ? $random : read_data_0[8'd1];
+  assign R0O[8'd2] = (read_data_0[8'd2] === 1'bX) ? $random : read_data_0[8'd2];
+  assign R0O[8'd3] = (read_data_0[8'd3] === 1'bX) ? $random : read_data_0[8'd3];
+  assign R0O[8'd4] = (read_data_0[8'd4] === 1'bX) ? $random : read_data_0[8'd4];
+  assign R0O[8'd5] = (read_data_0[8'd5] === 1'bX) ? $random : read_data_0[8'd5];
+  assign R0O[8'd6] = (read_data_0[8'd6] === 1'bX) ? $random : read_data_0[8'd6];
+  assign R0O[8'd7] = (read_data_0[8'd7] === 1'bX) ? $random : read_data_0[8'd7];
+  assign write_enable_1 = ~(1'd0);
+  assign mask_1 = ~(8'd0);
   assign read_data_1 = mem[address_buffer_1];
   always @(posedge clock)
   begin
     address_buffer_1 <= W1A;
   end
-  assign output_1[0] = (read_data_1[0] === 1'bX) ? $random : read_data_1[0];
-  assign output_1[1] = (read_data_1[1] === 1'bX) ? $random : read_data_1[1];
-  assign output_1[2] = (read_data_1[2] === 1'bX) ? $random : read_data_1[2];
-  assign output_1[3] = (read_data_1[3] === 1'bX) ? $random : read_data_1[3];
-  assign output_1[4] = (read_data_1[4] === 1'bX) ? $random : read_data_1[4];
-  assign output_1[5] = (read_data_1[5] === 1'bX) ? $random : read_data_1[5];
-  assign output_1[6] = (read_data_1[6] === 1'bX) ? $random : read_data_1[6];
-  assign output_1[7] = (read_data_1[7] === 1'bX) ? $random : read_data_1[7];
+  assign output_1[8'd0] = (read_data_1[8'd0] === 1'bX) ? $random : read_data_1[8'd0];
+  assign output_1[8'd1] = (read_data_1[8'd1] === 1'bX) ? $random : read_data_1[8'd1];
+  assign output_1[8'd2] = (read_data_1[8'd2] === 1'bX) ? $random : read_data_1[8'd2];
+  assign output_1[8'd3] = (read_data_1[8'd3] === 1'bX) ? $random : read_data_1[8'd3];
+  assign output_1[8'd4] = (read_data_1[8'd4] === 1'bX) ? $random : read_data_1[8'd4];
+  assign output_1[8'd5] = (read_data_1[8'd5] === 1'bX) ? $random : read_data_1[8'd5];
+  assign output_1[8'd6] = (read_data_1[8'd6] === 1'bX) ? $random : read_data_1[8'd6];
+  assign output_1[8'd7] = (read_data_1[8'd7] === 1'bX) ? $random : read_data_1[8'd7];
   always @(posedge clock)
   begin
-    if (((W1E && write_enable_1) && mask_1[0]))
+    if (((W1E && write_enable_1) && mask_1[3'd0]))
     begin
-      mem[W1A][0] <= W1I[0];
+      mem[W1A][3'd0] <= W1I[3'd0];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[1]))
+    if (((W1E && write_enable_1) && mask_1[3'd1]))
     begin
-      mem[W1A][1] <= W1I[1];
+      mem[W1A][3'd1] <= W1I[3'd1];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[2]))
+    if (((W1E && write_enable_1) && mask_1[3'd2]))
     begin
-      mem[W1A][2] <= W1I[2];
+      mem[W1A][3'd2] <= W1I[3'd2];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[3]))
+    if (((W1E && write_enable_1) && mask_1[3'd3]))
     begin
-      mem[W1A][3] <= W1I[3];
+      mem[W1A][3'd3] <= W1I[3'd3];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[4]))
+    if (((W1E && write_enable_1) && mask_1[3'd4]))
     begin
-      mem[W1A][4] <= W1I[4];
+      mem[W1A][3'd4] <= W1I[3'd4];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[5]))
+    if (((W1E && write_enable_1) && mask_1[3'd5]))
     begin
-      mem[W1A][5] <= W1I[5];
+      mem[W1A][3'd5] <= W1I[3'd5];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[6]))
+    if (((W1E && write_enable_1) && mask_1[3'd6]))
     begin
-      mem[W1A][6] <= W1I[6];
+      mem[W1A][3'd6] <= W1I[3'd6];
     end
     else
     begin
     end
-    if (((W1E && write_enable_1) && mask_1[7]))
+    if (((W1E && write_enable_1) && mask_1[3'd7]))
     begin
-      mem[W1A][7] <= W1I[7];
+      mem[W1A][3'd7] <= W1I[3'd7];
     end
     else
     begin
