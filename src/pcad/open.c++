@@ -86,8 +86,8 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     auto address_port_name = port_object->template get<std::string>("address port name");
                                     auto mask_port_name = port_object->template get<std::string>("mask port name");
                                     auto chip_enable_port_name = port_object->template get<std::string>("chip enable port name");
-                                    auto read_enable_port_name = port_object->template get<std::string>("chip enable port name");
                                     auto write_enable_port_name = port_object->template get<std::string>("write enable port name");
+                                    auto read_enable_port_name = port_object->template get<std::string>("read enable port name");
 
                                     auto clock_port_polarity = port_object->template get<std::string>("clock port polarity");
                                     auto output_port_polarity = port_object->template get<std::string>("output port polarity");
@@ -95,8 +95,8 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                     auto address_port_polarity = port_object->template get<std::string>("address port polarity");
                                     auto mask_port_polarity = port_object->template get<std::string>("mask port polarity");
                                     auto chip_enable_port_polarity = port_object->template get<std::string>("chip enable port polarity");
-                                    auto read_enable_port_polarity = port_object->template get<std::string>("chip enable port polarity");
                                     auto write_enable_port_polarity = port_object->template get<std::string>("write enable port polarity");
+                                    auto read_enable_port_polarity = port_object->template get<std::string>("read enable port polarity");
 
                                     return std::make_shared<netlist::memory_macro_port>(
                                         util::to_option(clock_port_name),
@@ -114,6 +114,8 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         from_offset(chip_enable_port_polarity),
                                         util::to_option(write_enable_port_name),
                                         from_offset(write_enable_port_polarity),
+                                        util::to_option(read_enable_port_name),
+                                        from_offset(read_enable_port_polarity),
                                         util::to_option(width),
                                         util::to_option(depth)
                                     );

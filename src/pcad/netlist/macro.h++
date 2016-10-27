@@ -57,6 +57,8 @@ namespace pcad {
             const enum rtlir::port_polarity _chip_enable_port_polarity;
             const util::option<std::string> _write_enable_port_name;
             const enum rtlir::port_polarity _write_enable_port_polarity;
+            const util::option<std::string> _read_enable_port_name;
+            const enum rtlir::port_polarity _read_enable_port_polarity;
             const util::option<int> _bit_width;
             const util::option<int> _word_depth;
 
@@ -77,6 +79,8 @@ namespace pcad {
                 const decltype(_chip_enable_port_polarity)& chip_enable_port_polarity,
                 const decltype(_write_enable_port_name)& write_enable_port_name,
                 const decltype(_write_enable_port_polarity)& write_enable_port_polarity,
+                const decltype(_read_enable_port_name)& read_enable_port_name,
+                const decltype(_read_enable_port_polarity)& read_enable_port_polarity,
                 const decltype(_bit_width)& bit_width,
                 const decltype(_word_depth)& word_depth
             )
@@ -95,6 +99,8 @@ namespace pcad {
               _chip_enable_port_polarity(chip_enable_port_polarity),
               _write_enable_port_name(write_enable_port_name),
               _write_enable_port_polarity(write_enable_port_polarity),
+              _read_enable_port_name(read_enable_port_name),
+              _read_enable_port_polarity(read_enable_port_polarity),
               _bit_width(bit_width),
               _word_depth(word_depth)
             {
@@ -111,6 +117,7 @@ namespace pcad {
             const decltype(_mask_port_name)& mask_port_name(void) const { return _mask_port_name; }
             const decltype(_chip_enable_port_name)& chip_enable_port_name(void) const { return _chip_enable_port_name; }
             const decltype(_write_enable_port_name)& write_enable_port_name(void) const { return _write_enable_port_name; }
+            const decltype(_read_enable_port_name)& read_enable_port_name(void) const { return _read_enable_port_name; }
             const decltype(_bit_width)& bit_width(void) const { return _bit_width; }
             const decltype(_word_depth)& word_depth(void) const { return _word_depth; }
 
@@ -190,6 +197,18 @@ namespace pcad {
                         1,
                         rtlir::port_direction::INPUT,
                         _write_enable_port_polarity
+                    );
+                } else
+                    return nullptr;
+            }
+
+            const rtlir::port::ptr read_enable_port(void) const {
+                if (read_enable_port_name().valid()) {
+                    return std::make_shared<rtlir::port>(
+                        read_enable_port_name().data(),
+                        1,
+                        rtlir::port_direction::INPUT,
+                        _read_enable_port_polarity
                     );
                 } else
                     return nullptr;

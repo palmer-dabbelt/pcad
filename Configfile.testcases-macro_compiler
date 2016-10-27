@@ -10,3 +10,4 @@ TESTSRC     += split_width-16x2048-mrw-names.bash
 TESTSRC     += split_width-16x2048-mrw-uneven.bash
 TESTSRC     += split_width-16x2048-mrw-very_uneven.bash
 TESTSRC     += split_depth-8x2048-mrw.bash
+TESTSRC     += split_width-16x2048-mrw-readenable.bash

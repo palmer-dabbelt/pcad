@@ -183,6 +183,15 @@ rtlir::circuit::ptr passes::compile(
                 return as;
             };
 
+            auto assign_port_literal = [&](const rtlir::port::ptr& target, int data) {
+                auto as = std::make_shared<rtlir::port_connect_statement>(
+                    target,
+                    std::make_shared<rtlir::literal_statement>(data)
+                );
+                connects.push_back(as);
+                return as;
+            };
+
             auto assign_cat = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
                 auto w = std::make_shared<rtlir::wire>(
                     target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
@@ -411,6 +420,19 @@ rtlir::circuit::ptr passes::compile(
                 } else if (o_write_enable == nullptr && i_write_enable != nullptr) {
                 } else {
                     std::cerr << "SRAM macro without write enable\n";
+                    abort();
+                    return std::make_shared<rtlir::circuit>(to_compile);
+                }
+
+                auto o_read_enable = portify(outer->read_enable_port());
+                auto i_read_enable = inner->read_enable_port();
+                if (o_read_enable != nullptr && i_read_enable != nullptr)
+                    assign_port(i_read_enable, o_read_enable);
+                else if (o_read_enable == nullptr && i_read_enable != nullptr)
+                    assign_port_literal(i_read_enable, 1);
+                else if (o_read_enable == nullptr && i_read_enable == nullptr) {
+                } else {
+                    std::cerr << "SRAM macro without read enable\n";
                     abort();
                     return std::make_shared<rtlir::circuit>(to_compile);
                 }
