@@ -438,6 +438,18 @@ rtlir::circuit::ptr passes::compile(
                         assign(i_we, and_address_match(o_write_enable));
                         assign(i_ce, and_address_match(o_chip_enable));
                     },
+                    ds(noneptr, anyptr, anyptr), [&](const auto& i_we, const auto& i_ce) {
+                        /* If we're expected to provide mask ports without */
+                        util::assert(o_mask->width() == 1, "cannot emulate multi-bit mask ports with write enable");
+                        assign(
+                            i_we,
+                            std::make_shared<rtlir::and_statement>(
+                                and_address_match(o_write_enable),
+                                o_mask
+                            )
+                        );
+                        assign(i_ce, and_address_match(o_chip_enable));
+                    },
                     ds(_x, _x, _x), [&](const auto& i_mask, const auto& i_we, const auto& i_ce) {
                         /* If we've gotten here then it means I haven't learned
                          * how to compile these sorts of memories yet. */

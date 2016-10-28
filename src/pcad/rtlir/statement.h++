@@ -6,9 +6,11 @@
 #include "literal.h++"
 #include "port.h++"
 #include "wire.h++"
-#include <memory>
 #include <pcad/util/assert.h++>
+#include <pcad/util/option.h++>
 #include <pcad/util/collection.h++>
+#include <iostream>
+#include <memory>
 
 namespace pcad {
     namespace rtlir {
@@ -17,9 +19,10 @@ namespace pcad {
             typedef std::shared_ptr<statement> ptr;
 
         public:
-            /* FIXME: This just lives here to make a vtable so I can do dynamic
-             * casts.  It'll go away later. */
-            virtual void nop(void) {}
+            virtual int width(void) const {
+                std::cerr << "ERROR: unimplemented statement width\n";
+                abort();
+            }
         };
 
         /* Represents the value of a single named wire. */
@@ -39,6 +42,8 @@ namespace pcad {
 
         public:
             const decltype(_wire)& wire(void) const { return _wire; }
+
+            virtual int width(void) const { return _wire->width(); }
         };
 
         class port_statement: public wire_statement {
@@ -90,6 +95,8 @@ namespace pcad {
 
         public:
             const decltype(_data)& data(void) const { return _data; }
+
+            virtual int width(void) const { return _data->width(); }
         };
 
         /* Connects two wires together, possibly unnamed ones. */
@@ -191,6 +198,7 @@ namespace pcad {
             const statement::ptr _source;
             const statement::ptr _hi;
             const statement::ptr _lo;
+            const util::option<int> _width;
 
         public:
             slice_statement(
@@ -199,7 +207,8 @@ namespace pcad {
                 const int& lo)
              : _source(std::make_shared<wire_statement>(source)),
                _hi(std::make_shared<literal_statement>(hi)),
-               _lo(std::make_shared<literal_statement>(lo))
+               _lo(std::make_shared<literal_statement>(lo)),
+               _width(hi - lo + 1)
             {
                 util::assert(_source != nullptr);
                 util::assert(_hi != nullptr);
@@ -212,7 +221,8 @@ namespace pcad {
                 const int& lo)
             : _source(source),
                _hi(std::make_shared<literal_statement>(hi)),
-               _lo(std::make_shared<literal_statement>(lo))
+               _lo(std::make_shared<literal_statement>(lo)),
+               _width(hi - lo + 1)
             {
                 util::assert(_source != nullptr);
                 util::assert(_hi != nullptr);
@@ -223,6 +233,8 @@ namespace pcad {
             const decltype(_source)& source(void) const { return _source; }
             const decltype(_hi)& hi(void) const { return _hi; }
             const decltype(_lo)& lo(void) const { return _lo; }
+
+            virtual int width(void) const { return _width.data(); }
         };
 
         /* Concatonates multiple wires together. */
