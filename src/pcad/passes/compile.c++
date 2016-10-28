@@ -200,17 +200,35 @@ rtlir::circuit::ptr passes::compile(
             auto mi = parallel_lower / mask_width;
             auto connects = std::vector<rtlir::port_connect_statement::ptr>();
 
-            auto assign_port = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& source) {
-                auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
-                connects.push_back(as);
-                return as;
-            };
-
             /* All the helper functions above are garbage, these are the ones that actually work. */
             auto assign = [&](const rtlir::port::ptr& target, const rtlir::statement::ptr& source) {
-                auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
-                connects.push_back(as);
-                return as;
+                if (target->width() < source->width()) {
+                    std::cerr << "WARNING: Assigned large statement to small port " << target->name() << "\n";
+                    auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
+                    connects.push_back(as);
+                    return as;
+                } else if (target->width() > source->width()) {
+                    auto as = std::make_shared<rtlir::port_connect_statement>(
+                        target,
+                        std::make_shared<rtlir::cat_statement>(
+                            source,
+                            std::make_shared<rtlir::literal_statement>(
+                                0,
+                                target->width() - source->width()
+                            )
+                        )
+                    );
+                    connects.push_back(as);
+                    return as;
+                } else {
+                    auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
+                    connects.push_back(as);
+                    return as;
+                }
+            };
+
+            auto assign_port = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& source) {
+                return assign(target, std::make_shared<rtlir::wire_statement>(source));
             };
 
 #if 0

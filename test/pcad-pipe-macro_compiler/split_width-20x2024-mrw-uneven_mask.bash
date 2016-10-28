@@ -82,7 +82,7 @@ module name_of_sram_module(
   vendor_sram mem_0_1(
     .clock(clock),
     .RW0O(RW0O_0_1),
-    .RW0I(RW0I[32'd9:32'd8]),
+    .RW0I({6'd0 ,RW0I[32'd9:32'd8]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd0:32'd0])),
     .RW0E(RW0E)
@@ -98,7 +98,7 @@ module name_of_sram_module(
   vendor_sram mem_0_3(
     .clock(clock),
     .RW0O(RW0O_0_3),
-    .RW0I(RW0I[32'd19:32'd18]),
+    .RW0I({6'd0 ,RW0I[32'd19:32'd18]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd1:32'd1])),
     .RW0E(RW0E)

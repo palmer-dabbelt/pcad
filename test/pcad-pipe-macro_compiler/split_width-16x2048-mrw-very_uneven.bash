@@ -78,7 +78,7 @@ module name_of_sram_module(
   vendor_sram mem_0_0(
     .clock(clock),
     .RW0O(RW0O_0_0),
-    .RW0I(RW0I[32'd1:32'd0]),
+    .RW0I({8'd0 ,RW0I[32'd1:32'd0]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd0:32'd0])),
     .RW0E(RW0E)
@@ -86,7 +86,7 @@ module name_of_sram_module(
   vendor_sram mem_0_1(
     .clock(clock),
     .RW0O(RW0O_0_1),
-    .RW0I(RW0I[32'd3:32'd2]),
+    .RW0I({8'd0 ,RW0I[32'd3:32'd2]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd1:32'd1])),
     .RW0E(RW0E)
@@ -94,7 +94,7 @@ module name_of_sram_module(
   vendor_sram mem_0_2(
     .clock(clock),
     .RW0O(RW0O_0_2),
-    .RW0I(RW0I[32'd5:32'd4]),
+    .RW0I({8'd0 ,RW0I[32'd5:32'd4]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd2:32'd2])),
     .RW0E(RW0E)
@@ -102,7 +102,7 @@ module name_of_sram_module(
   vendor_sram mem_0_3(
     .clock(clock),
     .RW0O(RW0O_0_3),
-    .RW0I(RW0I[32'd7:32'd6]),
+    .RW0I({8'd0 ,RW0I[32'd7:32'd6]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd3:32'd3])),
     .RW0E(RW0E)
@@ -110,7 +110,7 @@ module name_of_sram_module(
   vendor_sram mem_0_4(
     .clock(clock),
     .RW0O(RW0O_0_4),
-    .RW0I(RW0I[32'd9:32'd8]),
+    .RW0I({8'd0 ,RW0I[32'd9:32'd8]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd4:32'd4])),
     .RW0E(RW0E)
@@ -118,7 +118,7 @@ module name_of_sram_module(
   vendor_sram mem_0_5(
     .clock(clock),
     .RW0O(RW0O_0_5),
-    .RW0I(RW0I[32'd11:32'd10]),
+    .RW0I({8'd0 ,RW0I[32'd11:32'd10]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd5:32'd5])),
     .RW0E(RW0E)
@@ -126,7 +126,7 @@ module name_of_sram_module(
   vendor_sram mem_0_6(
     .clock(clock),
     .RW0O(RW0O_0_6),
-    .RW0I(RW0I[32'd13:32'd12]),
+    .RW0I({8'd0 ,RW0I[32'd13:32'd12]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd6:32'd6])),
     .RW0E(RW0E)
@@ -134,7 +134,7 @@ module name_of_sram_module(
   vendor_sram mem_0_7(
     .clock(clock),
     .RW0O(RW0O_0_7),
-    .RW0I(RW0I[32'd15:32'd14]),
+    .RW0I({8'd0 ,RW0I[32'd15:32'd14]}),
     .RW0A(RW0A[32'd10:32'd0]),
     .RW0W((RW0W && RW0M[32'd7:32'd7])),
     .RW0E(RW0E)

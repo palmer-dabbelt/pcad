@@ -19,10 +19,7 @@ namespace pcad {
             typedef std::shared_ptr<statement> ptr;
 
         public:
-            virtual int width(void) const {
-                std::cerr << "ERROR: unimplemented statement width\n";
-                abort();
-            }
+            virtual int width(void) const = 0;
         };
 
         /* Represents the value of a single named wire. */
@@ -142,6 +139,8 @@ namespace pcad {
         public:
             const decltype(_target)& target(void) const { return _target; }
             const decltype(_source)& source(void) const { return _source; }
+
+            virtual int width(void) const { return _target->width(); }
         };
 
         /* Connects a statement to a port. */
@@ -187,6 +186,8 @@ namespace pcad {
         public:
             const decltype(_target)& target(void) const { return _target; }
             const decltype(_source)& source(void) const { return _source; }
+
+            virtual int width(void) const { return _target->width(); }
         };
 
         /* Extracts a bit field from a wire. */
@@ -282,6 +283,16 @@ namespace pcad {
 
         public:
             const decltype(_sources)& sources(void) const { return _sources; }
+
+            virtual int width(void) const {
+                return putil::collection::fold(
+                    _sources,
+                    0,
+                    [](int sum, const statement::ptr& source) {
+                        return sum + source->width();
+                    }
+                );
+            }
         };
 
         /* The ternery operator. */
@@ -308,6 +319,10 @@ namespace pcad {
             const auto& select(void) const { return _select; }
             const auto& on_true(void) const { return _on_true; }
             const auto& on_false(void) const { return _on_false; }
+
+            virtual int width(void) const {
+                return std::max(_on_true->width(), _on_false->width());
+            }
         };
 
         /* Binary operators. */
@@ -337,6 +352,10 @@ namespace pcad {
             const decltype(_op)& op(void) const { return _op; }
             const decltype(_l)& left(void) const { return _l; }
             const decltype(_r)& right(void) const { return _r; }
+
+            virtual int width(void) const {
+                return std::max(_l->width(), _r->width());
+            }
         };
 
         template <enum binary_op OP>
@@ -381,6 +400,8 @@ namespace pcad {
         public:
             const decltype(_op)& op(void) const { return _op; }
             const decltype(_s) s(void) const { return _s; }
+
+            virtual int width(void) const { return _s->width(); }
         };
 
         template <enum unary_op OP>
