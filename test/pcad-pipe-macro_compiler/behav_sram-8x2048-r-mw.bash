@@ -64,14 +64,14 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= R0A;
   end
-  assign R0O[8'd0] = (read_data_0[8'd0] === 1'bX) ? $random : read_data_0[8'd0];
-  assign R0O[8'd1] = (read_data_0[8'd1] === 1'bX) ? $random : read_data_0[8'd1];
-  assign R0O[8'd2] = (read_data_0[8'd2] === 1'bX) ? $random : read_data_0[8'd2];
-  assign R0O[8'd3] = (read_data_0[8'd3] === 1'bX) ? $random : read_data_0[8'd3];
-  assign R0O[8'd4] = (read_data_0[8'd4] === 1'bX) ? $random : read_data_0[8'd4];
-  assign R0O[8'd5] = (read_data_0[8'd5] === 1'bX) ? $random : read_data_0[8'd5];
-  assign R0O[8'd6] = (read_data_0[8'd6] === 1'bX) ? $random : read_data_0[8'd6];
-  assign R0O[8'd7] = (read_data_0[8'd7] === 1'bX) ? $random : read_data_0[8'd7];
+  assign R0O[8'd0] = ((read_data_0[8'd0] === 1'bX)) ? ($random) : (read_data_0[8'd0]);
+  assign R0O[8'd1] = ((read_data_0[8'd1] === 1'bX)) ? ($random) : (read_data_0[8'd1]);
+  assign R0O[8'd2] = ((read_data_0[8'd2] === 1'bX)) ? ($random) : (read_data_0[8'd2]);
+  assign R0O[8'd3] = ((read_data_0[8'd3] === 1'bX)) ? ($random) : (read_data_0[8'd3]);
+  assign R0O[8'd4] = ((read_data_0[8'd4] === 1'bX)) ? ($random) : (read_data_0[8'd4]);
+  assign R0O[8'd5] = ((read_data_0[8'd5] === 1'bX)) ? ($random) : (read_data_0[8'd5]);
+  assign R0O[8'd6] = ((read_data_0[8'd6] === 1'bX)) ? ($random) : (read_data_0[8'd6]);
+  assign R0O[8'd7] = ((read_data_0[8'd7] === 1'bX)) ? ($random) : (read_data_0[8'd7]);
   assign write_enable_1 = ~(1'd0);
   assign mask_1 = ~(8'd0);
   assign read_data_1 = mem[address_buffer_1];
@@ -79,14 +79,14 @@ module name_of_sram_module(
   begin
     address_buffer_1 <= W1A;
   end
-  assign output_1[8'd0] = (read_data_1[8'd0] === 1'bX) ? $random : read_data_1[8'd0];
-  assign output_1[8'd1] = (read_data_1[8'd1] === 1'bX) ? $random : read_data_1[8'd1];
-  assign output_1[8'd2] = (read_data_1[8'd2] === 1'bX) ? $random : read_data_1[8'd2];
-  assign output_1[8'd3] = (read_data_1[8'd3] === 1'bX) ? $random : read_data_1[8'd3];
-  assign output_1[8'd4] = (read_data_1[8'd4] === 1'bX) ? $random : read_data_1[8'd4];
-  assign output_1[8'd5] = (read_data_1[8'd5] === 1'bX) ? $random : read_data_1[8'd5];
-  assign output_1[8'd6] = (read_data_1[8'd6] === 1'bX) ? $random : read_data_1[8'd6];
-  assign output_1[8'd7] = (read_data_1[8'd7] === 1'bX) ? $random : read_data_1[8'd7];
+  assign output_1[8'd0] = ((read_data_1[8'd0] === 1'bX)) ? ($random) : (read_data_1[8'd0]);
+  assign output_1[8'd1] = ((read_data_1[8'd1] === 1'bX)) ? ($random) : (read_data_1[8'd1]);
+  assign output_1[8'd2] = ((read_data_1[8'd2] === 1'bX)) ? ($random) : (read_data_1[8'd2]);
+  assign output_1[8'd3] = ((read_data_1[8'd3] === 1'bX)) ? ($random) : (read_data_1[8'd3]);
+  assign output_1[8'd4] = ((read_data_1[8'd4] === 1'bX)) ? ($random) : (read_data_1[8'd4]);
+  assign output_1[8'd5] = ((read_data_1[8'd5] === 1'bX)) ? ($random) : (read_data_1[8'd5]);
+  assign output_1[8'd6] = ((read_data_1[8'd6] === 1'bX)) ? ($random) : (read_data_1[8'd6]);
+  assign output_1[8'd7] = ((read_data_1[8'd7] === 1'bX)) ? ($random) : (read_data_1[8'd7]);
   always @(posedge clock)
   begin
     if (((W1E && write_enable_1) && mask_1[3'd0]))

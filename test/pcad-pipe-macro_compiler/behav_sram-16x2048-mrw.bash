@@ -47,22 +47,22 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= RW0A;
   end
-  assign RW0O[16'd0] = (read_data_0[16'd0] === 1'bX) ? $random : read_data_0[16'd0];
-  assign RW0O[16'd1] = (read_data_0[16'd1] === 1'bX) ? $random : read_data_0[16'd1];
-  assign RW0O[16'd2] = (read_data_0[16'd2] === 1'bX) ? $random : read_data_0[16'd2];
-  assign RW0O[16'd3] = (read_data_0[16'd3] === 1'bX) ? $random : read_data_0[16'd3];
-  assign RW0O[16'd4] = (read_data_0[16'd4] === 1'bX) ? $random : read_data_0[16'd4];
-  assign RW0O[16'd5] = (read_data_0[16'd5] === 1'bX) ? $random : read_data_0[16'd5];
-  assign RW0O[16'd6] = (read_data_0[16'd6] === 1'bX) ? $random : read_data_0[16'd6];
-  assign RW0O[16'd7] = (read_data_0[16'd7] === 1'bX) ? $random : read_data_0[16'd7];
-  assign RW0O[16'd8] = (read_data_0[16'd8] === 1'bX) ? $random : read_data_0[16'd8];
-  assign RW0O[16'd9] = (read_data_0[16'd9] === 1'bX) ? $random : read_data_0[16'd9];
-  assign RW0O[16'd10] = (read_data_0[16'd10] === 1'bX) ? $random : read_data_0[16'd10];
-  assign RW0O[16'd11] = (read_data_0[16'd11] === 1'bX) ? $random : read_data_0[16'd11];
-  assign RW0O[16'd12] = (read_data_0[16'd12] === 1'bX) ? $random : read_data_0[16'd12];
-  assign RW0O[16'd13] = (read_data_0[16'd13] === 1'bX) ? $random : read_data_0[16'd13];
-  assign RW0O[16'd14] = (read_data_0[16'd14] === 1'bX) ? $random : read_data_0[16'd14];
-  assign RW0O[16'd15] = (read_data_0[16'd15] === 1'bX) ? $random : read_data_0[16'd15];
+  assign RW0O[16'd0] = 9(read_data_0[16'd0] === 1'bX)) ? ($random) : (read_data_0[16'd0]);
+  assign RW0O[16'd1] = ((read_data_0[16'd1] === 1'bX)) ? ($random) : (read_data_0[16'd1]);
+  assign RW0O[16'd2] = ((read_data_0[16'd2] === 1'bX)) ? ($random) : (read_data_0[16'd2]);
+  assign RW0O[16'd3] = ((read_data_0[16'd3] === 1'bX)) ? ($random) : (read_data_0[16'd3]);
+  assign RW0O[16'd4] = ((read_data_0[16'd4] === 1'bX)) ? ($random) : (read_data_0[16'd4]);
+  assign RW0O[16'd5] = ((read_data_0[16'd5] === 1'bX)) ? ($random) : (read_data_0[16'd5]);
+  assign RW0O[16'd6] = ((read_data_0[16'd6] === 1'bX)) ? ($random) : (read_data_0[16'd6]);
+  assign RW0O[16'd7] = ((read_data_0[16'd7] === 1'bX)) ? ($random) : (read_data_0[16'd7]);
+  assign RW0O[16'd8] = ((read_data_0[16'd8] === 1'bX)) ? ($random) : (read_data_0[16'd8]);
+  assign RW0O[16'd9] = ((read_data_0[16'd9] === 1'bX)) ? ($random) : (read_data_0[16'd9]);
+  assign RW0O[16'd10] = ((read_data_0[16'd10] === 1'bX)) ? ($random) : (read_data_0[16'd10]);
+  assign RW0O[16'd11] = ((read_data_0[16'd11] === 1'bX)) ? ($random) : (read_data_0[16'd11]);
+  assign RW0O[16'd12] = ((read_data_0[16'd12] === 1'bX)) ? ($random) : (read_data_0[16'd12]);
+  assign RW0O[16'd13] = ((read_data_0[16'd13] === 1'bX)) ? ($random) : (read_data_0[16'd13]);
+  assign RW0O[16'd14] = ((read_data_0[16'd14] === 1'bX)) ? ($random) : (read_data_0[16'd14]);
+  assign RW0O[16'd15] = ((read_data_0[16'd15] === 1'bX)) ? ($random) : (read_data_0[16'd15]);
   always @(posedge clock)
   begin
     if (((RW0E && RW0W) && RW0M[4'd0]))

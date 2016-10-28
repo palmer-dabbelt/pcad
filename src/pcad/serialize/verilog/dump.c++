@@ -228,11 +228,13 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const statement::ptr& sta
         },
         some<hdlast::trop_statement>(), [&](auto s) {
             os << indent;
+            os << "(";
             dump(os, s.sel(), "");
-            os << " ? ";
+            os << ") ? (";
             dump(os, s.ont(), "");
-            os << " : ";
+            os << ") : (";
             dump(os, s.onf(), "");
+            os << ")";
         },
         some<hdlast::rep_statement>(), [&](auto s) {
             os << indent;
