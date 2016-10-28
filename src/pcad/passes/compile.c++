@@ -192,6 +192,7 @@ rtlir::circuit::ptr passes::compile(
             auto si = serial / compile_to->depth();
             auto parallel_lower = parallel_pairs[pi].first;
             auto parallel_upper = parallel_pairs[pi].second;
+            auto mi = parallel_lower / mask_width;
             auto connects = std::vector<rtlir::port_connect_statement::ptr>();
 
             auto assign_port = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& source) {
@@ -310,8 +311,8 @@ rtlir::circuit::ptr passes::compile(
             };
 
             auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
-                auto upper = (pi + 1) * target->width() - 1;
-                auto lower = (pi + 0) * target->width() - 0;
+                auto upper = mi;
+                auto lower = mi;
                 util::assert(upper == lower, "only single-bit mask/and is supported");
                 util::assert(bit->width() == 1, "only single-bit mask/and is supported");
 
