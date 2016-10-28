@@ -295,6 +295,11 @@ rtlir::circuit::ptr passes::compile(
                             )
                         );
                     },
+                    ds(noneptr, anyptr), [&](const auto& i_o) {
+                        /* If the inner memory has an output port but the outer
+                         * one doesn't then it's safe to just leave the outer
+                         * port floating. */
+                    },
                     ds(_x, _x), [&](const auto& o_o, const auto& i_o) {
                         std::cerr << "ERROR: Unable to match output ports on memory\n";
                         std::cerr << "  outer output port: " << o_o << "\n";
@@ -316,6 +321,13 @@ rtlir::circuit::ptr passes::compile(
                                 parallel_lower
                             )
                         );
+                    },
+                    ds(noneptr, anyptr), [&](const auto& i_i) {
+                        /* If the inner memory has an input port but the other
+                         * one doesn't then it's safe to just leave the inner
+                         * port floating.  This should be handled by the
+                         * default value of the write enable, so nothing should
+                         * every make it into the memory. */
                     },
                     ds(_x, _x), [&](const auto& o_i, const auto& i_i) {
                         std::cerr << "ERROR: Unable to match input ports on memory\n";
