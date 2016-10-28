@@ -58,8 +58,7 @@ void pcad::serialize::json::dump(ofstream& os, const wire::ptr& wire)
             os << make_pair("name", w.name());
             os << make_pair("width", w.width());
             os << make_pair("depth", w.depth());
-        },
-        none(), [&](){ abort(); }
+        }
     );
 
     os << stream_marker::END_STRUCTURE;
@@ -154,8 +153,7 @@ void pcad::serialize::json::dump(ofstream& os, const statement::ptr& statement)
         some<hdlast::statement>(), [&](auto s){
             std::cerr << "Unknown statement of type " << typeid(s).name() << std::endl;
             abort();
-        },
-        none(), [&](){ abort(); }
+        }
     );
 
     os << stream_marker::END_STRUCTURE;

@@ -279,10 +279,6 @@ void pcad::serialize::verilog::dump(std::ofstream& os, const statement::ptr& sta
         some<hdlast::statement>(), [&](auto s) {
             std::cerr << "Unknown statement of type " << typeid(statement).name() << std::endl;
             abort();
-        },
-        none(), [&](){
-            std::cerr << "nullptr statement\n";
-            abort();
         }
     );
 }
