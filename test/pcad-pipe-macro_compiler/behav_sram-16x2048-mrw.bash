@@ -47,7 +47,7 @@ module name_of_sram_module(
   begin
     address_buffer_0 <= RW0A;
   end
-  assign RW0O[16'd0] = 9(read_data_0[16'd0] === 1'bX)) ? ($random) : (read_data_0[16'd0]);
+  assign RW0O[16'd0] = ((read_data_0[16'd0] === 1'bX)) ? ($random) : (read_data_0[16'd0]);
   assign RW0O[16'd1] = ((read_data_0[16'd1] === 1'bX)) ? ($random) : (read_data_0[16'd1]);
   assign RW0O[16'd2] = ((read_data_0[16'd2] === 1'bX)) ? ($random) : (read_data_0[16'd2]);
   assign RW0O[16'd3] = ((read_data_0[16'd3] === 1'bX)) ? ($random) : (read_data_0[16'd3]);
