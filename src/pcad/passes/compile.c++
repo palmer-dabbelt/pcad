@@ -429,8 +429,8 @@ rtlir::circuit::ptr passes::compile(
                     anyptr, [](const auto& oce) -> rtlir::statement::ptr {
                         return std::make_shared<rtlir::port_statement>(oce);
                     },
-                    noneptr, []() -> rtlir::statement::ptr {
-                        return std::make_shared<rtlir::literal_statement>(1, 1);
+                    noneptr, [&]() -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::bnot_statement>(o_write_enable);
                     }
                 );
 
