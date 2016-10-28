@@ -253,7 +253,10 @@ rtlir::circuit::ptr passes::compile(
                         std::ceil(std::log2(to_compile->depth())) - std::ceil(std::log2(compile_to->depth()))
                     )
                 );
-                auto and_address_match = [&](const auto& s) {
+                auto and_address_match = [&](const auto& s) -> rtlir::statement::ptr {
+                    if (to_compile->depth() == compile_to->depth())
+                        return s;
+
                     return std::make_shared<rtlir::and_statement>(s, serial_address_match);
                 };
  
@@ -485,23 +488,29 @@ rtlir::circuit::ptr passes::compile(
                     )
                 );
 
-                auto address = std::make_shared<rtlir::slice_statement>(
-                    putil::collection::fold(
-                        tuples,
-                        rtlir::wire::ptr(nullptr),
-                        [](const auto& last, const auto& tuple) {
-                            auto wire = std::get<2>(tuple);
+                auto address = [&]() -> rtlir::statement::ptr {
+                    if (compile_to->depth() == to_compile->depth()) {
+                        return std::make_shared<rtlir::literal_statement>(0);
+                    } else {
+                        return std::make_shared<rtlir::slice_statement>(
+                            putil::collection::fold(
+                                tuples,
+                                rtlir::wire::ptr(nullptr),
+                                [](const auto& last, const auto& tuple) {
+                                    auto wire = std::get<2>(tuple);
 
-                            if (last == nullptr)
-                                return wire;
+                                    if (last == nullptr)
+                                        return wire;
 
-                            util::assert(last->name() == wire->name(), "mismatched cat wire");
-                            return wire;
-                        }
-                    ),
-                    std::ceil(std::log2(to_compile->depth())) - 1,
-                    std::ceil(std::log2(compile_to->depth()))
-                );
+                                    util::assert(last->name() == wire->name(), "mismatched cat wire");
+                                    return wire;
+                                }
+                            ),
+                            std::ceil(std::log2(to_compile->depth())) - 1,
+                            std::ceil(std::log2(compile_to->depth()))
+                        );
+                    }
+                }();
 
                 auto a = std::make_shared<rtlir::connect_statement>(w, cat);
                 statements.push_back(a);
@@ -531,7 +540,6 @@ rtlir::circuit::ptr passes::compile(
                         std::make_shared<rtlir::wire_statement>(on_value),
                         last
                     );
-                    return std::make_shared<rtlir::literal_statement>(1);
                 }
             );
 

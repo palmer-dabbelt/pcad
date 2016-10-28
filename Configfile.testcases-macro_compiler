@@ -10,5 +10,5 @@ TESTSRC     += behav_sram-16x2048-mrw-syn_flops.bash
 #TESTSRC     += split_width-16x2048-mrw-uneven.bash
 #TESTSRC     += split_width-16x2048-mrw-very_uneven.bash
 TESTSRC     += split_depth-8x2048-mrw.bash
-#TESTSRC     += split_width-16x2048-mrw-readenable.bash
+TESTSRC     += split_width-16x2048-mrw-readenable.bash
 #TESTSRC     += split_width-20x2024-mrw-uneven_mask.bash
