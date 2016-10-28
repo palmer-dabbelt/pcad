@@ -164,17 +164,34 @@ rtlir::circuit::ptr passes::compile(
         }
     );
 
+    /* This macro compiler is just a horrible mess... */
+    auto parallel_pairs = [&](){
+        auto out = std::vector<std::pair<int, int>>();
+        for (int mask = 0; mask < to_compile->width(); mask += mask_width) {
+            auto last_macro = mask;
+            for (int macro = mask + mask_or_macro_width; macro < mask + mask_width; macro += mask_or_macro_width) {
+                out.push_back(std::make_pair(last_macro, macro));
+                last_macro = macro;
+            }
+            out.push_back(std::make_pair(last_macro, mask + mask_width));
+        }
+        return out;
+    }();
+    std::cerr << "INFO: Mapped memory boundaries (mask_or_macro_width=" << std::to_string(mask_or_macro_width) << ", mask_width=" << std::to_string(mask_width) << "):\n";
+    for (const auto& pp: parallel_pairs)
+        std::cerr << "  [" << std::to_string(pp.first) << ", " << std::to_string(pp.second) << ")\n";
+
     auto logic = std::vector<rtlir::statement::ptr>();
 
     auto instances = std::vector<rtlir::instance::ptr>();
-    auto cats = std::multimap<rtlir::port::ptr, rtlir::wire::ptr>();
+    auto cats = std::multimap<rtlir::port::ptr, std::pair<rtlir::wire::ptr, int>>();
     auto wires = std::vector<rtlir::wire::ptr>();
     auto statements = std::vector<rtlir::statement::ptr>();
-    for (auto parallel = 0; parallel < to_compile->width(); parallel += mask_or_macro_width) {
+    for (size_t pi = 0; pi < parallel_pairs.size(); ++pi) {
         for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
-            auto pi = parallel / mask_or_macro_width;
             auto si = serial / compile_to->depth();
-            auto mi = parallel / mask_width;
+            auto parallel_lower = parallel_pairs[pi].first;
+            auto parallel_upper = parallel_pairs[pi].second;
             auto connects = std::vector<rtlir::port_connect_statement::ptr>();
 
             auto assign_port = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& source) {
@@ -197,7 +214,7 @@ rtlir::circuit::ptr passes::compile(
                 wires.push_back(w);
 
                 assign_port(source, w);
-                cats.insert(std::make_pair(target, w));
+                cats.insert(std::make_pair(target, std::make_pair(w, parallel_upper - parallel_lower)));
 
                 auto as = std::make_shared<rtlir::connect_statement>(w, source);
                 return as;
@@ -232,15 +249,15 @@ rtlir::circuit::ptr passes::compile(
                 return slice_helper(
                     target,
                     source,
-                    (pi + 1) * mask_or_macro_width - 1,
-                    (pi + 0) * mask_or_macro_width - 0,
+                    parallel_upper - 1,
+                    parallel_lower,
                     target->width()
                 );
             };
 
             auto assign_pi_mask_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, const rtlir::wire::ptr& address) {
-                auto upper = (pi + 1) * target->width() - 1;
-                auto lower = (pi + 0) * target->width() - 0;
+                int upper = (pi + 1) * target->width() - 1;
+                int lower = (pi + 0) * target->width() - 0;
                 auto width = target->width();
 
                 auto address_upper = address->width() - 1;
@@ -293,8 +310,8 @@ rtlir::circuit::ptr passes::compile(
             };
 
             auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
-                auto upper = (mi + 1) * target->width() - 1;
-                auto lower = (mi + 0) * target->width() - 0;
+                auto upper = (pi + 1) * target->width() - 1;
+                auto lower = (pi + 0) * target->width() - 0;
                 util::assert(upper == lower, "only single-bit mask/and is supported");
                 util::assert(bit->width() == 1, "only single-bit mask/and is supported");
 
@@ -417,7 +434,7 @@ rtlir::circuit::ptr passes::compile(
                     assign_port(i_write_enable, o_write_enable);
                     a_write_enable = std::make_shared<rtlir::wire_statement>(o_write_enable);
                 } else if (o_write_enable == nullptr && i_write_enable != nullptr) {
-                    a_write_enable = std::make_shared<rtlir::literal_statement>(0);
+                    a_write_enable = std::make_shared<rtlir::literal_statement>(0, 1);
                 } else {
                     std::cerr << "SRAM macro without write enable\n";
                     abort();
@@ -452,14 +469,14 @@ rtlir::circuit::ptr passes::compile(
 
     putil::collection::myfmmw(
         cats,
-        [&](const rtlir::port::ptr& port, const std::vector<rtlir::wire::ptr>& elements) -> void {
+        [&](const rtlir::port::ptr& port, const std::vector<std::pair<rtlir::wire::ptr, int>>& elements) -> void {
             auto cat = std::make_shared<rtlir::cat_statement>(
                 putil::collection::map(
                     elements,
-                    [&](const auto& element) -> rtlir::statement::ptr {
+                    [&](const auto& pair) -> rtlir::statement::ptr {
                         return std::make_shared<rtlir::slice_statement>(
-                            element,
-                            mask_or_macro_width - 1,
+                            pair.first,
+                            pair.second - 1,
                             0
                         );
                     }
