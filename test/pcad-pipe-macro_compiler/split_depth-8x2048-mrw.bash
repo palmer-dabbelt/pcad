@@ -59,49 +59,41 @@ cat >"library.json" <<"EOF"
 ]
 EOF
 
-cat >"$OUTPUT".gold <<"EOF"
+cat > "$OUTPUT".gold <<"EOF"
 module name_of_sram_module(
+  input [10:0] RW0A,
   input [0:0] clock,
   output [7:0] RW0O,
   input [7:0] RW0I,
-  input [10:0] RW0A,
   input [0:0] RW0M,
-  input [0:0] RW0E,
-  input [0:0] RW0W
+  input [0:0] RW0W,
+  input [0:0] RW0E
 );
   wire [7:0] RW0O_0_0;
-  wire [7:0] RW0I_0_0;
-  wire [9:0] RW0A_0_0;
-  wire [0:0] RW0M_0_0;
+  wire [7:0] RW0O_0;
   wire [7:0] RW0O_1_0;
-  wire [7:0] RW0I_1_0;
-  wire [9:0] RW0A_1_0;
-  wire [0:0] RW0M_1_0;
+  wire [7:0] RW0O_1;
   vendor_sram mem_0_0(
     .clock(clock),
     .RW0O(RW0O_0_0),
-    .RW0I(RW0I_0_0),
-    .RW0A(RW0A_0_0),
-    .RW0M(RW0M_0_0),
-    .RW0E(RW0E),
-    .RW0W(RW0W)
+    .RW0I(RW0I[32'd7:32'd0]),
+    .RW0A(RW0A[32'd9:32'd0]),
+    .RW0M(RW0M[32'd0:32'd0]),
+    .RW0W((RW0W && (RW0A[32'd10:32'd10] == 1'd0))),
+    .RW0E((RW0E && (RW0A[32'd10:32'd10] == 1'd0)))
   );
   vendor_sram mem_1_0(
     .clock(clock),
     .RW0O(RW0O_1_0),
-    .RW0I(RW0I_1_0),
-    .RW0A(RW0A_1_0),
-    .RW0M(RW0M_1_0),
-    .RW0E(RW0E),
-    .RW0W(RW0W)
+    .RW0I(RW0I[32'd7:32'd0]),
+    .RW0A(RW0A[32'd9:32'd0]),
+    .RW0M(RW0M[32'd0:32'd0]),
+    .RW0W((RW0W && (RW0A[32'd10:32'd10] == 1'd1))),
+    .RW0E((RW0E && (RW0A[32'd10:32'd10] == 1'd1)))
   );
-  assign RW0I_0_0 = RW0I[32'd7:32'd0];
-  assign RW0A_0_0 = RW0A[32'd9:32'd0];
-  assign RW0M_0_0 = (RW0M[32'd0:32'd0] && (RW0A[32'd10:32'd10] == 0'd0));
-  assign RW0I_1_0 = RW0I[32'd7:32'd0];
-  assign RW0A_1_0 = RW0A[32'd9:32'd0];
-  assign RW0M_1_0 = (RW0M[32'd0:32'd0] && (RW0A[32'd10:32'd10] == 0'd1));
-  assign RW0O = {RW0O_1_0[32'd7:32'd0] ,RW0O_0_0[32'd7:32'd0]};
+  assign RW0O_0 = {RW0O_0_0[32'd7:32'd0]};
+  assign RW0O_1 = {RW0O_1_0[32'd7:32'd0]};
+  assign RW0O = ((32'd1 == RW0A[32'd10:32'd10])) ? (RW0O_1) : (((32'd0 == RW0A[32'd10:32'd10])) ? (RW0O_0) : (8'd0));
 endmodule
 EOF
 

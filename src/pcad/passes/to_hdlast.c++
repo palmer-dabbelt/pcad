@@ -396,6 +396,9 @@ hdlast::statement::ptr passes::to_hdlast(const rtlir::statement::ptr& s)
         someptr<rtlir::literal_statement>(), [](const auto& ls) {
             return to_hdlast(ls);
         },
+        someptr<rtlir::terop_statement>(), [](const auto& bs) {
+            return to_hdlast(bs);
+        },
         someptr<rtlir::binop_statement>(), [](const auto& bs) {
             return to_hdlast(bs);
         },
@@ -509,6 +512,15 @@ hdlast::wire_statement::ptr passes::to_hdlast(const rtlir::literal_statement::pt
             ls->data()->as_string(),
             ls->data()->width()
         )
+    );
+}
+
+hdlast::trop_statement::ptr passes::to_hdlast(const rtlir::terop_statement::ptr& p)
+{
+    return std::make_shared<hdlast::trop_statement>(
+        to_hdlast(p->select()),
+        to_hdlast(p->on_true()),
+        to_hdlast(p->on_false())
     );
 }
 

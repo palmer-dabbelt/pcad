@@ -5,6 +5,7 @@
 #include <pcad/rtlir/module.h++>
 #include <pcad/rtlir/instance.h++>
 #include <pcad/util/collection.h++>
+#include <tuple>
 #include <simple_match/simple_match.hpp>
 #include <pcad/util/assert.h++>
 #include <cmath>
@@ -184,12 +185,16 @@ rtlir::circuit::ptr passes::compile(
     auto logic = std::vector<rtlir::statement::ptr>();
 
     auto instances = std::vector<rtlir::instance::ptr>();
-    auto cats = std::multimap<rtlir::port::ptr, std::pair<rtlir::wire::ptr, int>>();
     auto wires = std::vector<rtlir::wire::ptr>();
     auto statements = std::vector<rtlir::statement::ptr>();
-    for (size_t pi = 0; pi < parallel_pairs.size(); ++pi) {
-        for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
-            auto si = serial / compile_to->depth();
+    auto selects = std::multimap<rtlir::port::ptr, std::tuple<rtlir::wire::ptr, int, rtlir::statement::ptr>>();
+
+    for (auto serial = 0; serial < to_compile->depth(); serial += compile_to->depth()) {
+        auto si = serial / compile_to->depth();
+
+        auto cats = std::multimap<rtlir::port::ptr, std::tuple<rtlir::wire::ptr, int, rtlir::wire::ptr>>();
+
+        for (size_t pi = 0; pi < parallel_pairs.size(); ++pi) {
             auto parallel_lower = parallel_pairs[pi].first;
             auto parallel_upper = parallel_pairs[pi].second;
             auto mi = parallel_lower / mask_width;
@@ -201,262 +206,245 @@ rtlir::circuit::ptr passes::compile(
                 return as;
             };
 
-            auto assign_port_statement = [&](const rtlir::port::ptr& target, const rtlir::statement::ptr& source) {
+            /* All the helper functions above are garbage, these are the ones that actually work. */
+            auto assign = [&](const rtlir::port::ptr& target, const rtlir::statement::ptr& source) {
                 auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
                 connects.push_back(as);
                 return as;
             };
 
-            auto assign_cat = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
-                auto w = std::make_shared<rtlir::wire>(
-                    target->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
-                    source->width()
-                );
-                wires.push_back(w);
+#if 0
+            auto wire_assign_statement = [&](const rtlir::wire::ptr& target, const rtlir::statement::ptr& source) {
+                auto as = std::make_shared<rtlir::connect_statement>(target, source);
+                logic.push_back(as);
+                return as;
+            };
+#endif
 
-                assign_port(source, w);
-                cats.insert(std::make_pair(target, std::make_pair(w, parallel_upper - parallel_lower)));
-
-                auto as = std::make_shared<rtlir::connect_statement>(w, source);
+            auto wire_assign_wire = [&](const rtlir::wire::ptr& target, const rtlir::wire::ptr& source) {
+                auto as = std::make_shared<rtlir::connect_statement>(target, source);
+                logic.push_back(as);
                 return as;
             };
 
-            auto slice_helper = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, int upper, int lower, int width) {
-                util::assert(upper >= lower, "backwards slice");
-
+            auto mktemp = [&](const std::string& base_name, const int& width) {
                 auto w = std::make_shared<rtlir::wire>(
-                    source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
+                    base_name + "_" + std::to_string(si) + "_" + std::to_string(pi),
                     width
                 );
                 wires.push_back(w);
-
-                auto ss = std::make_shared<rtlir::slice_statement>(
-                    source,
-                    std::min(source->width() - 1, upper),
-                    lower
-                );
-                auto ass = std::make_shared<rtlir::connect_statement>(
-                    w,
-                    ss
-                );
-                statements.push_back(ass);
-
-                assign_port(target, w);
-
-                return ass;
-            };
-
-            auto assign_mask_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
-                return slice_helper(
-                    target,
-                    source,
-                    parallel_upper - 1,
-                    parallel_lower,
-                    target->width()
-                );
-            };
-
-            auto assign_pi_mask_slice = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source, const rtlir::wire::ptr& address) {
-                int upper = (pi + 1) * target->width() - 1;
-                int lower = (pi + 0) * target->width() - 0;
-                auto width = target->width();
-
-                auto address_upper = address->width() - 1;
-                auto address_lower = std::ceil(std::log2(compile_to->depth()));
-
-                auto w = std::make_shared<rtlir::wire>(
-                    source->name() + "_" + std::to_string(si) + "_" + std::to_string(pi),
-                    width
-                );
-                wires.push_back(w);
-
-                auto ss = std::make_shared<rtlir::slice_statement>(
-                    source,
-                    std::min(source->width() - 1, upper),
-                    lower
-                );
-                auto as = std::make_shared<rtlir::and_statement>(
-                    ss,
-                    std::make_shared<rtlir::eqeq_statement>(
-                        std::make_shared<rtlir::slice_statement>(
-                            address,
-                            address_upper,
-                            address_lower
-                        ),
-                        std::make_shared<rtlir::literal>(
-                            si,
-                            address_upper - address_lower
-                        )
-                    )
-                );
-
-                auto ass = [&](){
-                    if (address_lower > address_upper) {
-                        return std::make_shared<rtlir::connect_statement>(
-                            w,
-                            ss
-                        );
-                    } else {
-                        return std::make_shared<rtlir::connect_statement>(
-                            w,
-                            as
-                        );
-                    }
-                }();
-                statements.push_back(ass);
-
-                assign_port(target, w);
-
-                return ass;
-            };
-
-            auto assign_slice_and = [&](const rtlir::port::ptr& target, const rtlir::wire::ptr& mask, const rtlir::wire::ptr& bit) {
-                auto upper = mi;
-                auto lower = mi;
-                util::assert(upper == lower, "only single-bit mask/and is supported");
-                util::assert(bit->width() == 1, "only single-bit mask/and is supported");
-
-                auto w = std::make_shared<rtlir::wire>(
-                    mask->name() + "_" + std::to_string(si) + "_" + std::to_string(pi) + "_AND_" + bit->name(),
-                    upper - lower + 1
-                );
-                wires.push_back(w);
-
-                auto ss = std::make_shared<rtlir::slice_statement>(
-                    mask,
-                    upper,
-                    lower
-                );
-                auto ans = std::make_shared<rtlir::and_statement>(
-                    ss,
-                    bit
-                );
-                auto asans = std::make_shared<rtlir::connect_statement>(
-                    w,
-                    ans
-                );
-                statements.push_back(asans);
-
-                assign_port(target, w);
-            };
-
-            auto assign_lower = [&](const rtlir::port::ptr& target, const rtlir::port::ptr& source) {
-                return slice_helper(
-                    target,
-                    source,
-                    std::ceil(std::log2(compile_to->depth())) - 1,
-                    0,
-                    std::ceil(std::log2(compile_to->depth()))
-                );
+                return w;
             };
  
             for (const auto& pp: paired_memory_ports) {
                 auto outer = pp.first;
                 auto inner = pp.second;
-                
-                auto o_clock = portify(outer->clock_port());
-                auto i_clock = inner->clock_port();
-                if (o_clock != nullptr && i_clock != nullptr)
-                    assign_port(i_clock, o_clock);
-                else {
-                    std::cerr << "SRAM macro without clock\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
 
-                auto o_output = portify(outer->output_port());
-                auto i_output = inner->output_port();
-                if (o_output != nullptr && i_output != nullptr)
-                    assign_cat(o_output, i_output);
-                else if (o_output == nullptr && i_output != nullptr) {
-                } else if (o_output == nullptr && i_output == nullptr) {
-                } else {
-                    std::cerr << "SRAM macro without output: " << to_compile->name() << "\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                /* If we've got a parallel memory then we've got to take the
+                 * address bits into account. */
+                auto serial_address_match = std::make_shared<rtlir::eqeq_statement>(
+                    std::make_shared<rtlir::slice_statement>(
+                        portify(outer->address_port()),
+                        std::ceil(std::log2(to_compile->depth())) - 1,
+                        std::ceil(std::log2(compile_to->depth())) - 0
+                    ),
+                    std::make_shared<rtlir::literal_statement>(
+                        si,
+                        std::ceil(std::log2(to_compile->depth())) - std::ceil(std::log2(compile_to->depth()))
+                    )
+                );
+                auto and_address_match = [&](const auto& s) {
+                    return std::make_shared<rtlir::and_statement>(s, serial_address_match);
+                };
+ 
+                /* FIXME: I don't handle memories with read/write clocks yet. */
+                match(
+                    std::make_tuple(portify(outer->clock_port()), inner->clock_port()),
+                    ds(anyptr, anyptr), [&](const auto& o_c, const auto& i_c) {
+                        assign_port(i_c, o_c);
+                    },
+                    ds(_x, _x), [&](const auto& o_c, const auto& i_c) {
+                        std::cerr << "ERROR: Unable to match clock ports on memory\n";
+                        std::cerr << "  outer clock port: " << o_c << "\n";
+                        std::cerr << "  inner clock port: " << i_c << "\n";
+                        abort();
+                    }
+                );
 
-                auto o_input = portify(outer->input_port());
-                auto i_input = inner->input_port();
-                if (o_input != nullptr && i_input != nullptr)
-                    assign_mask_slice(i_input, o_input);
-                else if (o_input == nullptr && i_input != nullptr) {
-                } else if (o_input == nullptr && i_input == nullptr) {
-                } else {
-                    std::cerr << "SRAM macro without input\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                /* In order to produce the output of a memory we need to cat
+                 * together a bunch of narrower memories, which can only be
+                 * done after generating all the memories.  This saves up the
+                 * output statements for later. */
+                match(
+                    std::make_tuple(portify(outer->output_port()), inner->output_port()),
+                    ds(anyptr, anyptr), [&](const auto& o_o, const auto& i_o) {
+                        auto w = mktemp(o_o->name(), i_o->width());
+                        wire_assign_wire(w, i_o);
+                        assign_port(i_o, w);
+                        cats.insert(
+                            std::make_pair(
+                                o_o,
+                                std::make_tuple(
+                                    w,
+                                    parallel_upper - parallel_lower,
+                                    outer->address_port()
+                                )
+                            )
+                        );
+                    },
+                    ds(_x, _x), [&](const auto& o_o, const auto& i_o) {
+                        std::cerr << "ERROR: Unable to match output ports on memory\n";
+                        std::cerr << "  outer output port: " << o_o << "\n";
+                        std::cerr << "  inner output port: " << i_o << "\n";
+                        abort();
+                    }
+                );
 
-                auto o_address = portify(outer->address_port());
-                auto i_address = inner->address_port();
-                if (o_address != nullptr && i_address != nullptr)
-                    assign_lower(i_address, o_address);
-                else {
-                    std::cerr << "SRAM macro without address\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                /* The input port to a memory just needs to happen in parallel,
+                 * this does a part select to narrow the memory down. */
+                match(
+                    std::make_tuple(portify(outer->input_port()), inner->input_port()),
+                    ds(anyptr, anyptr), [&](const auto& o_i, const auto& i_i) {
+                        assign(
+                            i_i,
+                            std::make_shared<rtlir::slice_statement>(
+                                o_i,
+                                parallel_upper - 1,
+                                parallel_lower
+                            )
+                        );
+                    },
+                    ds(_x, _x), [&](const auto& o_i, const auto& i_i) {
+                        std::cerr << "ERROR: Unable to match input ports on memory\n";
+                        std::cerr << "  outer input port: " << o_i << "\n";
+                        std::cerr << "  inner input port: " << i_i << "\n";
+                        abort();
+                    }
+                );
 
-                auto o_mask = portify(outer->mask_port());
-                auto i_mask = inner->mask_port();
-                auto o_chip_enable = portify(outer->chip_enable_port());
-                auto i_chip_enable = inner->chip_enable_port();
-                if (o_mask != nullptr && i_mask != nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
-                    /* This is the simple case: everyone has enables and masks,
-                     * so just emit the connections. */
-                    assign_pi_mask_slice(i_mask, o_mask, o_address);
-                    assign_port(i_chip_enable, o_chip_enable);
-                } else if (o_mask != nullptr && i_mask == nullptr && o_chip_enable == nullptr && i_chip_enable != nullptr) {
-                    /* It's possible to implement a mask port using the enable
-                     * port, but we only get one bit. */
-                    assign_port(i_mask, o_chip_enable);
-                } else if (o_mask != nullptr && i_mask == nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
-                    /* When the outer macro has a chip enable and a mask, we
-                     * can still implement it with the chip enable it's just
-                     * that we need to AND together the inputs. */
-                    assign_slice_and(i_chip_enable, o_mask, o_chip_enable);
-                } else if (o_mask == nullptr && i_mask == nullptr && o_chip_enable != nullptr && i_chip_enable != nullptr) {
-                    assign_port(i_chip_enable, o_chip_enable);
-                } else {
-                    std::cerr << "SRAM macro without mask/chip enable: " << to_compile->name() << "\n";
-                    std::cerr << "  " << to_compile->name() << ".chip_enable: " << o_chip_enable << "\n";
-                    std::cerr << "  " << compile_to->name() << ".chip_enable: " << i_chip_enable << "\n";
-                    std::cerr << "  " << to_compile->name() << ".mask: " << o_mask << "\n";
-                    std::cerr << "  " << compile_to->name() << ".mask: " << i_mask << "\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                /* The address port to a memory is just the low-order bits of
+                 * the top address. */
+                match(
+                    std::make_tuple(portify(outer->address_port()), inner->address_port()),
+                    ds(anyptr, anyptr), [&](const auto& o_a, const auto& i_a) {
+                        assign(
+                            i_a,
+                            std::make_shared<rtlir::slice_statement>(
+                                o_a,
+                                std::ceil(std::log2(compile_to->depth())) - 1,
+                                0
+                            )
+                        );
+                    },
+                    ds(_x, _x), [&](const auto& o_a, const auto& i_a) {
+                        std::cerr << "ERROR: Unable to match input ports on memory\n";
+                        std::cerr << "  outer input port: " << o_a << "\n";
+                        std::cerr << "  inner input port: " << i_a << "\n";
+                        abort();
+                    }
+                );
 
-                auto o_write_enable = portify(outer->write_enable_port());
-                auto i_write_enable = inner->write_enable_port();
-                auto a_write_enable = rtlir::statement::ptr(nullptr);
-                if (o_write_enable != nullptr && i_write_enable != nullptr) {
-                    assign_port(i_write_enable, o_write_enable);
-                    a_write_enable = std::make_shared<rtlir::wire_statement>(o_write_enable);
-                } else if (o_write_enable == nullptr && i_write_enable != nullptr) {
-                    a_write_enable = std::make_shared<rtlir::literal_statement>(0, 1);
-                } else {
-                    std::cerr << "SRAM macro without write enable\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                /* The bits from the outer memory's write mask that will be
+                 * used as the write mask for this inner memory. */
+                auto o_mask = match(
+                    portify(outer->mask_port()),
+                    anyptr, [&](const auto& om) -> rtlir::statement::ptr {
+                        /* If the outer memory has a mask then select the
+                         * correct bits of that mask to go in here. */
+                        auto inner_mask_width = inner->mask_port() == nullptr ? 1 : inner->mask_port()->width();
+                        util::assert(inner_mask_width > 0, "inner mask width must be greater than zero");
+                        auto outer_mask_offset = inner_mask_width * mi;
+                        util::assert(outer_mask_offset + inner_mask_width <= om->width(), "outer mask slice too high");
 
-                auto o_read_enable = portify(outer->read_enable_port());
-                auto i_read_enable = inner->read_enable_port();
-                if (o_read_enable != nullptr && i_read_enable != nullptr)
-                    assign_port(i_read_enable, o_read_enable);
-                else if (o_read_enable == nullptr && i_read_enable != nullptr)
-                    assign_port_statement(
-                        i_read_enable,
-                        std::make_shared<rtlir::bnot_statement>(a_write_enable)
-                    );
-                else if (o_read_enable == nullptr && i_read_enable == nullptr) {
-                } else {
-                    std::cerr << "SRAM macro without read enable\n";
-                    abort();
-                    return std::make_shared<rtlir::circuit>(to_compile);
-                }
+                        return std::make_shared<rtlir::slice_statement>(
+                            std::make_shared<rtlir::port_statement>(om),
+                            outer_mask_offset + inner_mask_width - 1,
+                            outer_mask_offset
+                        );
+                    },
+                    noneptr, [&]() -> rtlir::statement::ptr {
+                        /* If the outer memory doesn't have a mask then we'll
+                         * just fake it by building something we can attach to
+                         * the inner mask port that's always enabled. */
+                        if (inner->mask_port() == nullptr)
+                            return std::make_shared<rtlir::literal_statement>(1, 1);
+                        else {
+                            return std::make_shared<rtlir::bnot_statement>(
+                                std::make_shared<rtlir::literal_statement>(0, inner->mask_port()->width())
+                            );
+                        }
+                    }
+                );
+
+                /* The outer memory's write enable port, or a constant 1 if
+                 * there isn't a write enable port. */
+                auto o_write_enable = match(
+                    portify(outer->write_enable_port()),
+                    anyptr, [](const auto& owe) -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::port_statement>(owe);
+                    },
+                    noneptr, []() -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::literal_statement>(1, 1);
+                    }
+                );
+
+                /* The other memory's chip enable port, or a constant 1 if
+                 * there isn't a write enable port. */
+                auto o_chip_enable = match(
+                    portify(outer->chip_enable_port()),
+                    anyptr, [](const auto& oce) -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::port_statement>(oce);
+                    },
+                    noneptr, []() -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::literal_statement>(1, 1);
+                    }
+                );
+
+                /* The other memory's chip enable port, or a constant 1 if
+                 * there isn't a write enable port. */
+                auto o_read_enable = match(
+                    portify(outer->read_enable_port()),
+                    anyptr, [](const auto& oce) -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::port_statement>(oce);
+                    },
+                    noneptr, []() -> rtlir::statement::ptr {
+                        return std::make_shared<rtlir::literal_statement>(1, 1);
+                    }
+                );
+
+
+                /* It's safe to ignore read enables, but we pass them through
+                 * to the vendor memory if there's a port on there that
+                 * implements the read enables. */
+                match(
+                    inner->read_enable_port(),
+                    anyptr, [&](const auto& ire) {
+                        assign(ire, and_address_match(o_read_enable));
+                    },
+                    noneptr, []() {}
+                );
+
+                /* This is actually the memory compiler: it figures out how to
+                 * implement the outer memory's collection of ports using what
+                 * the inner memory has availiable. */
+                match(
+                    std::make_tuple(inner->mask_port(), inner->write_enable_port(), inner->chip_enable_port()),
+                    ds(anyptr, anyptr, anyptr), [&](const auto& i_mask, const auto& i_we, const auto& i_ce) {
+                        /* This is the simple option: every port exists. */
+                        assign(i_mask, o_mask);
+                        assign(i_we, and_address_match(o_write_enable));
+                        assign(i_ce, and_address_match(o_chip_enable));
+                    },
+                    ds(_x, _x, _x), [&](const auto& i_mask, const auto& i_we, const auto& i_ce) {
+                        /* If we've gotten here then it means I haven't learned
+                         * how to compile these sorts of memories yet. */
+                        std::cerr << "ERROR: memory compiler doesn't understand the target memory\n";
+                        std::cerr << "  inner write mask: " << i_mask << "\n";
+                        std::cerr << "  inner write enable: " << i_we << "\n";
+                        std::cerr << "  inner chip enable: " << i_ce << "\n";
+                        abort();
+                    }
+                );
             }
 
             auto instance = std::make_shared<rtlir::instance>(
@@ -466,24 +454,88 @@ rtlir::circuit::ptr passes::compile(
             );
             instances.push_back(instance);
         }
+
+        auto mktemp = [&](const std::string& base_name, const int& width) {
+            auto w = std::make_shared<rtlir::wire>(
+                base_name + "_" + std::to_string(si),
+                width
+            );
+            wires.push_back(w);
+            return w;
+        };
+
+        putil::collection::myfmmw(
+            cats,
+            [&](const auto& port, const auto& tuples) {
+                auto w = mktemp(port->name(), port->width());
+
+                auto cat = std::make_shared<rtlir::cat_statement>(
+                    putil::collection::map(
+                        tuples,
+                        [&](const auto& tuple) -> rtlir::statement::ptr {
+                            auto source = std::get<0>(tuple);
+                            auto slice_width = std::get<1>(tuple);
+
+                            return std::make_shared<rtlir::slice_statement>(
+                                source,
+                                slice_width - 1,
+                                0
+                            );
+                        }
+                    )
+                );
+
+                auto address = std::make_shared<rtlir::slice_statement>(
+                    putil::collection::fold(
+                        tuples,
+                        rtlir::wire::ptr(nullptr),
+                        [](const auto& last, const auto& tuple) {
+                            auto wire = std::get<2>(tuple);
+
+                            if (last == nullptr)
+                                return wire;
+
+                            util::assert(last->name() == wire->name(), "mismatched cat wire");
+                            return wire;
+                        }
+                    ),
+                    std::ceil(std::log2(to_compile->depth())) - 1,
+                    std::ceil(std::log2(compile_to->depth()))
+                );
+
+                auto a = std::make_shared<rtlir::connect_statement>(w, cat);
+                statements.push_back(a);
+                selects.insert(std::make_pair(port, std::make_tuple(w, si, address)));
+            }
+        );
     }
 
     putil::collection::myfmmw(
-        cats,
-        [&](const rtlir::port::ptr& port, const std::vector<std::pair<rtlir::wire::ptr, int>>& elements) -> void {
-            auto cat = std::make_shared<rtlir::cat_statement>(
-                putil::collection::map(
-                    elements,
-                    [&](const auto& pair) -> rtlir::statement::ptr {
-                        return std::make_shared<rtlir::slice_statement>(
-                            pair.first,
-                            pair.second - 1,
-                            0
-                        );
-                    }
-                )
+        selects,
+        [&](const auto& port, const auto& tuples) {
+            auto match = putil::collection::fold(
+                tuples,
+                std::make_shared<rtlir::literal_statement>(
+                    std::make_shared<rtlir::literal>(0, port->width())
+                ),
+                [&](const auto& last, const auto& tuple) -> rtlir::statement::ptr {
+                    auto on_value = std::get<0>(tuple);
+                    auto on_address = std::get<1>(tuple);
+                    auto address = std::get<2>(tuple);
+
+                    return std::make_shared<rtlir::terop_statement>(
+                        std::make_shared<rtlir::eqeq_statement>(
+                            std::make_shared<rtlir::literal_statement>(on_address),
+                            address
+                        ),
+                        std::make_shared<rtlir::wire_statement>(on_value),
+                        last
+                    );
+                    return std::make_shared<rtlir::literal_statement>(1);
+                }
             );
-            auto a = std::make_shared<rtlir::connect_statement>(port, cat);
+
+            auto a = std::make_shared<rtlir::connect_statement>(port, match);
             statements.push_back(a);
         }
     );

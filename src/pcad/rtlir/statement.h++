@@ -206,6 +206,19 @@ namespace pcad {
                 util::assert(_lo != nullptr);
             }
 
+            slice_statement(
+                const statement::ptr& source,
+                const int& hi,
+                const int& lo)
+            : _source(source),
+               _hi(std::make_shared<literal_statement>(hi)),
+               _lo(std::make_shared<literal_statement>(lo))
+            {
+                util::assert(_source != nullptr);
+                util::assert(_hi != nullptr);
+                util::assert(_lo != nullptr);
+            }
+
         public:
             const decltype(_source)& source(void) const { return _source; }
             const decltype(_hi)& hi(void) const { return _hi; }
@@ -257,6 +270,32 @@ namespace pcad {
 
         public:
             const decltype(_sources)& sources(void) const { return _sources; }
+        };
+
+        /* The ternery operator. */
+        class terop_statement: public statement {
+        public:
+            typedef std::shared_ptr<terop_statement> ptr;
+
+        private:
+            const statement::ptr _select;
+            const statement::ptr _on_true;
+            const statement::ptr _on_false;
+
+        public:
+            terop_statement(
+                const decltype(_select)& select,
+                const decltype(_on_true)& on_true,
+                const decltype(_on_false)& on_false)
+            : _select(select),
+              _on_true(on_true),
+              _on_false(on_false)
+            {}
+
+        public:
+            const auto& select(void) const { return _select; }
+            const auto& on_true(void) const { return _on_true; }
+            const auto& on_false(void) const { return _on_false; }
         };
 
         /* Binary operators. */

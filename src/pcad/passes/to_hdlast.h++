@@ -26,6 +26,7 @@ namespace pcad {
         hdlast::cat_statement::ptr to_hdlast(const rtlir::cat_statement::ptr& p);
         hdlast::slice_statement::ptr to_hdlast(const rtlir::slice_statement::ptr& p);
         hdlast::wire_statement::ptr to_hdlast(const rtlir::literal_statement::ptr& p);
+        hdlast::trop_statement::ptr to_hdlast(const rtlir::terop_statement::ptr& p);
         hdlast::biop_statement::ptr to_hdlast(const rtlir::binop_statement::ptr& p);
         hdlast::unop_statement::ptr to_hdlast(const rtlir::unop_statement::ptr& p);
     }

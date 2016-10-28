@@ -28,9 +28,22 @@ namespace pcad {
             {}
 
         public:
-            std::string as_string(void) const { return std::to_string(_data); }
+            virtual std::string as_string(void) const { return std::to_string(_data); }
             auto data(void) const { return _data; }
             auto width(void) const { return _width; }
+        };
+
+        class literal_x: public literal {
+        public:
+            typedef std::shared_ptr<literal_x> ptr;
+
+        public:
+            literal_x(int width)
+            : literal(-1, width)
+            {}
+
+        public:
+            virtual std::string as_string(void) const { return "x"; }
         };
     }
 }
