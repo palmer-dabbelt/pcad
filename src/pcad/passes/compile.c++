@@ -398,8 +398,15 @@ rtlir::circuit::ptr passes::compile(
                     anyptr, [](const auto& owe) -> rtlir::statement::ptr {
                         return std::make_shared<rtlir::port_statement>(owe);
                     },
-                    noneptr, []() -> rtlir::statement::ptr {
-                        return std::make_shared<rtlir::literal_statement>(1, 1);
+                    noneptr, [&]() -> rtlir::statement::ptr {
+                        /* If there is no input port on the source memory port
+                         * then we don't ever want to turn on this write
+                         * enable.  Otherwise, we just _always_ turn on the
+                         * write enable port on the inner memory. */
+                        if (outer->input_port() == nullptr)
+                            return std::make_shared<rtlir::literal_statement>(0, 1);
+                        else
+                            return std::make_shared<rtlir::literal_statement>(1, 1);
                     }
                 );
 
