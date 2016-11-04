@@ -136,6 +136,17 @@ namespace putil {
 
             return o;
         }
+
+        /* Just a zip. */
+        template <class I, typename F>
+        static inline auto zip(const I& low, const I& high, const F f)
+            -> std::vector<decltype(f(low))>
+        {
+            std::vector<decltype(f(low))> out;
+            for (I i = low; i < high; ++i)
+                out.push_back(f(i));
+            return out;
+        }
    }
 }
 

@@ -129,7 +129,7 @@ rtlir::circuit::ptr passes::compile(
             auto inner = pair.second;
 
             if (outer->mask_gran().valid() && inner->mask_gran().valid()) {
-                auto match_gran = outer->mask_gran().data() % inner->mask_gran().data() ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
+                auto match_gran = (outer->mask_gran().data() % inner->mask_gran().data()) == 0 ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
                 return std::min(max, match_gran);
             }
 
@@ -154,7 +154,7 @@ rtlir::circuit::ptr passes::compile(
             auto inner = pair.second;
 
             if (outer->mask_gran().valid() && inner->mask_gran().valid()) {
-                auto match_gran = outer->mask_gran().data() % inner->mask_gran().data() ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
+                auto match_gran = (outer->mask_gran().data() % inner->mask_gran().data()) == 0 ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
                 return std::min(max, match_gran);
             }
 
@@ -386,14 +386,29 @@ rtlir::circuit::ptr passes::compile(
                          * correct bits of that mask to go in here. */
                         auto inner_mask_width = inner->mask_port() == nullptr ? 1 : inner->mask_port()->width();
                         util::assert(inner_mask_width > 0, "inner mask width must be greater than zero");
+                        auto outer_mask_width = outer->mask_port() == nullptr ? 1 : outer->mask_port()->width();
+                        util::assert(outer_mask_width > 0, "outer mask width must be greater than zero");
                         auto outer_mask_offset = inner_mask_width * mi;
-                        util::assert(outer_mask_offset + inner_mask_width <= om->width(), "outer mask slice too high");
 
-                        return std::make_shared<rtlir::slice_statement>(
-                            std::make_shared<rtlir::port_statement>(om),
-                            outer_mask_offset + inner_mask_width - 1,
-                            outer_mask_offset
-                        );
+                        if (inner_mask_width == 1) {
+                            return std::make_shared<rtlir::slice_statement>(
+                                std::make_shared<rtlir::port_statement>(om),
+                                outer_mask_offset + inner_mask_width - 1,
+                                outer_mask_offset
+                            );
+                        } else {
+                            return std::make_shared<rtlir::cat_statement>(
+                                putil::collection::zip(0, inner_mask_width / outer_mask_width,
+                                    [&](const auto i) -> rtlir::statement::ptr {
+                                        return std::make_shared<rtlir::slice_statement>(
+                                            std::make_shared<rtlir::port_statement>(om),
+                                            outer_mask_offset + outer_mask_width - 1,
+                                            outer_mask_offset
+                                        );
+                                    }
+                                )
+                            );
+                        }
                     },
                     noneptr, [&]() -> rtlir::statement::ptr {
                         /* If the outer memory doesn't have a mask then we'll
