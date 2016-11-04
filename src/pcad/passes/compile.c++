@@ -203,7 +203,9 @@ rtlir::circuit::ptr passes::compile(
             /* All the helper functions above are garbage, these are the ones that actually work. */
             auto assign = [&](const rtlir::port::ptr& target, const rtlir::statement::ptr& source) {
                 if (target->width() < source->width()) {
+#ifdef SMALL_PORT_WARNING
                     std::cerr << "WARNING: Assigned large statement to small port " << target->name() << "\n";
+#endif
                     auto as = std::make_shared<rtlir::port_connect_statement>(target, source);
                     connects.push_back(as);
                     return as;
