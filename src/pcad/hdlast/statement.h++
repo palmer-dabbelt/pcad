@@ -115,8 +115,8 @@ namespace pcad {
 
         public:
             biop_statement(const decltype(_op)& operation,
-                           const statement::ptr& a,
-                           const statement::ptr& b)
+                           const statement::ptr a,
+                           const statement::ptr b)
             : _op(operation),
               _a(a),
               _b(b)
