@@ -213,6 +213,13 @@ namespace pcad {
                 } else
                     return nullptr;
             }
+
+            int effective_mask_gran(void) const {
+                if (mask_gran().valid())
+                    return mask_gran().data();
+                else
+                    return bit_width().data();
+            }
         };
 
         class memory_macro: public macro {

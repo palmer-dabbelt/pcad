@@ -118,67 +118,44 @@ rtlir::circuit::ptr passes::compile(
         }
     );
 
-    /* There's two ways to split memories based on the depth: either we are
-     * limited by the width of the memory, or we're limited by matching the
-     * mask of the macro to what we're trying to compile.  */
-    auto mask_or_macro_width = putil::collection::fold(
-        paired_memory_ports,
-        compile_to->width(),
-        [](const auto& max, const auto& pair) {
-            auto outer = pair.first;
-            auto inner = pair.second;
-
-            if (outer->mask_gran().valid() && inner->mask_gran().valid()) {
-                auto match_gran = (outer->mask_gran().data() % inner->mask_gran().data()) == 0 ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
-                return std::min(max, match_gran);
-            }
-
-            if (outer->mask_gran().valid() && !inner->mask_gran().valid()) {
-                auto match_gran = std::min(outer->mask_gran().data(), inner->bit_width().data());
-                return std::min(max, match_gran);
-            }
-
-            auto match_width = std::min(outer->bit_width().data(), inner->bit_width().data());
-            return std::min(max, match_width);
-        }
-    );
-
-    /* When splitting macros based on width, it's possible that we use multiple
-     * narrower memories to generate a single mask bit of a larger memory.
-     * This width should be used when calculating mask indicies. */
-    auto mask_width = putil::collection::fold(
-        paired_memory_ports,
-        std::max(compile_to->width(), to_compile->width()),
-        [](const auto& max, const auto& pair) {
-            auto outer = pair.first;
-            auto inner = pair.second;
-
-            if (outer->mask_gran().valid() && inner->mask_gran().valid()) {
-                auto match_gran = (outer->mask_gran().data() % inner->mask_gran().data()) == 0 ? outer->mask_gran().data() : std::min(outer->mask_gran().data(), inner->mask_gran().data());
-                return std::min(max, match_gran);
-            }
-
-            if (outer->mask_gran().valid() && !inner->mask_gran().valid())
-                return std::min(max, outer->mask_gran().data());
-
-            return max;
-        }
-    );
-
-    /* This macro compiler is just a horrible mess... */
     auto parallel_pairs = [&](){
         auto out = std::vector<std::pair<int, int>>();
-        for (int mask = 0; mask < to_compile->width(); mask += mask_width) {
-            auto last_macro = mask;
-            for (int macro = mask + mask_or_macro_width; macro < mask + mask_width; macro += mask_or_macro_width) {
-                out.push_back(std::make_pair(last_macro, macro));
-                last_macro = macro;
+        int i, last;
+        for (i = 0, last = 0; i < to_compile->width(); ++i) {
+            /* Every memory is going to have to fit at least a single bit. */
+            if (i <= last + 1) continue;
+
+            /* It's possible that we rolled over a memory's width here, if so
+             * generate one. */
+            if ((i - last) % compile_to->width() == 0) {
+                out.push_back(std::make_pair(last, i));
+                last = i;
+                continue;
             }
-            out.push_back(std::make_pair(last_macro, mask + mask_width));
+
+            /* FIXME: This is a mess, I must just be super confused. */
+            for (const auto& pp: paired_memory_ports) {
+                if (pp.second->mask_gran().valid() && pp.second->mask_gran().data() == 1)
+                    continue;
+
+                if (pp.first->mask_gran().valid() && i % pp.first->mask_gran().data() == 0) {
+                    out.push_back(std::make_pair(last, i));
+                    last = i;
+                    continue;
+                }
+
+                util::assert(
+                    pp.second->mask_gran().valid() == false
+                    || pp.second->mask_gran().data() == 1
+                    || pp.second->mask_gran().data() == pp.second->bit_width().data(),
+                    "I only support bit-mask (or unmasked) target memories"
+                );
+            }
         }
+        out.push_back(std::make_pair(last, i));
         return out;
     }();
-    std::cerr << "INFO: Mapped memory boundaries (mask_or_macro_width=" << std::to_string(mask_or_macro_width) << ", mask_width=" << std::to_string(mask_width) << "):\n";
+    std::cerr << "INFO: Mapped " << to_compile->name() << " to " << compile_to->name() << " using widths:\n";
     for (const auto& pp: parallel_pairs)
         std::cerr << "  [" << std::to_string(pp.first) << ", " << std::to_string(pp.second) << ")\n";
 
@@ -197,7 +174,6 @@ rtlir::circuit::ptr passes::compile(
         for (size_t pi = 0; pi < parallel_pairs.size(); ++pi) {
             auto parallel_lower = parallel_pairs[pi].first;
             auto parallel_upper = parallel_pairs[pi].second;
-            auto mi = parallel_lower / mask_width;
             auto connects = std::vector<rtlir::port_connect_statement::ptr>();
 
             /* All the helper functions above are garbage, these are the ones that actually work. */
@@ -384,28 +360,21 @@ rtlir::circuit::ptr passes::compile(
                 auto o_mask = match(
                     portify(outer->mask_port()),
                     anyptr, [&](const auto& om) -> rtlir::statement::ptr {
-                        /* If the outer memory has a mask then select the
-                         * correct bits of that mask to go in here. */
-                        auto inner_mask_width = inner->mask_port() == nullptr ? 1 : inner->mask_port()->width();
-                        util::assert(inner_mask_width > 0, "inner mask width must be greater than zero");
-                        auto outer_mask_width = outer->mask_port() == nullptr ? 1 : outer->mask_port()->width();
-                        util::assert(outer_mask_width > 0, "outer mask width must be greater than zero");
-                        auto outer_mask_offset = inner_mask_width * mi;
-
-                        if (inner_mask_width == 1) {
+                        if (inner->effective_mask_gran() == inner->bit_width().data()) {
                             return std::make_shared<rtlir::slice_statement>(
                                 std::make_shared<rtlir::port_statement>(om),
-                                outer_mask_offset + inner_mask_width - 1,
-                                outer_mask_offset
+                                parallel_lower / outer->effective_mask_gran(),
+                                parallel_lower / outer->effective_mask_gran()
                             );
                         } else {
+                            util::assert(inner->effective_mask_gran() == 1, "I only support single-bit mask ports");
                             return std::make_shared<rtlir::cat_statement>(
-                                putil::collection::zip(0, inner_mask_width / outer_mask_width,
+                                putil::collection::zip(parallel_lower, parallel_upper,
                                     [&](const auto i) -> rtlir::statement::ptr {
                                         return std::make_shared<rtlir::slice_statement>(
                                             std::make_shared<rtlir::port_statement>(om),
-                                            outer_mask_offset + outer_mask_width - 1,
-                                            outer_mask_offset
+                                            (i + parallel_lower) / outer->effective_mask_gran(),
+                                            (i + parallel_lower) / outer->effective_mask_gran()
                                         );
                                     }
                                 )
@@ -493,7 +462,9 @@ rtlir::circuit::ptr passes::compile(
                         assign(i_ce, and_address_match(o_chip_enable));
                     },
                     ds(noneptr, anyptr, anyptr), [&](const auto& i_we, const auto& i_ce) {
-                        /* If we're expected to provide mask ports without */
+                        /* If we're expected to provide mask ports without a
+                         * memory that actually has them then we can use the
+                         * write enable port instead of the mask port. */
                         util::assert(o_mask->width() == 1, "cannot emulate multi-bit mask ports with write enable");
                         assign(
                             i_we,
@@ -623,7 +594,7 @@ rtlir::circuit::ptr passes::compile(
     );
 
     std::cerr << "INFO: compiled " << to_compile->name() << " using " << compile_to->name() << "\n";
-    std::cerr << "  width used for mapping: " << std::to_string(mask_or_macro_width) << "\n";
+    std::cerr << "  Used " << std::to_string(parallel_pairs.size()) << " memories in the width direction\n";
 
     return std::make_shared<rtlir::circuit>(
         compiled,
