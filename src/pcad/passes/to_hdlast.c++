@@ -119,7 +119,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module, bool syn
 
                 auto mask_gran = p->mask_gran().data(1);
                 auto mask = [&]() -> hdlast::wire::ptr {
-                    if (p->mask_gran().valid() == true) {
+                    if (p->mask_gran().valid() && p->mask_port_name().valid()) {
                         auto mp = std::make_shared<hdlast::port>(
                             p->mask_port_name().data(),
                             m->width() / mask_gran,
@@ -155,12 +155,35 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module, bool syn
                 );
                 ports.push_back(address);
 
-                auto enable = std::make_shared<hdlast::port>(
-                    p->chip_enable_port_name().data(),
-                    1,
-                    hdlast::port_direction::INPUT
-                );
-                ports.push_back(enable);
+                auto enable = [&]() -> hdlast::wire::ptr {
+                    if (p->chip_enable_port_name().valid()) {
+                        auto enable = std::make_shared<hdlast::port>(
+                            p->chip_enable_port_name().data(),
+                            1,
+                            hdlast::port_direction::INPUT
+                        );
+                        ports.push_back(enable);
+                        return enable;
+                    } else {
+                        auto mp = std::make_shared<hdlast::wire>(
+                            "chip_enable_" + std::to_string(i),
+                             m->width() / mask_gran
+                        );
+                        wires.push_back(mp);
+                        logic.push_back(
+                            std::make_shared<hdlast::assign_statement>(
+                                std::make_shared<hdlast::wire_statement>(mp),
+                                std::make_shared<hdlast::unop_statement>(
+                                    hdlast::unop_statement::op::NOT,
+                                    std::make_shared<hdlast::wire_statement>(
+                                        std::make_shared<hdlast::literal>(0, m->width())
+                                    )
+                                )
+                            )
+                        );
+                        return mp;
+                    }
+                }();
 
                 auto read_data = std::make_shared<hdlast::wire>(
                     "read_data_" + std::to_string(i),
