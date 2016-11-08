@@ -105,14 +105,32 @@ rtlir::circuit::ptr passes::compile(
     };
 
     /* FIXME: This just assumes the Chisel and vendor ports are in the same
-     * order, but I'm starting with the  */
+     * order, but I'm starting with what actually gets generated. */
     if (to_compile->mem_ports().size() != compile_to->mem_ports().size()) {
         std::cerr << "INFO: unable to compile " << to_compile->name() << " using " << compile_to->name() << ": port count must match\n";
         return std::make_shared<rtlir::circuit>(to_compile);
     }
+    auto memory_port_order = [](const auto& p) {
+        if (p->input_port_name().valid() && p->output_port_name().valid())
+            return 0;
+        if (!p->input_port_name().valid() && p->output_port_name().valid())
+            return 1;
+        if (p->input_port_name().valid() && !p->output_port_name().valid())
+            return 2;
+        return 3;
+    };
+    auto compare_memory_port = [&](const auto& p, const auto& q) {
+        return memory_port_order(p) > memory_port_order(q);
+    };
     auto paired_memory_ports = putil::collection::map_zip(
-        to_compile->mem_ports(),
-        compile_to->mem_ports(),
+        putil::collection::sort(
+            to_compile->mem_ports(),
+            compare_memory_port
+        ),
+        putil::collection::sort(
+            compile_to->mem_ports(),
+            compare_memory_port
+        ),
         [&](const auto& tcp, const auto& ctp) {
             return std::make_pair(tcp, ctp);
         }
@@ -274,7 +292,7 @@ rtlir::circuit::ptr passes::compile(
                  * together a bunch of narrower memories, which can only be
                  * done after generating all the memories.  This saves up the
                  * output statements for later. */
-                match(
+                auto generated_valid_output_port_assignment = match(
                     std::make_tuple(portify(outer->output_port()), inner->output_port()),
                     ds(anyptr, anyptr), [&](const auto& o_o, const auto& i_o) {
                         auto w = mktemp(o_o->name(), i_o->width());
@@ -290,19 +308,29 @@ rtlir::circuit::ptr passes::compile(
                                 )
                             )
                         );
+                        return true;
                     },
                     ds(noneptr, anyptr), [&](const auto& i_o) {
                         /* If the inner memory has an output port but the outer
                          * one doesn't then it's safe to just leave the outer
                          * port floating. */
+                        return true;
+                    },
+                    ds(noneptr, noneptr), [&]() {
+                        /* If there's no output ports at all (ie, read-only
+                         * port on the memory) then just don't worry about it,
+                         * there's nothing to do. */
+                        return true;
                     },
                     ds(_x, _x), [&](const auto& o_o, const auto& i_o) {
-                        std::cerr << "ERROR: Unable to match output ports on memory\n";
+                        std::cerr << "WARNING: Unable to match output ports on memory\n";
                         std::cerr << "  outer output port: " << o_o << "\n";
                         std::cerr << "  inner output port: " << i_o << "\n";
-                        abort();
+                        return false;
                     }
                 );
+                if (generated_valid_output_port_assignment == false)
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 /* The input port to a memory just needs to happen in parallel,
                  * this does a part select to narrow the memory down. */
@@ -325,6 +353,12 @@ rtlir::circuit::ptr passes::compile(
                          * port floating.  This should be handled by the
                          * default value of the write enable, so nothing should
                          * every make it into the memory. */
+                        return true;
+                    },
+                    ds(noneptr, noneptr), [&]() {
+                        /* If there's no input ports at all (ie, read-only
+                         * port on the memory) then just don't worry about it,
+                         * there's nothing to do. */
                         return true;
                     },
                     ds(_x, _x), [&](const auto& o_i, const auto& i_i) {
@@ -478,6 +512,10 @@ rtlir::circuit::ptr passes::compile(
                             )
                         );
                         assign(i_ce, and_address_match(o_chip_enable));
+                    },
+                    ds(noneptr, noneptr, noneptr), [&]() {
+                        /* There's nothing to do here since there aren't any
+                         * ports to match up. */
                     },
                     ds(_x, _x, _x), [&](const auto& i_mask, const auto& i_we, const auto& i_ce) {
                         /* If we've gotten here then it means I haven't learned
