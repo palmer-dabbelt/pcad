@@ -147,6 +147,14 @@ namespace putil {
                 out.push_back(f(i));
             return out;
         }
+
+        template <typename I, typename F>
+        static inline auto sort(const I& input, const F comp) -> I
+        {
+            I out = input;
+            std::sort(out.begin(), out.end(), comp);
+            return out;
+        }
    }
 }
 
