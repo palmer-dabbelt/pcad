@@ -306,7 +306,7 @@ rtlir::circuit::ptr passes::compile(
 
                 /* The input port to a memory just needs to happen in parallel,
                  * this does a part select to narrow the memory down. */
-                match(
+                auto generated_valid_input_port_assignment = match(
                     std::make_tuple(portify(outer->input_port()), inner->input_port()),
                     ds(anyptr, anyptr), [&](const auto& o_i, const auto& i_i) {
                         assign(
@@ -317,6 +317,7 @@ rtlir::circuit::ptr passes::compile(
                                 parallel_lower
                             )
                         );
+                        return true;
                     },
                     ds(noneptr, anyptr), [&](const auto& i_i) {
                         /* If the inner memory has an input port but the other
@@ -324,14 +325,17 @@ rtlir::circuit::ptr passes::compile(
                          * port floating.  This should be handled by the
                          * default value of the write enable, so nothing should
                          * every make it into the memory. */
+                        return true;
                     },
                     ds(_x, _x), [&](const auto& o_i, const auto& i_i) {
-                        std::cerr << "ERROR: Unable to match input ports on memory\n";
+                        std::cerr << "WARNING: Unable to match input ports on memory\n";
                         std::cerr << "  outer input port: " << o_i << "\n";
                         std::cerr << "  inner input port: " << i_i << "\n";
-                        abort();
+                        return false;
                     }
                 );
+                if (generated_valid_input_port_assignment == false)
+                    return std::make_shared<rtlir::circuit>(to_compile);
 
                 /* The address port to a memory is just the low-order bits of
                  * the top address. */
