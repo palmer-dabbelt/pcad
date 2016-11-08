@@ -529,6 +529,17 @@ rtlir::circuit::ptr passes::compile(
                         assign(i_we, and_address_match(o_write_enable));
                         assign(i_ce, and_address_match(o_chip_enable));
                     },
+                    ds(anyptr, anyptr, noneptr), [&](const auto& i_mask, const auto& i_we) {
+                        /* If we don't have a chip enable but do have */
+                        assign(i_mask, o_mask);
+                        assign(
+                            i_we,
+                            std::make_shared<rtlir::and_statement>(
+                                o_chip_enable,
+                                and_address_match(o_write_enable)
+                            )
+                        );
+                    },
                     ds(noneptr, anyptr, anyptr), [&](const auto& i_we, const auto& i_ce) {
                         /* If we're expected to provide mask ports without a
                          * memory that actually has them then we can use the
