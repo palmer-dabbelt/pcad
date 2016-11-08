@@ -249,6 +249,35 @@ rtlir::circuit::ptr passes::compile(
                 wires.push_back(w);
                 return w;
             };
+
+            /* It's legal to have the same port multiple times when mapping
+             * memories.  This ensures that we safely assign these sorts of
+             * ports. */
+            auto assigned_ports = std::unordered_map<std::string, std::string>();
+            auto ports_are_already_assigned = [&](const rtlir::port::ptr& outer, const rtlir::port::ptr& inner) {
+                if (outer == nullptr && inner == nullptr)
+                    return true;
+
+                if (outer == nullptr || inner == nullptr)
+                    return false;
+
+                auto l = assigned_ports.find(inner->name());
+                if (l == assigned_ports.end()) {
+                    assigned_ports[inner->name()] = outer->name();
+                    return false;
+                }
+
+                if (l->second != outer->name()) {
+                    std::cerr << "ERROR: Elided second port assignment, but it's to a different port\n";
+                    std::cerr << "  inner port name: " << inner->name() << "\n";
+                    std::cerr << "  first outer port name: " << l->second << "\n";
+                    std::cerr << "  second outer port name: " << outer->name() << "\n";
+                    abort();
+                }
+
+                return true;
+            };
+
  
             for (const auto& pp: paired_memory_ports) {
                 auto outer = pp.first;
@@ -278,7 +307,8 @@ rtlir::circuit::ptr passes::compile(
                 match(
                     std::make_tuple(portify(outer->clock_port()), inner->clock_port()),
                     ds(anyptr, anyptr), [&](const auto& o_c, const auto& i_c) {
-                        assign_port(i_c, o_c);
+                        if (ports_are_already_assigned(o_c, i_c) == false)
+                            assign_port(i_c, o_c);
                     },
                     ds(_x, _x), [&](const auto& o_c, const auto& i_c) {
                         std::cerr << "ERROR: Unable to match clock ports on memory\n";
