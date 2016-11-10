@@ -46,21 +46,14 @@ rtlir::circuit::ptr passes::compile(
     auto vmacro = [&]() {
         auto best_circuit = rtlir::circuit::ptr(nullptr);
         auto best_macro = netlist::memory_macro::ptr(nullptr);
+        auto best_area = (size_t)(-1);
 
         for (const auto& to_try: compile_to) {
             auto compiled = compile(to_compile, to_try);
 
-            /* This weights flops as 10x as expensive as an SRAM bit cell, and
-             * SRAMs as 100x as expensive as bit cells.  I should really be
-             * reading a proper macro file (maybe a lib or lef or db?) that
-             * tells me the exact area for all the macros, but I'm lazy.  The
-             * 10x is probably OK, but the 100x is garbage. */
             auto compiled_area = compiled == nullptr
                 ? (size_t)(-1)
                 : memory_cost(compiled->top());
-            auto best_area = best_circuit == nullptr
-                ? (size_t)(-1)
-                : memory_cost(best_circuit->top());
 
             if (compiled != nullptr)
                 std::cerr << "INFO: compiling " << to_compile->name() << " using " << to_try->name() << " costs " << std::to_string(compiled_area) << "\n";
@@ -68,6 +61,7 @@ rtlir::circuit::ptr passes::compile(
             if (best_area > compiled_area) {
                 best_circuit = compiled;
                 best_macro = to_try;
+                best_area = compiled_area;
             }
         }
 
