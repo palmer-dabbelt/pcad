@@ -435,8 +435,8 @@ rtlir::circuit::ptr passes::compile(
                                     [&](const auto i) -> rtlir::statement::ptr {
                                         return std::make_shared<rtlir::slice_statement>(
                                             std::make_shared<rtlir::port_statement>(om),
-                                            (i + parallel_lower) / outer->effective_mask_gran(),
-                                            (i + parallel_lower) / outer->effective_mask_gran()
+                                            i / outer->effective_mask_gran(),
+                                            i / outer->effective_mask_gran()
                                         );
                                     }
                                 )

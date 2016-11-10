@@ -15,3 +15,4 @@ TESTSRC     += split_width-20x2024-mrw-uneven_mask.bash
 TESTSRC     += split_depth-8x2048-mrw-n28.bash
 TESTSRC     += split_width-16x2048-mrw-n28.bash
 TESTSRC     += split_depth-8x2048-r-mw-backwards.bash
+TESTSRC     += split_width-160x32-masks.bash
