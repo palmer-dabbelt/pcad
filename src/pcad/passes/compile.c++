@@ -49,6 +49,16 @@ rtlir::circuit::ptr passes::compile(
         auto best_area = (size_t)(-1);
 
         for (const auto& to_try: compile_to) {
+            /* A quick cost function (that must be kept in sync with
+             * memory_cost()) that attempts to avoid compiling unncessary
+             * memories.  This is a lower bound on the cost of compiling a
+             * memory: it assumes 100% bit-cell utilization when mapping. */
+            size_t quick_cost =
+                100 * (to_compile->width() * to_compile->depth()) / (to_try->width() * to_try->depth())
+                + (to_compile->width() * to_compile->depth());
+            if (quick_cost > best_area)
+                continue;
+
             auto compiled = compile(to_compile, to_try);
 
             auto compiled_area = compiled == nullptr
