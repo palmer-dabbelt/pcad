@@ -45,6 +45,14 @@ int main(int argc, const char **argv)
                 someptr<pcad::netlist::memory_macro>(), [&](auto m) {
                     if (type.getValue() == "sram")
                         std::cout << m->name() << "\n";
+                },
+                someptr<pcad::netlist::metal_fill_macro>(), [&](auto m) {
+                    if (type.getValue() == "metal filler")
+                        std::cout << m->name() << "\n";
+                },
+                someptr<pcad::netlist::fill_macro>(), [&](auto m) {
+                    if (type.getValue() == "filler")
+                        std::cout << m->name() << "\n";
                 }
             );
         }
