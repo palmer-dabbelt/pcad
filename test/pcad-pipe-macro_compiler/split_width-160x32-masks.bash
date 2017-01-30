@@ -3,6 +3,7 @@
 cat >"$INPUT" <<"EOF"
 [
   {
+    "type": "sram",
     "name": "name_of_sram_module",
     "depth": 32,
     "width": 160,
@@ -33,6 +34,7 @@ LIBS+=("-l" "library.json")
 cat >"library.json" <<"EOF"
 [
   {
+    "type": "sram",
     "name": "vendor_sram",
     "depth": 32,
     "width": 80,

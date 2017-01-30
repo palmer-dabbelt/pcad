@@ -3,6 +3,7 @@
 cat >"$INPUT" <<"EOF"
 [
   {
+    "type": "sram",
     "name": "name_of_sram_module",
     "depth": 2048,
     "width": 8,
@@ -28,6 +29,7 @@ cat >"$INPUT" <<"EOF"
     ]
   },
   {
+    "type": "sram",
     "name": "another_sram_module",
     "depth": 2048,
     "width": 8,

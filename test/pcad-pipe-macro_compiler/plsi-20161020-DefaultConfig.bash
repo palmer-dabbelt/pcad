@@ -3,6 +3,7 @@
 cat >"$INPUT" <<"EOF"
 [
   {
+    "type": "sram",
     "name": "tag_array_ext",
     "depth": 64,
     "width": 80,
@@ -20,6 +21,7 @@ cat >"$INPUT" <<"EOF"
     ]
   },
   {
+    "type": "sram",
     "name": "T_1090_ext",
     "depth": 512,
     "width": 64,
@@ -35,6 +37,7 @@ cat >"$INPUT" <<"EOF"
     ]
   },
   {
+    "type": "sram",
     "name": "T_406_ext",
     "depth": 512,
     "width": 64,
@@ -52,6 +55,7 @@ cat >"$INPUT" <<"EOF"
     ]
   },
   {
+    "type": "sram",
     "name": "T_2172_ext",
     "depth": 64,
     "width": 88,
