@@ -271,4 +271,7 @@ EOF
 
 #include "_harness.bash"
 
-cat "${OUTPUT}" | grep SRAM
+if test -f "${OUTPUT}.v"
+then
+    cat "${OUTPUT}.v" | grep SRAM
+fi

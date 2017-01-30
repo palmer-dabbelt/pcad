@@ -112,4 +112,8 @@ module name_of_sram_module(
 endmodule
 EOF
 
+cat > "${OUTPUT}.list.gold" <<EOF
+vendor_sram
+EOF
+
 #include "_harness.bash"

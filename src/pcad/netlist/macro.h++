@@ -267,6 +267,26 @@ namespace pcad {
             )
             {}
         };
+
+        class metal_fill_macro: public macro {
+        public:
+            typedef std::shared_ptr<metal_fill_macro> ptr;
+
+        public:
+            metal_fill_macro(const std::string& name)
+            : macro(name)
+            {}
+        };
+
+        class fill_macro: public macro {
+        public:
+            typedef std::shared_ptr<fill_macro> ptr;
+
+        public:
+            fill_macro(const std::string& name)
+            : macro(name)
+            {}
+        };
     }
 }
 

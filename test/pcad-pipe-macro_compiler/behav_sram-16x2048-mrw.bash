@@ -30,7 +30,7 @@ cat >"$INPUT" <<"EOF"
 ]
 EOF
 
-cat >"$OUTPUT".gold <<"EOF"
+cat >"$OUTPUT".v.gold <<"EOF"
 module name_of_sram_module(
   input [0:0] clock,
   output [15:0] RW0O,

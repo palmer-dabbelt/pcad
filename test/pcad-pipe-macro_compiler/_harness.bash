@@ -1,8 +1,8 @@
-$PTEST_BINARY --macro-list "${INPUT}" --verilog "${OUTPUT}" ${LIBS[@]}
+$PTEST_BINARY --macro-list "${INPUT}" --verilog "${OUTPUT}.v" ${LIBS[@]} ${COMPILER_ARGS[@]}
 
-cat "${OUTPUT}"
+cat "${OUTPUT}.v"
 
-if test -e "${OUTPUT}.gold"
+if test -e "${OUTPUT}.v.gold"
 then
-    diff -u "${OUTPUT}" "${OUTPUT}.gold"
+    diff -u "${OUTPUT}.v" "${OUTPUT}.v.gold"
 fi

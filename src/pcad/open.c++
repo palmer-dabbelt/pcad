@@ -130,6 +130,16 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         width.data(),
                                         ports
                                     );
+                                },
+                                util::option<std::string>("metal filler cell"), [&](auto type) -> netlist::macro::ptr {
+                                    return std::make_shared<netlist::metal_fill_macro>(
+                                        macro_json.template get<std::string>("name").data()
+                                    );
+                                },
+                                util::option<std::string>("filler cell"), [&](auto type) -> netlist::macro::ptr {
+                                    return std::make_shared<netlist::fill_macro>(
+                                        macro_json.template get<std::string>("name").data()
+                                    );
                                 }
                             );
                         }

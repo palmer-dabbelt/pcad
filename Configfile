@@ -68,3 +68,9 @@ CONFIG      += testcases-hdlast
 BINARIES    += pcad-pipe-macro_compiler
 SOURCES     += pipe-macro_compiler.c++
 CONFIG      += testcases-macro_compiler
+
+# Lists the macros by name in a library of already implemented black box
+# macros.
+BINARIES    += pcad-pipe-list_macros
+SOURCES     += pipe-list_macros.c++
+CONFIG      += testcases-macro_compiler
