@@ -233,24 +233,28 @@ namespace pcad {
             const int _depth;
             const int _width;
             const std::vector<memory_macro_port::ptr> _ports;
+            const std::vector<rtlir::named_literal::ptr> _extra_ports;
 
         public:
             memory_macro(
                 const std::string& name,
                 const decltype(_depth)& depth,
                 const decltype(_width)& width,
-                const decltype(_ports)& ports
+                const decltype(_ports)& ports,
+                const decltype(_extra_ports)& extra_ports
             )
             : macro(name),
               _depth(depth),
               _width(width),
-              _ports(ports)
+              _ports(ports),
+              _extra_ports(extra_ports)
             {}
 
         public:
             const decltype(_depth)& depth(void) const { return _depth; }
             const decltype(_width)& width(void) const { return _width; }
             const decltype(_ports)& mem_ports(void) const { return _ports; }
+            const decltype(_extra_ports)& extra_ports(void) const { return _extra_ports; }
         };
 
         class memory_blackbox: public memory_macro {
@@ -263,7 +267,8 @@ namespace pcad {
                 parent->name(),
                 parent->depth(),
                 parent->width(),
-                parent->mem_ports()
+                parent->mem_ports(),
+                parent->extra_ports()
             )
             {}
         };

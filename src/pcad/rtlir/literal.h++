@@ -45,6 +45,23 @@ namespace pcad {
         public:
             virtual std::string as_string(void) const { return "x"; }
         };
+
+        class named_literal: public literal {
+        public:
+            typedef std::shared_ptr<named_literal> ptr;
+
+        private:
+            const std::string _name;
+
+        public:
+            named_literal(std::string name, int data, int width)
+            : literal(data, width),
+              _name(name)
+            {}
+
+        public:
+            const decltype(_name)& name(void) const { return _name; }
+        };
     }
 }
 

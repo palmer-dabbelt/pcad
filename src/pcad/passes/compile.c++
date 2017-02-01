@@ -574,6 +574,22 @@ rtlir::circuit::ptr passes::compile(
                 );
             }
 
+            for (const auto& extra_port: compile_to->extra_ports()) {
+                auto as = std::make_shared<rtlir::port_connect_statement>(
+                    std::make_shared<rtlir::port>(
+                        extra_port->name(),
+                        extra_port->width(),
+                        rtlir::port_direction::INPUT,
+                        rtlir::port_polarity::ACTIVE_HIGH
+                    ),
+                    std::make_shared<rtlir::literal_statement>(
+                        extra_port->width(),
+                        extra_port->data()
+                    )
+                );
+                connects.push_back(as);
+            }
+
             auto instance = std::make_shared<rtlir::instance>(
                 "mem_" + std::to_string(si) + "_" + std::to_string(pi),
                 black_box,

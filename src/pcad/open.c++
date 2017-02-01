@@ -124,11 +124,23 @@ std::vector<netlist::macro::ptr> pcad::open_macros(const std::string& path)
                                         }
                                     );
 
+                                    auto extra_ports = macro_json.template map<rtlir::named_literal::ptr, pson::tree_object>(
+                                        "extra ports",
+                                        [&](const auto& extra_port_object) {
+                                            auto name = extra_port_object->template get<std::string>("name").data();
+                                            auto width = extra_port_object->template get<int>("width").data();
+                                            auto value = extra_port_object->template get<int>("value").data();
+
+                                            return std::make_shared<rtlir::named_literal>(name, width, value);
+                                        }
+                                    );
+
                                     return std::make_shared<netlist::memory_macro>(
                                         name.data(),
                                         depth.data(),
                                         width.data(),
-                                        ports
+                                        ports,
+                                        extra_ports
                                     );
                                 },
                                 util::option<std::string>("metal filler cell"), [&](auto type) -> netlist::macro::ptr {

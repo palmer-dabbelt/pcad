@@ -291,6 +291,7 @@ hdlast::module::ptr passes::to_hdlast(const rtlir::module::ptr& module, bool syn
                     );
                 }
             }
+
             auto body = std::make_shared<hdlast::scope>(
                 std::make_shared<hdlast::scope>(ports),
                 wires
