@@ -301,7 +301,7 @@ rtlir::circuit::ptr passes::compile(
                     )
                 );
                 auto and_address_match = [&](const auto& s) -> rtlir::statement::ptr {
-                    if (to_compile->depth() == compile_to->depth())
+                    if (to_compile->depth() <= compile_to->depth())
                         return s;
 
                     return std::make_shared<rtlir::and_statement>(s, serial_address_match);
@@ -629,7 +629,7 @@ rtlir::circuit::ptr passes::compile(
                 );
 
                 auto address = [&]() -> rtlir::statement::ptr {
-                    if (compile_to->depth() == to_compile->depth()) {
+                    if (compile_to->depth() >= to_compile->depth()) {
                         return std::make_shared<rtlir::literal_statement>(0);
                     } else {
                         return std::make_shared<rtlir::slice_statement>(
