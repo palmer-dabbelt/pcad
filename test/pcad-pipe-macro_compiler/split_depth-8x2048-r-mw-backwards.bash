@@ -72,7 +72,7 @@ cat >"library.json" <<"EOF"
 ]
 EOF
 
-cat > "$OUTPUT".gold <<"EOF"
+cat > "$OUTPUT".v.gold <<"EOF"
 module name_of_sram_module(
   input [10:0] W0A,
   input [0:0] clock,
