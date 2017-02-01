@@ -18,3 +18,4 @@ TESTSRC     += split_depth-8x2048-r-mw-backwards.bash
 TESTSRC     += split_width-160x32-masks.bash
 TESTSRC     += split_depth-8x2048-mrw-filler.bash
 TESTSRC     += split_depth-8x2048-mrw-sleep.bash
+TESTSRC     += split_depth-8x2000-mrw.bash
