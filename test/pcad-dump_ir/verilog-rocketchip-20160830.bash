@@ -1,1 +1,0 @@
-../_testcases-hdlast/verilog-rocketchip-20160830.bash

@@ -1,1 +1,0 @@
-../_testcases-hdlast/verilog-single_instance.bash

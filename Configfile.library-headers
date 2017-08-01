@@ -1,7 +1,0 @@
-#!/bin/bash
-
-find src/pcad -iname "*.h++" | sed 's@^src/@@' | while read f
-do
-    echo "HEADERS += $f"
-    echo "SOURCES += $f"
-done

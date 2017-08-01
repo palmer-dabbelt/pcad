@@ -1,1 +1,0 @@
-../_testcases-hdlast/verilog-always_hash.bash

@@ -1,1 +1,0 @@
-../_testcases-hdlast/verilog-hello_world.bash
